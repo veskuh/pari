@@ -2,14 +2,15 @@
 
 ## UI
 
-* Code editor pane
-* File System pane
-* AI Message pane
-* AI Output pane
-* Menu bar
-* Status bar
-* Toolbar for common actions (e.g., save, open, build)
-* Project explorer
+*   **Application Window:** The main window is an `ApplicationWindow` providing standard desktop application features.
+*   **Menu Bar:** A `MenuBar` with "File", "Edit", and "Help" menus.
+*   **Toolbar:** A `ToolBar` with "Open", "Save", and "Build" buttons.
+*   **Status Bar:** A custom `CustomStatusBar` component at the bottom to display application status.
+*   **Code editor pane:** A `TextArea` for code editing, which is scrollable by default.
+*   **File System pane:** A `TreeView` displaying the local file system, allowing file selection to load content into the code editor.
+*   **AI Message pane:** A pane for user input/prompts to the AI.
+*   **AI Output pane:** A `TextArea` to display AI responses, with a `BusyIndicator` to show processing status.
+*   **Labels:** Clear labels for all major panes.
 
 ## Features
 
@@ -74,9 +75,22 @@
         *   When the button is clicked, the content of the "Code editor pane" will be sent to the `Llm` class.
         *   The `Llm` class will use a prompt template for code commenting.
         *   The LLM's response (the commented code) will be displayed in the "AI Output pane".
-*   **Phase 2: Refactoring & Documentation:**
-    *   Expand prompting templates for refactoring and documentation.
-    *   Implement code modification capabilities.
+*   **Phase 2: Refactoring & Documentation**
+    *   **2.1: Documentation Generation:**
+        *   Expand prompting templates for documentation generation (e.g., for functions, classes, modules).
+        *   Add a "Generate Documentation" button/action in the UI.
+        *   Implement a mechanism to insert generated documentation into the code editor (e.g., at cursor position, or replacing selected text).
+    *   **2.2: Basic Refactoring - Rename:**
+        *   Expand prompting templates for basic refactoring (e.g., renaming variables, functions).
+        *   Add a "Rename" button/action in the UI.
+        *   Implement code modification capabilities to apply simple rename operations in the code editor.
+    *   **2.3: Advanced Refactoring - Extract Function/Method:**
+        *   Expand prompting templates for more complex refactoring (e.g., extracting selected code into a new function/method).
+        *   Add an "Extract Function/Method" button/action in the UI.
+        *   Implement code modification capabilities to perform these more complex refactoring operations.
+    *   **2.4: Contextual Refactoring/Documentation:**
+        *   Enhance prompt engineering to include more context (e.g., surrounding code, file type) for better refactoring and documentation suggestions.
+        *   Explore ways to provide interactive refactoring suggestions (e.g., previewing changes before applying).
 *   **Phase 3: Contextual Awareness & Advanced Features:**
     *   Implement context management for multi-turn conversations.
     *   Add support for more advanced features (e.g., code completion, bug detection).

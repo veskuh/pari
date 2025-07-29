@@ -22,6 +22,16 @@ private slots:
 
 private:
     QNetworkAccessManager *m_networkAccessManager;
+    bool m_busy;
+
+    Q_PROPERTY(bool busy READ busy WRITE setBusy NOTIFY busyChanged)
+
+public:
+    bool busy() const;
+    void setBusy(bool busy);
+
+signals:
+    void busyChanged();
 };
 
 #endif // LLM_H

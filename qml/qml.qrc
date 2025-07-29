@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource prefix="/qml">
     <file>pari.qml</file>
+    <file>CustomStatusBar.qml</file>
 </qresource>
 </RCC>
