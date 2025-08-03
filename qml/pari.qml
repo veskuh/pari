@@ -15,7 +15,12 @@ ApplicationWindow {
             title: qsTr("File")
             MenuItem { text: qsTr("Open") }
             MenuItem { text: qsTr("Save") }
-            MenuItem { text: qsTr("Exit") }
+            MenuItem { 
+                text: qsTr("Exit")
+                onTriggered: {
+                    Qt.exit(0)
+                }
+            }
         }
         Menu {
             title: qsTr("Edit")
