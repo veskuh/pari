@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     FileSystem *fileSystem = new FileSystem(&app);
-    fileSystem->model()->setRootPath(".");
+    
     engine.rootContext()->setContextProperty("fileSystem", fileSystem);
 
     Llm *llm = new Llm(&app);

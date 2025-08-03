@@ -5,7 +5,8 @@
 Use the following commands to build the project:
 
 ```bash
-~/Qt/6.8.0/macos/bin/qmake pari.pro
+cd build
+~/Qt/6.8.0/macos/bin/qmake ../pari.pro
 make
 ```
 

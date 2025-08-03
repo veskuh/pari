@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
 import QtQuick.Window
+import QtQuick.Dialogs
 
 ApplicationWindow {
     id: appWindow
@@ -10,10 +11,20 @@ ApplicationWindow {
     visible: true
     title: qsTr("Pari")
 
+    Action {
+        id: openAction
+        text: qsTr("Open")
+        shortcut: StandardKey.Open
+        onTriggered: fileDialog.open()
+    }
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
-            MenuItem { text: qsTr("Open") }
+            MenuItem {
+                text: qsTr("Open")
+                action: openAction
+            }
             MenuItem { text: qsTr("Save") }
             MenuItem { 
                 text: qsTr("Exit")
@@ -38,9 +49,9 @@ ApplicationWindow {
         Layout.fillWidth: true
         RowLayout {
             anchors.fill: parent
-            ToolButton { text: qsTr("Open"); Layout.preferredWidth: 80 }
-            ToolButton { text: qsTr("Save"); Layout.preferredWidth: 80 }
-            ToolButton { text: qsTr("Build"); Layout.preferredWidth: 80 }
+            ToolButton { text: qsTr("Open"); width: 80 }
+            ToolButton { text: qsTr("Save"); width: 80 }
+            ToolButton { text: qsTr("Build"); width: 80 }
         }
     }
 
@@ -55,9 +66,8 @@ ApplicationWindow {
         // Left side: File System Pane / Project Explorer
         ColumnLayout {
             Layout.fillHeight: true
-            Layout.preferredWidth: 250
-            Layout.minimumWidth: 150
-            Rectangle { Layout.fillWidth: true; Layout.fillHeight: true; color: "#ffcccc"; z: -1 } // Debug color
+            Layout.preferredWidth: 150
+            Layout.minimumWidth: 100
 
             Label {
                 text: qsTr("File System / Project Explorer")
@@ -70,7 +80,28 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: fileSystem.model
-                rootIndex: fileSystem.model.index(fileSystem.model.rootPath, 0)
+                rootIndex: fileSystem.currentRootIndex
+
+                // Debugging TreeView properties
+                Component.onCompleted: {
+                    console.log("TreeView: Component.onCompleted - Initial rootIndex:", fileSystemView.rootIndex);
+                    console.log("TreeView: Component.onCompleted - Initial model:", fileSystemView.model);
+                }
+
+                onRootIndexChanged: {
+                    console.log("TreeView: rootIndex changed to:", fileSystemView.rootIndex);
+                    // Check if the new rootIndex is valid and expand it
+                    if (fileSystemView.rootIndex.isValid) {
+                        fileSystemView.expand(fileSystemView.rootIndex);
+                        console.log("TreeView: Expanded new rootIndex.");
+                    } else {
+                        console.log("TreeView: New rootIndex is not valid.");
+                    }
+                }
+
+                onModelChanged: {
+                    console.log("TreeView: model changed to:", fileSystemView.model);
+                }
 
                 delegate: Item {
                     implicitHeight: 20
@@ -86,6 +117,7 @@ ApplicationWindow {
                             if (fileSystem.isDirectory(model.filePath)) {
                                 fileSystemView.toggleExpanded(index);
                             } else {
+                                console.log("QML: Attempting to load file:", model.filePath);
                                 fileSystem.loadFileContent(model.filePath);
                             }
                         }
@@ -98,7 +130,6 @@ ApplicationWindow {
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Rectangle { Layout.fillWidth: true; Layout.fillHeight: true; color: "#ccffcc"; z: -1 } // Debug color
 
             // Top: Code Editor
             Label {
@@ -109,12 +140,16 @@ ApplicationWindow {
             ScrollView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.minimumHeight: 500
+                Layout.minimumWidth: 600
                 TextArea {
                     id: codeEditor
                     placeholderText: "Code editor pane"
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Layout.minimumHeight: 200
+                    Layout.minimumHeight: 500
+                    Layout.minimumWidth: 600
+
                 }
             }
 
@@ -184,6 +219,23 @@ ApplicationWindow {
     }
 
     Connections {
+        target: fileSystem.model
+        function onDirectoryLoaded(path) {
+            if (path === fileSystem.rootPath) {
+                console.log("QML Connections: fileSystem.model.directoryLoaded detected for path:", path);
+                fileSystemView.rootIndex = fileSystem.currentRootIndex;
+                console.log("QML Connections: TreeView rootIndex set to:", fileSystemView.rootIndex);
+                if (fileSystemView.rootIndex.isValid) {
+                    fileSystemView.expand(fileSystemView.rootIndex);
+                    console.log("QML Connections: TreeView expanded new rootIndex.");
+                } else {
+                    console.log("QML Connections: TreeView rootIndex is NOT valid after directory loaded.");
+                }
+            }
+        }
+    }
+
+    Connections {
         target: llm
         function onResponseReady(response) {
             aiOutputPane.text = response;
@@ -194,6 +246,17 @@ ApplicationWindow {
                 customStatusBar.text = qsTr("Processing AI request...");
             } else {
                 customStatusBar.text = qsTr("Ready");
+            }
+        }
+    }
+
+    FolderDialog {
+        id: fileDialog
+        title: qsTr("Choose a folder")
+        
+        onAccepted: {
+            if (fileDialog.selectedFolder) {
+                fileSystem.setRootPath(fileDialog.selectedFolder.toString().replace("file://", ""));
             }
         }
     }
