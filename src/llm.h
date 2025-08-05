@@ -16,13 +16,18 @@ public slots:
 
 signals:
     void responseReady(const QString &response);
+    void newLineReceived(const QString &line);
 
 private slots:
-    void onNetworkReply(QNetworkReply *reply);
+    void onNetworkReply();
+    void onReadyRead();
 
 private:
     QNetworkAccessManager *m_networkAccessManager;
     bool m_busy;
+    QByteArray m_buffer;
+    QString m_currentResponse;
+    QString m_partialLine;
 
     Q_PROPERTY(bool busy READ busy WRITE setBusy NOTIFY busyChanged)
 

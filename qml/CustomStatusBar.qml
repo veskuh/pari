@@ -7,7 +7,8 @@ Control {
     Layout.fillWidth: true
     height: 25
     background: Rectangle {
-        color: "#f0f0f0"
+            color: "#000000"
+
     }
 
     property alias text: statusLabel.text
@@ -18,5 +19,7 @@ Control {
         anchors.left: parent.left
         anchors.leftMargin: 5
         text: qsTr("Ready")
+        color: "#f0f0f0"
+
     }
 }

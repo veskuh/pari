@@ -48,7 +48,7 @@ ApplicationWindow {
     header: ToolBar {
         Layout.fillWidth: true
         RowLayout {
-            anchors.fill: parent
+         
             ToolButton { text: qsTr("Open"); width: 80 }
             ToolButton { text: qsTr("Save"); width: 80 }
             ToolButton { text: qsTr("Build"); width: 80 }
@@ -131,26 +131,65 @@ ApplicationWindow {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // Top: Code Editor
-            Label {
-                text: qsTr("Code Editor")
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-            }
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.minimumHeight: 500
-                Layout.minimumWidth: 600
-                TextArea {
-                    id: codeEditor
-                    placeholderText: "Code editor pane"
+            RowLayout {
+            
+                // Right side: Editor 
+                ColumnLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Layout.minimumHeight: 500
-                    Layout.minimumWidth: 600
+                    // Top: Code Editor
 
+                    Label {
+                        text: qsTr("Code Editor")
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+                    ScrollView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.minimumHeight: 500
+                        Layout.minimumWidth: 400
+                        TextArea {
+                            id: codeEditor
+                            placeholderText: "Code editor pane"
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.minimumHeight: 500
+                            Layout.minimumWidth: 400
+
+                        }
+                    }
                 }
+
+                // Right side: Editor 
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    // Top: Code Editor
+
+                    Label {
+                        text: qsTr("AI output")
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+                    ScrollView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.minimumHeight: 500
+                        Layout.minimumWidth: 400
+                        TextArea {
+                            id: aiOutputPane
+                            placeholderText: "AI output"
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.minimumHeight: 500
+                            Layout.minimumWidth: 400
+
+                        }
+                    }
+                }
+
+                
             }
 
             // Bottom: AI Panes
@@ -158,55 +197,31 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 250
                 Layout.minimumHeight: 150
-                Rectangle { Layout.fillWidth: true; Layout.fillHeight: true; color: "#ccccff"; z: -1 } // Debug color
 
                 // AI Message Pane
                 Label {
                     text: qsTr("AI Message")
                     Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
+                    horizontalAlignment: Text.AlignHLeft
                 }
-                Rectangle {
+                TextArea {
                     id: aiMessagePane
                     color: "lightblue"
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Layout.preferredHeight: 100
                     Layout.minimumHeight: 50
-                    Text {
-                        text: "AI Message Pane"
-                        anchors.centerIn: parent
-                    }
-                    Button {
-                        text: "Comment Code"
-                        anchors.centerIn: parent
-                        enabled: codeEditor.text != ""
-                        onClicked: {
-                            llm.sendPrompt("Comment the following code:\n```\n" + codeEditor.text + "\n```");
-                        }
+                }
+                Button {
+                    text: "Comment Code"
+                    enabled: codeEditor.text != ""
+                    onClicked: {
+                        aiOutputPane.text = ""; // Clear previous output
+                        llm.sendPrompt("Comment the following code:\n```\n" + codeEditor.text + "\n```");
                     }
                 }
 
-                // AI Output Pane
-                Label {
-                    text: qsTr("AI Output")
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
-                }
-                TextArea {
-                        id: aiOutputPane
-                        placeholderText: "AI Output Pane"
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.preferredHeight: 150
-                        Layout.minimumHeight: 100
-                        Text {
-                            id: busyIndicatorText
-                            text: qsTr("Processing...")
-                            anchors.centerIn: parent
-                            visible: llm.busy
-                        }
-                    }
+        
             }
         }
     }
@@ -238,7 +253,6 @@ ApplicationWindow {
     Connections {
         target: llm
         function onResponseReady(response) {
-            aiOutputPane.text = response;
             customStatusBar.text = qsTr("AI response received.");
         }
         function onBusyChanged() {
@@ -247,6 +261,9 @@ ApplicationWindow {
             } else {
                 customStatusBar.text = qsTr("Ready");
             }
+        }
+        function onNewLineReceived(line) {
+            aiOutputPane.append(line);
         }
     }
 

@@ -9,6 +9,7 @@
 Llm::Llm(QObject *parent)
     : QObject{parent}
     , m_busy(false)
+    , m_partialLine("")
 {
     qDebug() << "Llm initialized, busy:" << m_busy;
     m_networkAccessManager = new QNetworkAccessManager(this);
@@ -38,36 +39,76 @@ void Llm::sendPrompt(const QString &prompt)
     QJsonObject mainObject;
     mainObject["model"] = "gemma3:12b"; // Or any other model you have locally
     mainObject["prompt"] = prompt;
-    mainObject["stream"] = false;
+    mainObject["stream"] = true;
 
     QJsonDocument doc(mainObject);
     QByteArray data = doc.toJson();
 
     qDebug() << "Sending request:" << QString(data);
 
-    m_networkAccessManager->post(request, data);
+    QNetworkReply *reply = m_networkAccessManager->post(request, data);
+    connect(reply, &QNetworkReply::readyRead, this, &Llm::onReadyRead);
+    connect(reply, &QNetworkReply::finished, this, &Llm::onNetworkReply);
 
-    // The reply is processed in onNetworkReply, which is connected to finished signal
-    // No need to delete reply here, it's handled in onNetworkReply
+    m_currentResponse.clear(); // Clear previous response
+    m_partialLine.clear(); // Clear partial line buffer
 }
 
-void Llm::onNetworkReply(QNetworkReply *reply)
+void Llm::onReadyRead()
 {
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    if (!reply)
+        return;
+
+    QByteArray newData = reply->readAll();
+    m_buffer.append(newData);
+
+    while (m_buffer.contains("\n")) {
+        int newlineIndex = m_buffer.indexOf("\n");
+        QByteArray lineData = m_buffer.left(newlineIndex + 1);
+        m_buffer.remove(0, newlineIndex + 1);
+
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(lineData);
+        if (!jsonDoc.isNull() && jsonDoc.isObject()) {
+            QJsonObject jsonObj = jsonDoc.object();
+            if (jsonObj.contains("response")) {
+                QString newText = jsonObj["response"].toString();
+                m_currentResponse.append(newText);
+                m_partialLine.append(newText);
+
+                // Check for newlines within the received text
+                int lineBreakIndex = m_partialLine.indexOf('\n');
+                while (lineBreakIndex != -1) {
+                    QString completeLine = m_partialLine.left(lineBreakIndex);
+                    emit newLineReceived(completeLine);
+                    m_partialLine.remove(0, lineBreakIndex + 1);
+                    lineBreakIndex = m_partialLine.indexOf('\n');
+                }
+            }
+        }
+    }
+}
+
+void Llm::onNetworkReply()
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    if (!reply)
+        return;
+
     setBusy(false);
     qDebug() << "onNetworkReply called, busy:" << m_busy;
     if (reply->error() == QNetworkReply::NoError) {
-        QByteArray responseData = reply->readAll();
-        qDebug() << "Received response:" << QString(responseData);
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(responseData);
-        QJsonObject jsonObj = jsonDoc.object();
+        // Process any remaining data in the buffer
+        onReadyRead();
 
-        if (jsonObj.contains("response")) {
-            emit responseReady(jsonObj["response"].toString());
-        } else {
-            emit responseReady("Error: Unexpected API response format.");
+        // Emit any remaining partial line as a final line
+        if (!m_partialLine.isEmpty()) {
+            emit newLineReceived(m_partialLine);
+            m_partialLine.clear();
         }
+        emit responseReady(m_currentResponse);
     } else {
-        qDebug() << "Network error:" << reply->errorString();
+        qDebug() << "Network error: " << reply->errorString();
         emit responseReady("Error: " + reply->errorString());
     }
     reply->deleteLater();

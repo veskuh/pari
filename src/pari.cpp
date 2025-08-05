@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("fileSystem", fileSystem);
 
     Llm *llm = new Llm(&app);
-    engine.rootContext()->setContextProperty("llm", llm);
+    engine.rootContext()->setContextProperty("llm", static_cast<QObject*>(llm));
 
     const QUrl url(u"qrc:/qml/pari.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
