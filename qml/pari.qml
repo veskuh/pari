@@ -46,12 +46,10 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        Layout.fillWidth: true
         RowLayout {
-         
-            ToolButton { text: qsTr("Open"); width: 80 }
-            ToolButton { text: qsTr("Save"); width: 80 }
-            ToolButton { text: qsTr("Build"); width: 80 }
+            ToolButton {text: qsTr("Open")}
+            ToolButton {text: qsTr("Save")}
+            ToolButton {text: qsTr("Build")}
         }
     }
 
@@ -70,9 +68,8 @@ ApplicationWindow {
             Layout.minimumWidth: 100
 
             Label {
-                text: qsTr("File System / Project Explorer")
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
+                text: qsTr("File System")
+                Layout.leftMargin: 10
             }
 
             TreeView {
@@ -106,7 +103,7 @@ ApplicationWindow {
                 delegate: Item {
                     implicitHeight: 20
                     implicitWidth: fileSystemView.width
-                    Text {
+                    Label {
                         text: model.display
                         anchors.verticalCenter: parent.verticalCenter
                         x: 5
