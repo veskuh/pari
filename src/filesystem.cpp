@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+#include <QSettings>
 
 FileSystem::FileSystem(QObject *parent)
     : QObject{parent}
@@ -10,6 +11,9 @@ FileSystem::FileSystem(QObject *parent)
 {
     m_model = new QFileSystemModel(this);
     m_model->setRootPath(m_rootPath);
+
+    QSettings settings("Pari", "Pari");
+    m_lastOpenedPath = settings.value("lastOpenedPath", QDir::homePath()).toString();
 }
 
 QFileSystemModel* FileSystem::model() const
@@ -25,6 +29,21 @@ QString FileSystem::rootPath() const
 QModelIndex FileSystem::currentRootIndex() const
 {
     return m_currentRootIndex;
+}
+
+QString FileSystem::lastOpenedPath() const
+{
+    return m_lastOpenedPath;
+}
+
+void FileSystem::setLastOpenedPath(const QString &path)
+{
+    if (m_lastOpenedPath != path) {
+        m_lastOpenedPath = path;
+        QSettings settings("Pari", "Pari");
+        settings.setValue("lastOpenedPath", m_lastOpenedPath);
+        emit lastOpenedPathChanged();
+    }
 }
 
 void FileSystem::loadFileContent(const QString &filePath)
@@ -49,6 +68,7 @@ void FileSystem::setRootPath(const QString &path)
         qDebug() << "FileSystem: Setting root path to" << m_rootPath;
         emit rootPathChanged();
         emit currentRootIndexChanged();
+        setLastOpenedPath(path); // Save the last opened path
     }
 }
 

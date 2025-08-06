@@ -108,7 +108,6 @@ ApplicationWindow {
                     Label {
                         id: indicator
                         text: (isDirectory? "▶" : " ") 
-                        //anchors.verticalCenter: parent.verticalCenter
                         x: (root.depth * 10) + 5
                         rotation : expanded? 90 : 0
                     }
@@ -281,6 +280,7 @@ ApplicationWindow {
     FolderDialog {
         id: fileDialog
         title: qsTr("Choose a folder")
+        currentFolder: fileSystem.lastOpenedPath
         
         onAccepted: {
             if (fileDialog.selectedFolder) {
