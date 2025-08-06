@@ -79,11 +79,7 @@ ApplicationWindow {
                 model: fileSystem.model
                 rootIndex: fileSystem.currentRootIndex
 
-                // Debugging TreeView properties
-                Component.onCompleted: {
-                    console.log("TreeView: Component.onCompleted - Initial rootIndex:", fileSystemView.rootIndex);
-                    console.log("TreeView: Component.onCompleted - Initial model:", fileSystemView.model);
-                }
+                property string selectedPath : ""
 
                 onRootIndexChanged: {
                     console.log("TreeView: rootIndex changed to:", fileSystemView.rootIndex);
@@ -101,24 +97,42 @@ ApplicationWindow {
                 }
 
                 delegate: Item {
+                    id: root
                     implicitHeight: 20
                     implicitWidth: fileSystemView.width
+
+                    required property int depth
+                    required property bool expanded
+                    property bool isDirectory: fileSystem.isDirectory(model.filePath)
+
                     Label {
-                        text: model.display
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: 5
+                        id: indicator
+                        text: (isDirectory? "▶" : " ") 
+                        //anchors.verticalCenter: parent.verticalCenter
+                        x: (root.depth * 10) + 5
+                        rotation : expanded? 90 : 0
                     }
+
+                    Label {
+                        text: model.display 
+                        x: indicator.x + 20
+                        font.bold: model.filePath == fileSystemView.selectedPath
+                    }
+
+
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            if (fileSystem.isDirectory(model.filePath)) {
+                            if (isDirectory) {
                                 fileSystemView.toggleExpanded(index);
                             } else {
                                 console.log("QML: Attempting to load file:", model.filePath);
                                 fileSystem.loadFileContent(model.filePath);
+                                fileSystemView.selectedPath = model.filePath
                             }
                         }
                     }
+                    
                 }
             }
         }
