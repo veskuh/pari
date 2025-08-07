@@ -6,7 +6,7 @@ Dialog {
     id: settingsDialog
     title: "Settings"
     standardButtons: Dialog.Ok | Dialog.Cancel
-    modal: true
+    modal: false
     width: 400
     height: 300
 

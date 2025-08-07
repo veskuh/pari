@@ -2,5 +2,6 @@
 <qresource prefix="/qml">
     <file>pari.qml</file>
     <file>CustomStatusBar.qml</file>
+    <file>SettingsDialog.qml</file>
 </qresource>
 </RCC>

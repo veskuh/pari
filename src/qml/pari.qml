@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import QtQuick.Window
 import QtQuick.Dialogs
 
-import "." // Import local QML files
 
 ApplicationWindow {
     id: appWindow
