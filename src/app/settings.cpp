@@ -1,4 +1,5 @@
 #include "settings.h"
+#include <QDebug>
 
 Settings::Settings(QObject *parent)
     : QObject{parent},
@@ -14,6 +15,7 @@ QStringList Settings::availableModels() const
 
 void Settings::setAvailableModels(const QStringList &models)
 {
+    qDebug() << models;
     if (m_availableModels == models)
         return;
     m_availableModels = models;
@@ -23,7 +25,7 @@ void Settings::setAvailableModels(const QStringList &models)
 void Settings::loadSettings()
 {
     m_ollamaUrl = m_qsettings.value("ollama/url", "http://localhost:11434").toString();
-    m_ollamaModel = m_qsettings.value("ollama/model", "codellama").toString();
+    m_ollamaModel = m_qsettings.value("ollama/model", "gemma3:12b").toString();
     m_fontFamily = m_qsettings.value("editor/fontFamily", "monospace").toString();
     m_fontSize = m_qsettings.value("editor/fontSize", 12).toInt();
 }

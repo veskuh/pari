@@ -55,10 +55,8 @@ Dialog {
                 ComboBox {
                     id: ollamaModelComboBox
                     model: appSettings.availableModels
-                    textRole: "text"
-                    valueRole: "value"
                     Layout.fillWidth: true
-                    currentIndex: model: appSettings.availableModels.indexOf(appSettings.ollamaModel)
+                    currentIndex: appSettings.availableModels.indexOf(appSettings.ollamaModel)
                     onCurrentIndexChanged: {
                         if (currentIndex !== -1) {
                             appSettings.ollamaModel = appSettings.availableModels[currentIndex]
