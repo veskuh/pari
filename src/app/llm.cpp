@@ -125,3 +125,28 @@ void Llm::onNetworkReply()
     }
     reply->deleteLater();
 }
+
+void Llm::listModels()
+{
+    QNetworkRequest request(QUrl(m_settings->ollamaUrl() + "/api/tags"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = m_networkAccessManager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            QByteArray data = reply->readAll();
+            QJsonDocument doc = QJsonDocument::fromJson(data);
+            QJsonObject obj = doc.object();
+            QJsonArray modelsArray = obj["models"].toArray();
+            QStringList models;
+            for (const auto &modelValue : modelsArray) {
+                QJsonObject modelObject = modelValue.toObject();
+                models.append(modelObject["name"].toString());
+            }
+            emit modelsListed(models);
+        } else {
+            qDebug() << "Error listing models:" << reply->errorString();
+        }
+        reply->deleteLater();
+    });
+}

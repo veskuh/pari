@@ -1,5 +1,15 @@
 # Building and Running
 
+## Prerequisites
+
+Before building the project, you need to install the following dependencies:
+
+- **Qt6:** You can install it using your system's package manager. For example, on Debian-based systems, you can use the following command:
+
+  ```bash
+  sudo apt-get install -y qt6-base-dev
+  ```
+
 ## Build
 
 Use the following commands to build the project:

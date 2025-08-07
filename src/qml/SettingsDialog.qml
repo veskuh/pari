@@ -11,20 +11,23 @@ Dialog {
     height: 300
 
     property alias ollamaUrl: ollamaUrlField.text
-    property alias ollamaModel: ollamaModelField.text
+    property alias ollamaModel: ollamaModelComboBox.currentValue
     property alias fontFamily: fontFamilyField.text
     property alias fontSize: fontSizeSpinBox.value
 
     onAccepted: {
         appSettings.ollamaUrl = ollamaUrl
-        appSettings.ollamaModel = ollamaModel
+        appSettings.ollamaModel = ollamaModelComboBox.currentValue
         appSettings.fontFamily = fontFamily
         appSettings.fontSize = fontSize
     }
 
     onOpened: {
         ollamaUrlField.text = appSettings.ollamaUrl
-        ollamaModelField.text = appSettings.ollamaModel
+        var modelIndex = appSettings.availableModels.indexOf(appSettings.ollamaModel)
+        if (modelIndex !== -1) {
+            ollamaModelComboBox.currentIndex = modelIndex
+        }
         fontFamilyField.text = appSettings.fontFamily
         fontSizeSpinBox.value = appSettings.fontSize
     }
@@ -48,9 +51,24 @@ Dialog {
             }
 
             Label { text: "Model:" }
-            TextField {
-                id: ollamaModelField
-                Layout.fillWidth: true
+            RowLayout {
+                ComboBox {
+                    id: ollamaModelComboBox
+                    model: appSettings.availableModels
+                    textRole: "text"
+                    valueRole: "value"
+                    Layout.fillWidth: true
+                    currentIndex: model: appSettings.availableModels.indexOf(appSettings.ollamaModel)
+                    onCurrentIndexChanged: {
+                        if (currentIndex !== -1) {
+                            appSettings.ollamaModel = appSettings.availableModels[currentIndex]
+                        }
+                    }
+                }
+                Button {
+                    text: "Refresh"
+                    onClicked: llm.listModels()
+                }
             }
         }
 
