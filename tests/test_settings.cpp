@@ -14,6 +14,7 @@ private slots:
     void testSettersAndGetters();
     void testPersistence();
     void testSignals();
+    void testAvailableModels();
 };
 
 void TestSettings::init()
@@ -93,6 +94,22 @@ void TestSettings::testSignals()
     // Verify no signals on same-value set
     settings.setFontSize(42);
     QCOMPARE(sizeSpy.count(), 1);
+}
+
+void TestSettings::testAvailableModels()
+{
+    Settings settings;
+    QSignalSpy spy(&settings, &Settings::availableModelsChanged);
+
+    QStringList models = {"model1", "model2"};
+    settings.setAvailableModels(models);
+
+    QCOMPARE(settings.availableModels(), models);
+    QCOMPARE(spy.count(), 1);
+
+    // Verify no signal on same-value set
+    settings.setAvailableModels(models);
+    QCOMPARE(spy.count(), 1);
 }
 
 QTEST_MAIN(TestSettings)

@@ -7,6 +7,19 @@ Settings::Settings(QObject *parent)
     loadSettings();
 }
 
+QStringList Settings::availableModels() const
+{
+    return m_availableModels;
+}
+
+void Settings::setAvailableModels(const QStringList &models)
+{
+    if (m_availableModels == models)
+        return;
+    m_availableModels = models;
+    emit availableModelsChanged();
+}
+
 void Settings::loadSettings()
 {
     m_ollamaUrl = m_qsettings.value("ollama/url", "http://localhost:11434").toString();

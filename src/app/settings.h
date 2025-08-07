@@ -13,6 +13,7 @@ class Settings : public QObject
     Q_PROPERTY(QString ollamaModel READ ollamaModel WRITE setOllamaModel NOTIFY ollamaModelChanged)
     Q_PROPERTY(QString fontFamily READ fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
+    Q_PROPERTY(QStringList availableModels READ availableModels WRITE setAvailableModels NOTIFY availableModelsChanged)
 
 public:
     explicit Settings(QObject *parent = nullptr);
@@ -29,11 +30,15 @@ public:
     int fontSize() const;
     void setFontSize(int size);
 
+    QStringList availableModels() const;
+    void setAvailableModels(const QStringList &models);
+
 signals:
     void ollamaUrlChanged();
     void ollamaModelChanged();
     void fontFamilyChanged();
     void fontSizeChanged();
+    void availableModelsChanged();
 
 private:
     void loadSettings();
@@ -42,6 +47,7 @@ private:
     QString m_ollamaModel;
     QString m_fontFamily;
     int m_fontSize;
+    QStringList m_availableModels;
 
     QSettings m_qsettings;
 };

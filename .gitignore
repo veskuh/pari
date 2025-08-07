@@ -1,0 +1,9 @@
+# Build artifacts
+build/
+*.o
+*.moc
+Makefile
+.qmake.stash
+moc_*.cpp
+moc_*.h
+tst_*

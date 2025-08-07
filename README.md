@@ -23,3 +23,5 @@ Pari is currently in the **early development phase**. The foundational features 
 *   **Core Functionality:** The application can send the content of the code editor to the LLM and display the generated output.
 
 The project is a hobby project (with Gemini) and somewhat actively being developed.
+
+<!-- Agent-added comment to trigger PR update -->

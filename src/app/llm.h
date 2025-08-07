@@ -14,10 +14,12 @@ public:
 
 public slots:
     void sendPrompt(const QString &prompt);
+    void listModels();
 
 signals:
     void responseReady(const QString &response);
     void newLineReceived(const QString &line);
+    void modelsListed(const QStringList &models);
 
 private slots:
     void onNetworkReply();
