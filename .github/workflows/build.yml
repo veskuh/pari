@@ -1,4 +1,4 @@
-name: Build
+name: Build and Test
 
 on:
   push:
@@ -20,9 +20,11 @@ jobs:
         version: '6.8.0'
         arch: 'linux_gcc_64'
 
-    - name: Build project
+    - name: Build project and tests
       run: |
-        mkdir build
-        cd build
-        qmake ../pari.pro
+        qmake
         make
+
+    - name: Run tests
+      run: |
+        ./tests/tst_settings
