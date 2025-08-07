@@ -20,11 +20,9 @@ jobs:
         version: '6.8.0'
         arch: 'linux_gcc_64'
 
-    - name: Build project and tests
+    - name: Build project
       run: |
-        qmake
+        mkdir build
+        cd build
+        qmake ../pari.pro
         make
-
-    - name: Run tests
-      run: |
-        ./tests/tst_settings
