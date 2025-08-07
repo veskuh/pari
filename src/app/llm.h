@@ -4,12 +4,13 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include "settings.h"
 
 class Llm : public QObject
 {
     Q_OBJECT
 public:
-    explicit Llm(QObject *parent = nullptr);
+    explicit Llm(Settings *settings, QObject *parent = nullptr);
 
 public slots:
     void sendPrompt(const QString &prompt);
@@ -21,9 +22,11 @@ signals:
 private slots:
     void onNetworkReply();
     void onReadyRead();
+    void onSettingsChanged();
 
 private:
     QNetworkAccessManager *m_networkAccessManager;
+    Settings *m_settings;
     bool m_busy;
     QByteArray m_buffer;
     QString m_currentResponse;

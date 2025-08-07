@@ -4,6 +4,8 @@ import QtQuick.Layouts
 import QtQuick.Window
 import QtQuick.Dialogs
 
+import "." // Import local QML files
+
 ApplicationWindow {
     id: appWindow
     width: 1024
@@ -38,6 +40,10 @@ ApplicationWindow {
             MenuItem { text: qsTr("Cut") }
             MenuItem { text: qsTr("Copy") }
             MenuItem { text: qsTr("Paste") }
+            MenuItem {
+                text: qsTr("Settings...")
+                onTriggered: settingsDialog.open()
+            }
         }
         Menu {
             title: qsTr("Help")
@@ -166,6 +172,8 @@ ApplicationWindow {
                             Layout.fillHeight: true
                             Layout.minimumHeight: 500
                             Layout.minimumWidth: 400
+                            font.family: appSettings.fontFamily
+                            font.pointSize: appSettings.fontSize
 
                         }
                     }
@@ -287,5 +295,9 @@ ApplicationWindow {
                 fileSystem.setRootPath(fileDialog.selectedFolder.toString().replace("file://", ""));
             }
         }
+    }
+
+    SettingsDialog {
+        id: settingsDialog
     }
 }

@@ -6,14 +6,20 @@
 #include <QDebug>
 #include <QEventLoop>
 
-Llm::Llm(QObject *parent)
+Llm::Llm(Settings *settings, QObject *parent)
     : QObject{parent}
+    , m_settings(settings)
     , m_busy(false)
     , m_partialLine("")
 {
     qDebug() << "Llm initialized, busy:" << m_busy;
     m_networkAccessManager = new QNetworkAccessManager(this);
     connect(m_networkAccessManager, &QNetworkAccessManager::finished, this, &Llm::onNetworkReply);
+
+    if (m_settings) {
+        connect(m_settings, &Settings::ollamaUrlChanged, this, &Llm::onSettingsChanged);
+        connect(m_settings, &Settings::ollamaModelChanged, this, &Llm::onSettingsChanged);
+    }
 }
 
 bool Llm::busy() const
@@ -33,11 +39,11 @@ void Llm::sendPrompt(const QString &prompt)
 {
     setBusy(true);
     qDebug() << "sendPrompt called, busy:" << m_busy;
-    QNetworkRequest request(QUrl("http://localhost:11434/api/generate"));
+    QNetworkRequest request(QUrl(m_settings->ollamaUrl() + "/api/generate"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QJsonObject mainObject;
-    mainObject["model"] = "gemma3:12b"; // Or any other model you have locally
+    mainObject["model"] = m_settings->ollamaModel();
     mainObject["prompt"] = prompt;
     mainObject["stream"] = true;
 
@@ -52,6 +58,12 @@ void Llm::sendPrompt(const QString &prompt)
 
     m_currentResponse.clear(); // Clear previous response
     m_partialLine.clear(); // Clear partial line buffer
+}
+
+void Llm::onSettingsChanged()
+{
+    // Settings have changed, we could invalidate something here if needed
+    qDebug() << "Llm settings changed.";
 }
 
 void Llm::onReadyRead()

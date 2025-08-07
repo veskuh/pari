@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include "filesystem.h"
 #include "llm.h"
+#include "settings.h"
 
 int main(int argc, char *argv[])
 {
@@ -13,10 +14,13 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    FileSystem *fileSystem = new FileSystem(&app);   
+    Settings *appSettings = new Settings(&app);
+    engine.rootContext()->setContextProperty("appSettings", appSettings);
+
+    FileSystem *fileSystem = new FileSystem(&app);
     engine.rootContext()->setContextProperty("fileSystem", fileSystem);
 
-    Llm *llm = new Llm(&app);
+    Llm *llm = new Llm(appSettings, &app);
     engine.rootContext()->setContextProperty("llm", static_cast<QObject*>(llm));
 
     const QUrl url("qrc:/qml/pari.qml");
