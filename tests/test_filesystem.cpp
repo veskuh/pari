@@ -27,6 +27,4 @@ void TestFileSystem::testSaveFile()
     file.close();
 }
 
-QTEST_APPLESS_MAIN(TestFileSystem)
-
 #include "test_filesystem.moc"

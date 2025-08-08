@@ -11,7 +11,8 @@ INCLUDEPATH += ../src
 SOURCES += \
     test_settings.cpp \
     test_filesystem.cpp \
-    ../src/app/filesystem.cpp
+    ../src/app/filesystem.cpp \
+    ../src/app/settings.cpp
 
 HEADERS += \
     ../src/app/settings.h \

@@ -3,6 +3,8 @@
 #include <QSignalSpy>
 #include "app/settings.h"
 
+#include "test_filesystem.cpp"
+
 class TestSettings : public QObject
 {
     Q_OBJECT
@@ -112,5 +114,19 @@ void TestSettings::testAvailableModels()
     QCOMPARE(spy.count(), 1);
 }
 
-QTEST_MAIN(TestSettings)
+int main(int argc, char *argv[])
+{
+    QCoreApplication app(argc, argv);
+    int status = 0;
+    {
+        TestSettings tc;
+        status |= QTest::qExec(&tc, argc, argv);
+    }
+    {
+        TestFileSystem tc;
+        status |= QTest::qExec(&tc, argc, argv);
+    }
+    return status;
+}
+
 #include "test_settings.moc"
