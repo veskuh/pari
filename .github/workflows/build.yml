@@ -30,9 +30,9 @@ jobs:
     - name: Run unit tests
       run: |
         cd build/tests
-        ./tst_settings
+        QT_QPA_PLATFORM=offscreen ./tst_settings
 
     - name: Run smoke test
       run: |
         cd build/src
-        ./pari --selfcheck
+        QT_QPA_PLATFORM=offscreen ./pari --selfcheck
