@@ -35,7 +35,7 @@ void TestSettings::testDefaults()
 {
     Settings settings;
     QCOMPARE(settings.ollamaUrl(), "http://localhost:11434");
-    QCOMPARE(settings.ollamaModel(), "codellama");
+    QCOMPARE(settings.ollamaModel(), "gemma3:12b");
     QCOMPARE(settings.fontFamily(), "monospace");
     QCOMPARE(settings.fontSize(), 12);
 }

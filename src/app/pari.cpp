@@ -23,15 +23,28 @@ int main(int argc, char *argv[])
     Llm *llm = new Llm(appSettings, &app);
     engine.rootContext()->setContextProperty("llm", static_cast<QObject*>(llm));
 
-    QObject::connect(llm, &Llm::modelsListed, appSettings, &Settings::setAvailableModels);
-    llm->listModels();
-
     const QUrl url("qrc:/qml/pari.qml");
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-        &app, [url](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl)
-                QCoreApplication::exit(-1);
-        }, Qt::QueuedConnection);
+
+    if (app.arguments().contains("--selfcheck")) {
+        QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+            &app, [url](QObject *obj, const QUrl &objUrl) {
+                if (!obj && url == objUrl) {
+                    QCoreApplication::exit(-1);
+                } else {
+                    QCoreApplication::exit(0);
+                }
+            }, Qt::QueuedConnection);
+    } else {
+        QObject::connect(llm, &Llm::modelsListed, appSettings, &Settings::setAvailableModels);
+        llm->listModels();
+
+        QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+            &app, [url](QObject *obj, const QUrl &objUrl) {
+                if (!obj && url == objUrl)
+                    QCoreApplication::exit(-1);
+            }, Qt::QueuedConnection);
+    }
+
     engine.load(url);
     return app.exec();
 }

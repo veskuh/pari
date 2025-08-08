@@ -26,3 +26,13 @@ jobs:
         cd build
         qmake ../pari.pro
         make
+
+    - name: Run unit tests
+      run: |
+        cd build/tests
+        QT_QPA_PLATFORM=offscreen ./tst_settings
+
+    - name: Run smoke test
+      run: |
+        cd build/src
+        QT_QPA_PLATFORM=offscreen ./pari --selfcheck
