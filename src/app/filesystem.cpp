@@ -3,11 +3,13 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QSettings>
+#include <QFileDialog>
 
 FileSystem::FileSystem(QObject *parent)
     : QObject{parent}
     , m_rootPath("")
     , m_currentRootIndex()
+    , m_currentFilePath("")
 {
     m_model = new QFileSystemModel(this);
     m_model->setRootPath(m_rootPath);
@@ -46,6 +48,19 @@ void FileSystem::setLastOpenedPath(const QString &path)
     }
 }
 
+QString FileSystem::currentFilePath() const
+{
+    return m_currentFilePath;
+}
+
+void FileSystem::setCurrentFilePath(const QString &path)
+{
+    if (m_currentFilePath != path) {
+        m_currentFilePath = path;
+        emit currentFilePathChanged();
+    }
+}
+
 void FileSystem::loadFileContent(const QString &filePath)
 {
     qDebug() << "FileSystem: Attempting to load file:" << filePath;
@@ -54,9 +69,24 @@ void FileSystem::loadFileContent(const QString &filePath)
         QTextStream in(&file);
         emit fileContentReady(in.readAll());
         file.close();
+        setCurrentFilePath(filePath);
         qDebug() << "FileSystem: File loaded successfully.";
     } else {
         qWarning() << "FileSystem: Could not open file:" << filePath << ", Error:" << file.errorString();
+    }
+}
+
+void FileSystem::saveFile(const QString &filePath, const QString &content)
+{
+    QFile file(filePath);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&file);
+        out << content;
+        file.close();
+        setCurrentFilePath(filePath);
+        emit fileSaved(filePath);
+    } else {
+        qWarning() << "Could not save file:" << file.errorString();
     }
 }
 
