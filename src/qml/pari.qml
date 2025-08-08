@@ -19,6 +19,24 @@ ApplicationWindow {
         onTriggered: fileDialog.open()
     }
 
+    Action {
+        id: saveAction
+        text: qsTr("Save")
+        shortcut: StandardKey.Save
+        enabled: codeEditor.text.length > 0 && fileSystem.currentFilePath !== ""
+        onTriggered: {
+            fileSystem.saveFile(fileSystem.currentFilePath, codeEditor.text)
+        }
+    }
+
+    Action {
+        id: saveAsAction
+        text: qsTr("Save As...")
+        shortcut: StandardKey.SaveAs
+        enabled: codeEditor.text.length > 0
+        onTriggered: saveAsDialog.open()
+    }
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -26,8 +44,15 @@ ApplicationWindow {
                 text: qsTr("Open")
                 action: openAction
             }
-            MenuItem { text: qsTr("Save") }
-            MenuItem { 
+            MenuItem {
+                text: qsTr("Save")
+                action: saveAction
+            }
+            MenuItem {
+                text: qsTr("Save As...")
+                action: saveAsAction
+            }
+            MenuItem {
                 text: qsTr("Exit")
                 onTriggered: {
                     Qt.exit(0)
@@ -52,8 +77,14 @@ ApplicationWindow {
 
     header: ToolBar {
         RowLayout {
-            ToolButton {text: qsTr("Open")}
-            ToolButton {text: qsTr("Save")}
+            ToolButton {
+                text: qsTr("Open")
+                action: openAction
+            }
+            ToolButton {
+                text: qsTr("Save")
+                action: saveAction
+            }
             ToolButton {text: qsTr("Build")}
         }
     }
@@ -259,6 +290,13 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: fileSystem
+        function onFileSaved(filePath) {
+            customStatusBar.text = qsTr("File saved: %1").arg(filePath)
+        }
+    }
+
     FolderDialog {
         id: fileDialog
         title: qsTr("Choose a folder")
@@ -267,6 +305,18 @@ ApplicationWindow {
         onAccepted: {
             if (fileDialog.selectedFolder) {
                 fileSystem.setRootPath(fileDialog.selectedFolder.toString().replace("file://", ""));
+            }
+        }
+    }
+
+    FileDialog {
+        id: saveAsDialog
+        title: "Save As..."
+        fileMode: FileDialog.SaveFile
+        currentFolder: fileSystem.lastOpenedPath
+        onAccepted: {
+            if (saveAsDialog.selectedFile) {
+                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), codeEditor.text)
             }
         }
     }

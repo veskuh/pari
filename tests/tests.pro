@@ -9,8 +9,11 @@ INCLUDEPATH += ../src
 
 # Source files for the settings class being tested
 SOURCES += \
-    ../src/app/settings.cpp \
-    test_settings.cpp
+    test_settings.cpp \
+    test_filesystem.cpp \
+    ../src/app/filesystem.cpp \
+    ../src/app/settings.cpp
 
 HEADERS += \
-    ../src/app/settings.h
+    ../src/app/settings.h \
+    ../src/app/filesystem.h
