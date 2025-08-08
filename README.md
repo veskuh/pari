@@ -24,4 +24,30 @@ Pari is currently in the **early development phase**. The foundational features 
 
 The project is a hobby project (with Gemini) and somewhat actively being developed.
 
+## Testing
+
+This project includes unit tests and a smoke test to ensure code quality and application stability. These tests are integrated into the CI workflow and are run automatically on every push and pull request.
+
+### Unit Tests
+
+The unit tests are built using the Qt Test framework and can be found in the `tests/` directory. To run the unit tests locally, first build the project, and then execute the test binary:
+
+```bash
+mkdir build
+cd build
+qmake6 ../pari.pro
+make
+./tests/tst_settings
+```
+
+### Smoke Test
+
+The application includes a smoke test that verifies if the main QML interface can be loaded successfully. This is triggered by the `--selfcheck` command-line flag.
+
+```bash
+./src/pari --selfcheck
+```
+
+**Note:** Running these tests locally requires a proper Qt development environment. The test scripts are primarily designed for use in automated testing environments, such as the GitHub Actions CI workflow, where the environment is pre-configured with all necessary dependencies. If you are running the tests locally, you may need to install Qt development packages first. For example, on Ubuntu, you can install the necessary packages with: `sudo apt-get install qt6-base-dev qt6-declarative-dev` and all the `qml6-module-*` packages.
+
 <!-- Agent-added comment to trigger PR update -->

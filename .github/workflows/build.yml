@@ -26,3 +26,13 @@ jobs:
         cd build
         qmake ../pari.pro
         make
+
+    - name: Run unit tests
+      run: |
+        cd build/tests
+        ./tst_settings
+
+    - name: Run smoke test
+      run: |
+        cd build/src
+        ./pari --selfcheck

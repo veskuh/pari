@@ -7,3 +7,9 @@ Makefile
 moc_*.cpp
 moc_*.h
 tst_*
+
+# Qt installation
+qt/
+
+# Log files
+*.log

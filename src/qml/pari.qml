@@ -82,20 +82,9 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: fileSystem.model
-                rootIndex: fileSystem.currentRootIndex
+                // rootIndex: fileSystem.currentRootIndex
 
                 property string selectedPath : ""
-
-                onRootIndexChanged: {
-                    console.log("TreeView: rootIndex changed to:", fileSystemView.rootIndex);
-                    // Check if the new rootIndex is valid and expand it
-                    if (fileSystemView.rootIndex.isValid) {
-                        fileSystemView.expand(fileSystemView.rootIndex);
-                        console.log("TreeView: Expanded new rootIndex.");
-                    } else {
-                        console.log("TreeView: New rootIndex is not valid.");
-                    }
-                }
 
                 onModelChanged: {
                     console.log("TreeView: model changed to:", fileSystemView.model);
@@ -245,25 +234,11 @@ ApplicationWindow {
 
     Connections {
         target: fileSystem
+        function onRootPathChanged() {
+            fileSystemView.model = fileSystem.model
+        }
         function onFileContentReady(content) {
             codeEditor.text = content;
-        }
-    }
-
-    Connections {
-        target: fileSystem.model
-        function onDirectoryLoaded(path) {
-            if (path === fileSystem.rootPath) {
-                console.log("QML Connections: fileSystem.model.directoryLoaded detected for path:", path);
-                fileSystemView.rootIndex = fileSystem.currentRootIndex;
-                console.log("QML Connections: TreeView rootIndex set to:", fileSystemView.rootIndex);
-                if (fileSystemView.rootIndex.isValid) {
-                    fileSystemView.expand(fileSystemView.rootIndex);
-                    console.log("QML Connections: TreeView expanded new rootIndex.");
-                } else {
-                    console.log("QML Connections: TreeView rootIndex is NOT valid after directory loaded.");
-                }
-            }
         }
     }
 
