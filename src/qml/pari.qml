@@ -66,7 +66,7 @@ ApplicationWindow {
             MenuItem { text: qsTr("Paste") }
             MenuItem {
                 text: qsTr("Settings...")
-                onTriggered: settingsDialog.open()
+                onTriggered: settingsDialog.show()
             }
         }
         Menu {
@@ -321,7 +321,7 @@ ApplicationWindow {
         }
     }
 
-    SettingsDialog {
+    SettingsWindow {
         id: settingsDialog
     }
 }
