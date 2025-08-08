@@ -3,7 +3,6 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QSettings>
-#include <QFileDialog>
 
 FileSystem::FileSystem(QObject *parent)
     : QObject{parent}
