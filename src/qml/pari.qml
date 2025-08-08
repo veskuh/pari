@@ -71,7 +71,10 @@ ApplicationWindow {
         }
         Menu {
             title: qsTr("Help")
-            MenuItem { text: qsTr("About") }
+            MenuItem {
+                text: qsTr("About")
+                onTriggered: aboutWindow.show()
+            }
         }
     }
 
@@ -323,5 +326,9 @@ ApplicationWindow {
 
     SettingsWindow {
         id: settingsDialog
+    }
+
+    AboutWindow {
+        id: aboutWindow
     }
 }
