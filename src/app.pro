@@ -17,3 +17,10 @@ SOURCES += \
 # QML resources
 RESOURCES += \
     qml/qml.qrc
+
+macx {
+    ICON = ../assets/pari.icns
+    RC_FILE = ../assets/pari.icns
+}
+win32: ICON = ../assets/pari.ico
+unix:!macx: ICON = ../assets/pari.png

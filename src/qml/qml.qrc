@@ -3,6 +3,6 @@
     <file>pari.qml</file>
     <file>CustomStatusBar.qml</file>
     <file>SettingsWindow.qml</file>
-        <file>AboutWindow.qml</file>
+    <file>AboutWindow.qml</file>
 </qresource>
 </RCC>

@@ -13,3 +13,11 @@ qt/
 
 # Log files
 *.log
+
+# Other files
+GEMINI.md
+notes.md
+*/.DS_Store
+.DS_Store
+*.app
+src/qrc_*
