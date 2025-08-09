@@ -12,6 +12,7 @@ class FileSystem : public QObject
     Q_PROPERTY(QModelIndex currentRootIndex READ currentRootIndex NOTIFY currentRootIndexChanged)
     Q_PROPERTY(QString lastOpenedPath READ lastOpenedPath WRITE setLastOpenedPath NOTIFY lastOpenedPathChanged)
     Q_PROPERTY(QString currentFilePath READ currentFilePath WRITE setCurrentFilePath NOTIFY currentFilePathChanged)
+    Q_PROPERTY(QString homePath READ homePath CONSTANT)
 
 public:
     explicit FileSystem(QObject *parent = nullptr);
@@ -23,6 +24,7 @@ public:
     void setLastOpenedPath(const QString &path);
     QString currentFilePath() const;
     void setCurrentFilePath(const QString &path);
+    QString homePath() const;
 
 public slots:
     void loadFileContent(const QString &filePath);
@@ -45,6 +47,7 @@ private:
     QModelIndex m_currentRootIndex;
     QString m_lastOpenedPath;
     QString m_currentFilePath;
+    QString m_homePath;
 };
 
 #endif // FILESYSTEM_H

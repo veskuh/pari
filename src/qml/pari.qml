@@ -116,7 +116,7 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: fileSystem.model
-                // rootIndex: fileSystem.currentRootIndex
+                rootIndex: fileSystem.currentRootIndex
 
                 property string selectedPath : ""
 
@@ -141,7 +141,7 @@ ApplicationWindow {
                     }
 
                     Label {
-                        text: model.display 
+                        text: model.display ? model.display : "" 
                         x: indicator.x + 20
                         font.bold: model.filePath == fileSystemView.selectedPath
                     }
@@ -159,7 +159,9 @@ ApplicationWindow {
                             }
                         }
                     }
-                    
+                    Component.onCompleted:{
+                        fileSystem.setRootPath(fileSystem.homePath)
+                    }   
                 }
             }
         }
@@ -263,6 +265,8 @@ ApplicationWindow {
 
         
             }
+
+            
         }
     }
 

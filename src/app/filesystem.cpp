@@ -15,6 +15,7 @@ FileSystem::FileSystem(QObject *parent)
 
     QSettings settings("Pari", "Pari");
     m_lastOpenedPath = settings.value("lastOpenedPath", QDir::homePath()).toString();
+    m_homePath = QDir::homePath();
 }
 
 QFileSystemModel* FileSystem::model() const
@@ -104,4 +105,9 @@ void FileSystem::setRootPath(const QString &path)
 bool FileSystem::isDirectory(const QString &filePath)
 {
     return m_model->isDir(m_model->index(filePath));
+}
+
+QString FileSystem::homePath() const
+{
+    return m_homePath;
 }
