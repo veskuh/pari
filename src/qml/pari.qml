@@ -226,7 +226,7 @@ ApplicationWindow {
                             Layout.minimumWidth: 400
                             font.family: appSettings.fontFamily
                             font.pointSize: appSettings.fontSize
-
+                            wrapMode: Text.Wrap
                         }
                     }
                 }
@@ -254,6 +254,7 @@ ApplicationWindow {
                             Layout.fillHeight: true
                             Layout.minimumHeight: 500
                             Layout.minimumWidth: 400
+                            wrapMode: Text.Wrap
 
                         }
                     }
@@ -281,6 +282,7 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.preferredHeight: 100
                     Layout.minimumHeight: 50
+                    wrapMode: Text.Wrap
                 }
                 RowLayout {
                 
@@ -308,33 +310,15 @@ ApplicationWindow {
                     }
                     Button {
                         text: "Send"
-                        enabled: codeEditor.text != ""
+                        enabled: codeEditor.text != "" && aiMessagePane.text !="" 
                         onClicked: {
                             aiOutputPane.text = ""; // Clear previous output
-                            var prompt = ""
-                            switch (promptComboBox.currentIndex) {
-                                case 0:
-                                    prompt = "Add comments to the following code. Do not add any other text, just the commented code."
-                                    break
-                                case 1:
-                                    prompt = "Explain the following code in a clear and concise way. Focus on the overall purpose of the code and the role of each major component."
-                                    break
-                                case 2:
-                                    prompt = "Refactor the following code to improve its readability, performance, and maintainability. Do not add any new functionality."
-                                    break
-                                case 3:
-                                    prompt = "Write unit tests for the following code. Use the Qt Test framework and cover all major functionality."
-                                    break
-                            }
-                            llm.sendPrompt(prompt + "\n```\n" + codeEditor.text + "\n```");
+                            var prompt = aiMessagePane.text                             
+                            llm.sendPrompt("You are AI code assistant. Follow the instructions given for the code in the end of message. Be short in your response, no chatting or politness, just code or comment. " + prompt + "\n```\n" + codeEditor.text + "\n```");
                         }
                     }
                 }
-
-        
             }
-
-            
         }
     }
 
