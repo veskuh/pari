@@ -14,6 +14,13 @@ ApplicationWindow {
         spacing: 10
         anchors.margins: 10
 
+        Image {
+            source: "qrc:/assets/pari.png"
+            sourceSize.width: 64
+            sourceSize.height: 64
+            Layout.alignment: Qt.AlignHCenter
+        }
+
         Label {
             text: "Pari - Your Local AI Coding Companion"
             font.bold: true
