@@ -1,0 +1,11 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/assets">
+    <file>cpp.png</file>
+    <file>png.png</file>
+    <file>qml.png</file>
+    <file>file.png</file>
+    <file>txt.png</file>
+    <file>md.png</file>
+    <file>folder.png</file>
+</qresource>
+</RCC>

@@ -103,8 +103,7 @@ ApplicationWindow {
         // Left side: File System Pane / Project Explorer
         ColumnLayout {
             Layout.fillHeight: true
-            Layout.preferredWidth: 150
-            Layout.minimumWidth: 100
+            Layout.preferredWidth: 250
 
             Label {
                 text: qsTr("File System")
@@ -126,8 +125,10 @@ ApplicationWindow {
 
                 delegate: Item {
                     id: root
-                    implicitHeight: 20
+                    implicitHeight: 28
                     implicitWidth: fileSystemView.width
+
+                    height: 28
 
                     required property int depth
                     required property bool expanded
@@ -138,12 +139,42 @@ ApplicationWindow {
                         text: (isDirectory? "▶" : " ") 
                         x: (root.depth * 10) + 5
                         rotation : expanded? 90 : 0
+                        anchors.verticalCenter: parent.verticalCenter
+
+                    }
+
+                    Image {
+                        source: {
+                            if (model.filePath==null) {
+                                "qrc:/assets/file.png"
+                            }
+                            else if (model.filePath.endsWith(".cpp") || model.filePath.endsWith(".h")) {
+                                "qrc:/assets/cpp.png"
+                            } else if (model.filePath.endsWith(".png")) {
+                                "qrc:/assets/png.png"
+                            } else if (model.filePath.endsWith(".qml")) {
+                                "qrc:/assets/qml.png"
+                            } else if (isDirectory) {
+                                "qrc:/assets/folder.png"
+                            } else if (model.filePath.endsWith(".md")) {
+                                "qrc:/assets/md.png"
+                            } else if (model.filePath.endsWith(".txt")) {
+                                "qrc:/assets/txt.png"
+                            } else {
+                                "qrc:/assets/file.png"
+                            }
+                        }
+                        sourceSize.height: 20
+                        x: indicator.x + 14
+                        anchors.verticalCenter: parent.verticalCenter
+
                     }
 
                     Label {
                         text: model.display ? model.display : "" 
-                        x: indicator.x + 20
+                        x: indicator.x + 38
                         font.bold: model.filePath == fileSystemView.selectedPath
+                        anchors.verticalCenter: parent.verticalCenter
                     }
 
 
@@ -159,9 +190,6 @@ ApplicationWindow {
                             }
                         }
                     }
-                    Component.onCompleted:{
-                        fileSystem.setRootPath(fileSystem.homePath)
-                    }   
                 }
             }
         }
@@ -335,4 +363,8 @@ ApplicationWindow {
     AboutWindow {
         id: aboutWindow
     }
+
+    Component.onCompleted:{
+        fileSystem.setRootPath(fileSystem.homePath)
+    }   
 }

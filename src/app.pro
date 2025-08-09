@@ -16,7 +16,8 @@ SOURCES += \
 
 # QML resources
 RESOURCES += \
-    qml/qml.qrc
+    qml/qml.qrc \
+    ../assets/assets.qrc
 
 macx {
     ICON = ../assets/pari.icns
