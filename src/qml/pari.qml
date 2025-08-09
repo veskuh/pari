@@ -282,12 +282,52 @@ ApplicationWindow {
                     Layout.preferredHeight: 100
                     Layout.minimumHeight: 50
                 }
-                Button {
-                    text: "Comment Code"
-                    enabled: codeEditor.text != ""
-                    onClicked: {
-                        aiOutputPane.text = ""; // Clear previous output
-                        llm.sendPrompt("Comment the following code:\n```\n" + codeEditor.text + "\n```");
+                RowLayout {
+                
+                    ComboBox {
+                        id: promptComboBox
+                        model: ["Comment the code", "Explain the code", "Refactor the code", "Write unit tests"]
+                        onCurrentTextChanged: {
+                            var prompt = ""
+                            switch (currentIndex) {
+                                case 0:
+                                    prompt = "Add comments to the following code. Do not add any other text, just the commented code."
+                                    break
+                                case 1:
+                                    prompt = "Explain the following code in a clear and concise way. Focus on the overall purpose of the code and the role of each major component."
+                                    break
+                                case 2:
+                                    prompt = "Refactor the following code to improve its readability, performance, and maintainability. Do not add any new functionality."
+                                    break
+                                case 3:
+                                    prompt = "Write unit tests for the following code. Use the Qt Test framework and cover all major functionality."
+                                    break
+                            }
+                            aiMessagePane.text = prompt
+                        }
+                    }
+                    Button {
+                        text: "Send"
+                        enabled: codeEditor.text != ""
+                        onClicked: {
+                            aiOutputPane.text = ""; // Clear previous output
+                            var prompt = ""
+                            switch (promptComboBox.currentIndex) {
+                                case 0:
+                                    prompt = "Add comments to the following code. Do not add any other text, just the commented code."
+                                    break
+                                case 1:
+                                    prompt = "Explain the following code in a clear and concise way. Focus on the overall purpose of the code and the role of each major component."
+                                    break
+                                case 2:
+                                    prompt = "Refactor the following code to improve its readability, performance, and maintainability. Do not add any new functionality."
+                                    break
+                                case 3:
+                                    prompt = "Write unit tests for the following code. Use the Qt Test framework and cover all major functionality."
+                                    break
+                            }
+                            llm.sendPrompt(prompt + "\n```\n" + codeEditor.text + "\n```");
+                        }
                     }
                 }
 
