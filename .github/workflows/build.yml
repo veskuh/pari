@@ -30,7 +30,7 @@ jobs:
     - name: Run unit tests
       run: |
         cd build/tests
-        QT_QPA_PLATFORM=offscreen ./tst_settings
+        QT_QPA_PLATFORM=offscreen ./tst_all
 
     - name: Run smoke test
       run: |
