@@ -5,6 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include "settings.h"
+#include "markdownformatter.h"
 
 class Llm : public QObject
 {
@@ -33,6 +34,7 @@ private:
     QByteArray m_buffer;
     QString m_currentResponse;
     QString m_partialLine;
+    MarkdownFormatter m_markdownFormatter;
 
     Q_PROPERTY(bool busy READ busy WRITE setBusy NOTIFY busyChanged)
 

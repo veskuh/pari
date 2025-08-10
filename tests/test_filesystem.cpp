@@ -1,15 +1,8 @@
+#include "test_filesystem.h"
 #include <QtTest>
 #include "../src/app/filesystem.h"
 #include <QTemporaryDir>
 #include <QFile>
-
-class TestFileSystem : public QObject
-{
-    Q_OBJECT
-
-private slots:
-    void testSaveFile();
-};
 
 void TestFileSystem::testSaveFile()
 {
@@ -26,5 +19,3 @@ void TestFileSystem::testSaveFile()
     QCOMPARE(QString(file.readAll()), content);
     file.close();
 }
-
-#include "test_filesystem.moc"

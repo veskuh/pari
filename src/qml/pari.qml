@@ -115,7 +115,6 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: fileSystem.model
-                rootIndex: fileSystem.currentRootIndex
 
                 property string selectedPath : ""
 
@@ -247,15 +246,15 @@ ApplicationWindow {
                         Layout.fillHeight: true
                         Layout.minimumHeight: 500
                         Layout.minimumWidth: 400
-                        TextArea {
+                        Text {
                             id: aiOutputPane
-                            placeholderText: "AI output"
+                            text: "AI output"
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             Layout.minimumHeight: 500
                             Layout.minimumWidth: 400
                             wrapMode: Text.Wrap
-
+                            textFormat: Text.RichText
                         }
                     }
                 }
@@ -335,6 +334,7 @@ ApplicationWindow {
     Connections {
         target: llm
         function onResponseReady(response) {
+            aiOutputPane.text = response;
             customStatusBar.text = qsTr("AI response received.");
         }
         function onBusyChanged() {
@@ -345,7 +345,7 @@ ApplicationWindow {
             }
         }
         function onNewLineReceived(line) {
-            aiOutputPane.append(line);
+            aiOutputPane.text += line;
         }
     }
 
