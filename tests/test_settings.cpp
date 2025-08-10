@@ -1,23 +1,8 @@
-#include <QTest>
+#include "test_settings.h"
+#include <QtTest>
 #include <QSettings>
 #include <QSignalSpy>
 #include "app/settings.h"
-
-#include "test_filesystem.cpp"
-
-class TestSettings : public QObject
-{
-    Q_OBJECT
-
-private slots:
-    void init();
-    void cleanup();
-    void testDefaults();
-    void testSettersAndGetters();
-    void testPersistence();
-    void testSignals();
-    void testAvailableModels();
-};
 
 void TestSettings::init()
 {
@@ -113,20 +98,3 @@ void TestSettings::testAvailableModels()
     settings.setAvailableModels(models);
     QCOMPARE(spy.count(), 1);
 }
-
-int main(int argc, char *argv[])
-{
-    QCoreApplication app(argc, argv);
-    int status = 0;
-    {
-        TestSettings tc;
-        status |= QTest::qExec(&tc, argc, argv);
-    }
-    {
-        TestFileSystem tc;
-        status |= QTest::qExec(&tc, argc, argv);
-    }
-    return status;
-}
-
-#include "test_settings.moc"

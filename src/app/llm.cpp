@@ -118,7 +118,7 @@ void Llm::onNetworkReply()
             emit newLineReceived(m_partialLine);
             m_partialLine.clear();
         }
-        emit responseReady(m_currentResponse);
+        emit responseReady(m_markdownFormatter.toHtml(m_currentResponse));
     } else {
         qDebug() << "Network error: " << reply->errorString();
         emit responseReady("Error: " + reply->errorString());
