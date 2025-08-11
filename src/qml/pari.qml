@@ -96,7 +96,6 @@ ApplicationWindow {
 
             TreeView {
                 id: fileSystemView
-                property var rootIndex
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: fileSystem.model
