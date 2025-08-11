@@ -96,6 +96,7 @@ ApplicationWindow {
 
             TreeView {
                 id: fileSystemView
+                property var rootIndex
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: fileSystem.model
@@ -188,6 +189,10 @@ ApplicationWindow {
 
         // Pane 3: AI Section (40% width)
         ColumnLayout {
+            id: aiPane
+            property bool isThinking: false
+            property string thinkingText: ""
+
             SplitView.preferredWidth: appWindow.width * 0.40
             SplitView.minimumWidth: 250
 
@@ -199,17 +204,75 @@ ApplicationWindow {
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
             }
-            ScrollView {
+            Item {
                 Layout.fillWidth: true
-                Layout.fillHeight: true // This makes the output area expand to fill available space
-                clip: true
+                Layout.fillHeight: true
 
-                TextArea { // Using a read-only TextArea for better selection/copying
-                    id: aiOutputPane
-                    readOnly: true
-                    placeholderText: "AI assistant output will appear here..."
-                    wrapMode: Text.WordWrap
-                    textFormat: Text.RichText // Keep RichText if you use markdown formatting
+                ScrollView {
+                    id: aiOutputScrollView
+                    anchors.fill: parent
+                    clip: true
+
+                    TextArea { // Using a read-only TextArea for better selection/copying
+                        id: aiOutputPane
+                        readOnly: true
+                        placeholderText: "AI assistant output will appear here..."
+                        wrapMode: Text.WordWrap
+                        textFormat: Text.RichText // Keep RichText if you use markdown formatting
+                    }
+                }
+
+                // Thinking Overlay
+                Rectangle {
+                    id: thinkingOverlay
+                    anchors.fill: parent
+                    color: "#AA000000" // Semi-transparent black
+                    visible: aiPane.isThinking
+                    z: 10 // Ensure it's on top
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 10
+
+                        Label {
+                            text: "Thinking..."
+                            font.bold: true
+                            color: "white"
+                        }
+
+                        ScrollView {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            clip: true
+                            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+
+                            TextArea {
+                                id: thinkingOutput
+                                readOnly: true
+                                text: aiPane.thinkingText
+                                color: "white"
+                                background: Rectangle {
+                                    color: "transparent"
+                                }
+                                wrapMode: Text.WordWrap
+                                font.family: appSettings.fontFamily
+                                font.pointSize: appSettings.fontSize
+
+                                // Auto-scroll to the bottom
+                                onTextChanged: {
+                                    flickableItem.contentY = contentHeight - flickableItem.height
+                                }
+
+                                Flickable {
+                                    id: flickableItem
+                                    anchors.fill: parent
+                                    contentHeight: thinkingOutput.contentHeight
+                                    clip: true
+                                    interactive: true
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -270,19 +333,10 @@ ApplicationWindow {
 
    Connections {
         target: fileSystem
-        // This is the key change. We now set the rootIndex here,
-        // after we know the model is ready.
         function onRootPathChanged() {
             fileSystemView.model = fileSystem.model
             fileSystemView.rootIndex = fileSystem.currentRootIndex
         }
-        function onFileContentReady(content) { codeEditor.text = content; }
-        function onFileSaved(filePath) { customStatusBar.text = qsTr("File saved: %1").arg(filePath) }
-    }
-
-    Connections {
-        target: fileSystem
-        function onRootPathChanged() { fileSystemView.model = fileSystem.model }
         function onFileContentReady(content) { codeEditor.text = content; }
         function onFileSaved(filePath) { customStatusBar.text = qsTr("File saved: %1").arg(filePath) }
     }
@@ -301,7 +355,31 @@ ApplicationWindow {
             }
         }
         function onNewLineReceived(line) {
-            aiOutputPane.text += line;
+            var currentLine = line;
+            while (currentLine.length > 0) {
+                if (aiPane.isThinking) {
+                    var endThinkIndex = currentLine.indexOf("</think>");
+                    if (endThinkIndex !== -1) {
+                        aiPane.thinkingText += currentLine.substring(0, endThinkIndex);
+                        aiPane.isThinking = false;
+                        currentLine = currentLine.substring(endThinkIndex + 8);
+                    } else {
+                        aiPane.thinkingText += currentLine;
+                        currentLine = "";
+                    }
+                } else {
+                    var startThinkIndex = currentLine.indexOf("<think>");
+                    if (startThinkIndex !== -1) {
+                        aiOutputPane.text += currentLine.substring(0, startThinkIndex);
+                        aiPane.isThinking = true;
+                        aiPane.thinkingText = ""; // Clear previous thinking
+                        currentLine = currentLine.substring(startThinkIndex + 7);
+                    } else {
+                        aiOutputPane.text += currentLine;
+                        currentLine = "";
+                    }
+                }
+            }
         }
     }
 
