@@ -21,6 +21,7 @@ signals:
     void responseReady(const QString &response);
     void newLineReceived(const QString &line);
     void modelsListed(const QStringList &models);
+    void chatLogChanged();
 
 private slots:
     void onNetworkReply();
@@ -28,6 +29,7 @@ private slots:
     void onSettingsChanged();
 
 private:
+    void addToChatLog(const QString &line);
     QNetworkAccessManager *m_networkAccessManager;
     Settings *m_settings;
     bool m_busy;
@@ -35,12 +37,15 @@ private:
     QString m_currentResponse;
     QString m_partialLine;
     MarkdownFormatter m_markdownFormatter;
+    QStringList m_chatLog;
 
     Q_PROPERTY(bool busy READ busy WRITE setBusy NOTIFY busyChanged)
+    Q_PROPERTY(QStringList chatLog READ chatLog NOTIFY chatLogChanged)
 
 public:
     bool busy() const;
     void setBusy(bool busy);
+    QStringList chatLog() const;
 
 signals:
     void busyChanged();

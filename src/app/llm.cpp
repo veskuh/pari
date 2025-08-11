@@ -5,6 +5,13 @@
 #include <QJsonArray>
 #include <QDebug>
 #include <QEventLoop>
+#include <QDateTime>
+
+void Llm::addToChatLog(const QString &line)
+{
+    m_chatLog.append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")).arg(line));
+    emit chatLogChanged();
+}
 
 Llm::Llm(Settings *settings, QObject *parent)
     : QObject{parent}
@@ -20,6 +27,11 @@ Llm::Llm(Settings *settings, QObject *parent)
         connect(m_settings, &Settings::ollamaUrlChanged, this, &Llm::onSettingsChanged);
         connect(m_settings, &Settings::ollamaModelChanged, this, &Llm::onSettingsChanged);
     }
+}
+
+QStringList Llm::chatLog() const
+{
+    return m_chatLog;
 }
 
 bool Llm::busy() const
@@ -39,6 +51,9 @@ void Llm::sendPrompt(const QString &prompt)
 {
     setBusy(true);
     qDebug() << "sendPrompt called, busy:" << m_busy;
+
+    addToChatLog("USER: " + prompt);
+
     QNetworkRequest request(QUrl(m_settings->ollamaUrl() + "/api/generate"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -62,7 +77,9 @@ void Llm::sendPrompt(const QString &prompt)
 
 void Llm::onSettingsChanged()
 {
-    // Settings have changed, we could invalidate something here if needed
+    addToChatLog(QString("INFO: Settings changed. New URL: %1, New Model: %2")
+                     .arg(m_settings->ollamaUrl())
+                     .arg(m_settings->ollamaModel()));
     qDebug() << "Llm settings changed.";
 }
 
@@ -118,9 +135,11 @@ void Llm::onNetworkReply()
             emit newLineReceived(m_partialLine);
             m_partialLine.clear();
         }
+        addToChatLog("AI: " + m_currentResponse);
         emit responseReady(m_markdownFormatter.toHtml(m_currentResponse));
     } else {
         qDebug() << "Network error: " << reply->errorString();
+        addToChatLog("ERROR: " + reply->errorString());
         emit responseReady("Error: " + reply->errorString());
     }
     reply->deleteLater();
