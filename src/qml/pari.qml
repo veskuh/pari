@@ -268,7 +268,18 @@ ApplicationWindow {
         }
     }
 
-    // --- Connections, Dialogs, and onCompleted are unchanged ---
+   Connections {
+        target: fileSystem
+        // This is the key change. We now set the rootIndex here,
+        // after we know the model is ready.
+        function onRootPathChanged() {
+            fileSystemView.model = fileSystem.model
+            fileSystemView.rootIndex = fileSystem.currentRootIndex
+        }
+        function onFileContentReady(content) { codeEditor.text = content; }
+        function onFileSaved(filePath) { customStatusBar.text = qsTr("File saved: %1").arg(filePath) }
+    }
+
     Connections {
         target: fileSystem
         function onRootPathChanged() { fileSystemView.model = fileSystem.model }
