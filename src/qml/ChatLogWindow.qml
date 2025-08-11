@@ -8,8 +8,11 @@ Window {
     height: 600
     title: qsTr("Chat Log")
     visible: false
+    color: palette.window
 
     property var chatLlm: null
+
+    SystemPalette { id: palette }
 
     ColumnLayout {
         anchors.fill: parent
@@ -19,6 +22,7 @@ Window {
             text: qsTr("Chat Session Log")
             font.bold: true
             Layout.alignment: Qt.AlignHCenter
+            color: palette.windowText
         }
 
         ScrollView {
