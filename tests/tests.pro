@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = tst_all
 CONFIG += console
 CONFIG -= app_bundle
-QT += testlib core
+QT += testlib core network
 
 # Include path to find the application headers
 INCLUDEPATH += ../src
@@ -13,14 +13,18 @@ SOURCES += \
     test_settings.cpp \
     test_filesystem.cpp \
     test_markdownformatter.cpp \
+    test_llm.cpp \
     ../src/app/filesystem.cpp \
     ../src/app/settings.cpp \
-    ../src/app/markdownformatter.cpp
+    ../src/app/markdownformatter.cpp \
+    ../src/app/llm.cpp
 
 HEADERS += \
     test_settings.h \
     test_filesystem.h \
     test_markdownformatter.h \
+    test_llm.h \
     ../src/app/settings.h \
     ../src/app/filesystem.h \
-    ../src/app/markdownformatter.h
+    ../src/app/markdownformatter.h \
+    ../src/app/llm.h

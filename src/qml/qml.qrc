@@ -4,5 +4,6 @@
     <file>CustomStatusBar.qml</file>
     <file>SettingsWindow.qml</file>
     <file>AboutWindow.qml</file>
+    <file>ChatLogWindow.qml</file>
 </qresource>
 </RCC>

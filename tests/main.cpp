@@ -2,6 +2,7 @@
 #include "test_settings.h"
 #include "test_filesystem.h"
 #include "test_markdownformatter.h"
+#include "test_llm.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,9 @@ int main(int argc, char *argv[])
 
     TestMarkdownFormatter tc_md;
     status |= QTest::qExec(&tc_md, argc, argv);
+
+    TestLlm tc_llm;
+    status |= QTest::qExec(&tc_llm, argc, argv);
 
     return status;
 }

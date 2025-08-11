@@ -53,6 +53,10 @@ ApplicationWindow {
             MenuItem { text: qsTr("Settings..."); onTriggered: settingsDialog.show() }
         }
         Menu {
+            title: qsTr("View")
+            MenuItem { text: qsTr("Chat log"); onTriggered: chatLogWindow.show() }
+        }
+        Menu {
             title: qsTr("Help")
             MenuItem { text: qsTr("About"); onTriggered: aboutWindow.show() }
         }
@@ -316,6 +320,10 @@ ApplicationWindow {
 
     SettingsWindow { id: settingsDialog }
     AboutWindow { id: aboutWindow }
+    ChatLogWindow {
+        id: chatLogWindow
+        llm: llm
+    }
 
     Component.onCompleted: {
         fileSystem.setRootPath(fileSystem.homePath)
