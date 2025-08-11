@@ -322,7 +322,7 @@ ApplicationWindow {
     AboutWindow { id: aboutWindow }
     ChatLogWindow {
         id: chatLogWindow
-        llm: llm
+        chatLlm: llm
     }
 
     Component.onCompleted: {
