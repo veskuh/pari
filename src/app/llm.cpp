@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QEventLoop>
 #include <QDateTime>
+#include <QRegularExpression>
 
 void Llm::addToChatLog(const QString &line)
 {
@@ -136,7 +137,9 @@ void Llm::onNetworkReply()
             m_partialLine.clear();
         }
         addToChatLog("AI: " + m_currentResponse);
-        emit responseReady(m_markdownFormatter.toHtml(m_currentResponse));
+        QString finalResponse = m_currentResponse;
+        finalResponse.replace(QRegularExpression("<think>.*</think>"), "");
+        emit responseReady(m_markdownFormatter.toHtml(finalResponse));
     } else {
         qDebug() << "Network error: " << reply->errorString();
         addToChatLog("ERROR: " + reply->errorString());
