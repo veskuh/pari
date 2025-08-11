@@ -48,6 +48,8 @@ The application includes a smoke test that verifies if the main QML interface ca
 ./src/pari --selfcheck
 ```
 
-**Note:** Running these tests locally requires a proper Qt development environment. The test scripts are primarily designed for use in automated testing environments, such as the GitHub Actions CI workflow, where the environment is pre-configured with all necessary dependencies. If you are running the tests locally, you may need to install Qt development packages first. For example, on Ubuntu, you can install the necessary packages with: `sudo apt-get install qt6-base-dev qt6-declarative-dev` and all the `qml6-module-*` packages.
+**Note:** Running these tests locally requires a proper Qt development environment. The test scripts are primarily designed for use in automated testing environments, such as the GitHub Actions CI workflow, where the environment is pre-configured with all necessary dependencies. If you are running the tests locally, you may need to install Qt development packages first. For example, on a recent Debian/Ubuntu-based system, you can install the necessary packages with:
 
-<!-- Agent-added comment to trigger PR update -->
+```bash
+sudo apt-get install qt6-base-dev qt6-declarative-dev qt6-tools-dev qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-dialogs qml6-module-qtquick-layouts qml6-module-qtquick-window qml6-module-qtqml-workerscript qml6-module-qtquick-templates
+```

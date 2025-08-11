@@ -99,7 +99,6 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: fileSystem.model
-                rootIndex: fileSystem.currentRootIndex
                 property string selectedPath: ""
 
                 delegate: Item {
