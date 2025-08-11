@@ -9,7 +9,7 @@ Window {
     title: qsTr("Chat Log")
     visible: false
 
-    property var llm: null
+    property var chatLlm: null
 
     ColumnLayout {
         anchors.fill: parent
@@ -30,12 +30,12 @@ Window {
                 id: chatLogArea
                 readOnly: true
                 wrapMode: Text.WordWrap
-                text: llm ? llm.chatLog.join("\\n") : "No chat log available."
+                text: chatLlm ? chatLlm.chatLog.join("\\n") : "No chat log available."
 
                 Connections {
-                    target: llm
+                    target: chatLlm
                     function onChatLogChanged() {
-                        chatLogArea.text = llm.chatLog.join("\\n")
+                        chatLogArea.text = chatLlm.chatLog.join("\\n")
                     }
                 }
             }
