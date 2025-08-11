@@ -96,7 +96,6 @@ ApplicationWindow {
 
             TreeView {
                 id: fileSystemView
-                property var rootIndex
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: fileSystem.model
@@ -251,12 +250,10 @@ ApplicationWindow {
                                 readOnly: true
                                 text: aiPane.thinkingText
                                 color: "white"
-                                background: Rectangle {
-                                    color: "transparent"
-                                }
                                 wrapMode: Text.WordWrap
                                 font.family: appSettings.fontFamily
                                 font.pointSize: appSettings.fontSize
+                                background: Rectangle { color: "transparent"}
 
                                 // Auto-scroll to the bottom
                                 onTextChanged: {
@@ -361,6 +358,7 @@ ApplicationWindow {
                     var endThinkIndex = currentLine.indexOf("</think>");
                     if (endThinkIndex !== -1) {
                         aiPane.thinkingText += currentLine.substring(0, endThinkIndex);
+                        aiPane.thinkingText += "<br>"
                         aiPane.isThinking = false;
                         currentLine = currentLine.substring(endThinkIndex + 8);
                     } else {
