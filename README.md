@@ -1,5 +1,7 @@
 # Pari - Your Local AI Coding Companion
 
+![Screenshot of Pari](assets/screenshot.png)
+
 Pari is a desktop application designed to be your local AI-powered coding partner. It leverages the power of local Large Language Models (LLMs) through Ollama to assist you with various coding tasks, right on your machine.
 
 ## Purpose
