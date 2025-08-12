@@ -2,19 +2,10 @@
 #include <QStringList>
 #include <QRegularExpression>
 
-// Private helper function to escape HTML special characters
-QString escapeHtml(const QString &text) {
-    QString escaped = text;
-    escaped.replace('&', "&amp;");
-    escaped.replace('<', "&lt;");
-    escaped.replace('>', "&gt;");
-    escaped.replace('"', "&quot;");
-    escaped.replace('\'', "&#39;");
-    return escaped;
-}
-
 // Private helper function to process inline markdown formatting
 QString processInlineMarkdown(QString text) {
+    // code
+    text.replace(QRegularExpression("`(.*?)`"), "<code>\\1</code>");
     // Bold
     text.replace(QRegularExpression("\\*\\*(.*?)\\*\\*"), "<b>\\1</b>");
     // Italics
