@@ -98,6 +98,20 @@ ApplicationWindow {
         }
     }
 
+    Timer {
+        id: timer
+        // Populate selectionList a bit later as content is not ready so quick
+        interval: 1000
+        repeat: false
+        onTriggered: {
+            var modelIndex = appSettings.availableModels.indexOf(appSettings.ollamaModel)
+            if (modelIndex !== -1) {
+                ollamaModelComboBox.currentIndex = modelIndex
+            }
+        }
+    }
+
+
     Component.onCompleted: {
         ollamaUrlField.text = appSettings.ollamaUrl
         var modelIndex = appSettings.availableModels.indexOf(appSettings.ollamaModel)
@@ -106,5 +120,6 @@ ApplicationWindow {
         }
         fontFamilyField.text = appSettings.fontFamily
         fontSizeSpinBox.value = appSettings.fontSize
+        timer.start()
     }
 }
