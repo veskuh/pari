@@ -226,6 +226,7 @@ ApplicationWindow {
                     id: thinkingOverlay
                     anchors.fill: parent
                     color: "#AA000000" // Semi-transparent black
+
                     opacity: aiPane.isThinking ? 1.0 : 0.0
                     visible: opacity > 0.01
                     z: 10 // Ensure it's on top
@@ -240,6 +241,7 @@ ApplicationWindow {
                     }
 
 
+
                     ColumnLayout {
                         anchors.fill: parent
                         anchors.margins: 10
@@ -251,6 +253,7 @@ ApplicationWindow {
                         }
 
                         ScrollView {
+
                             id: scroll
                             Layout.fillWidth: true
                             Layout.fillHeight: true
@@ -287,6 +290,7 @@ ApplicationWindow {
                                 }
                             }
                         }
+
 
                     }
                 }
@@ -386,6 +390,7 @@ ApplicationWindow {
                         if (currentLine.trim()!=="") {
                             aiPane.thinkingText += "\n\n";
                         }
+
                         currentLine = "";
                     }
                 } else {
