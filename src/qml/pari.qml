@@ -226,8 +226,21 @@ ApplicationWindow {
                     id: thinkingOverlay
                     anchors.fill: parent
                     color: "#AA000000" // Semi-transparent black
-                    visible: aiPane.isThinking
+
+                    opacity: aiPane.isThinking ? 1.0 : 0.0
+                    visible: opacity > 0.01
                     z: 10 // Ensure it's on top
+
+                    // Define the animation to be applied whenever the opacity property changes
+                    Behavior on opacity {
+                        // This is the animation that will run when the opacity value changes
+                        PropertyAnimation {
+                            duration: 500
+                            easing.type: Easing.InOutQuad
+                        }
+                    }
+
+
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -240,35 +253,45 @@ ApplicationWindow {
                         }
 
                         ScrollView {
+
+                            id: scroll
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            clip: true
                             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
-                            TextArea {
-                                id: thinkingOutput
-                                readOnly: true
-                                text: aiPane.thinkingText
-                                color: "white"
-                                wrapMode: Text.WordWrap
-                                font.family: appSettings.fontFamily
-                                font.pointSize: appSettings.fontSize
-                                background: Rectangle { color: "transparent"}
+                            clip: true
 
-                                // Auto-scroll to the bottom
-                                onTextChanged: {
-                                    flickableItem.contentY = contentHeight - flickableItem.height
-                                }
+                            Flickable {
+                                id: flickable
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                contentHeight: thinkingOutput.contentHeight // Bind directly to the TextArea content height
+                                clip: true
+                                interactive: true
 
-                                Flickable {
-                                    id: flickableItem
-                                    anchors.fill: parent
-                                    contentHeight: thinkingOutput.contentHeight
-                                    clip: true
-                                    interactive: true
+                                TextArea {
+                                    id: thinkingOutput
+                                    width: parent.width
+                                    height: scroll.height
+                                    readOnly: true
+                                    text: aiPane.thinkingText
+                                    color: "white"
+                                    wrapMode: Text.WordWrap
+                                    font.family: appSettings.fontFamily
+                                    font.pointSize: appSettings.fontSize
+                                    background: Rectangle { color: "transparent" }
+
+                                    // Auto-scroll to the bottom when text changes
+                                    onTextChanged: {
+                                        if (contentHeight > height) {
+                                            flickable.contentY = contentHeight - height
+                                        }
+                                    }
                                 }
                             }
                         }
+
+
                     }
                 }
             }
@@ -363,6 +386,11 @@ ApplicationWindow {
                         currentLine = currentLine.substring(endThinkIndex + 8);
                     } else {
                         aiPane.thinkingText += currentLine;
+
+                        if (currentLine.trim()!=="") {
+                            aiPane.thinkingText += "\n\n";
+                        }
+
                         currentLine = "";
                     }
                 } else {

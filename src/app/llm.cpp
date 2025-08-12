@@ -51,7 +51,6 @@ void Llm::setBusy(bool busy)
 void Llm::sendPrompt(const QString &prompt)
 {
     setBusy(true);
-    qDebug() << "sendPrompt called, busy:" << m_busy;
 
     addToChatLog("USER: " + prompt);
 
@@ -65,8 +64,6 @@ void Llm::sendPrompt(const QString &prompt)
 
     QJsonDocument doc(mainObject);
     QByteArray data = doc.toJson();
-
-    qDebug() << "Sending request:" << QString(data);
 
     QNetworkReply *reply = m_networkAccessManager->post(request, data);
     connect(reply, &QNetworkReply::readyRead, this, &Llm::onReadyRead);
