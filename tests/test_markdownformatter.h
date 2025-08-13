@@ -22,6 +22,7 @@ private slots:
     void testCodeBlocks();
     void testMixedContent();
     void testEscapeHtml();
+    void testUnorderedListsWithDash();
 };
 
 #endif // TEST_MARKDOWNFORMATTER_H
