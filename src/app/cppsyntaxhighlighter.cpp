@@ -32,10 +32,7 @@ CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent)
     highlightingRules.append(rule);
 
     // Single-line comments
-    singleLineCommentFormat.setForeground(QColor(98, 114, 164)); // Grayish blue
-    rule.pattern = QRegularExpression(QStringLiteral("//[^\n]*"));
-    rule.format = singleLineCommentFormat;
-    highlightingRules.append(rule);
+    singleLineCommentFormat.setForeground(QColor(98, 114, 164));
 
     // Multi-line comments
     multiLineCommentFormat.setForeground(QColor(98, 114, 164));
@@ -46,7 +43,7 @@ CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent)
 
 void CppSyntaxHighlighter::highlightBlock(const QString &text)
 {
-    // Apply all stateless rules first.
+    // 1. Apply stateless rules (keywords, includes, macros)
     for (const HighlightingRule &rule : highlightingRules) {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
@@ -55,9 +52,24 @@ void CppSyntaxHighlighter::highlightBlock(const QString &text)
         }
     }
 
-    setCurrentBlockState(Normal);
+    // 2. Handle strings
+    QRegularExpression stringExpression(QStringLiteral("\"([^\"\\\\]|\\\\.)*\""));
+    QRegularExpressionMatchIterator stringIterator = stringExpression.globalMatch(text);
+    while (stringIterator.hasNext()) {
+        QRegularExpressionMatch match = stringIterator.next();
+        setFormat(match.capturedStart(), match.capturedLength(), stringFormat);
+    }
 
-    // Handle multi-line comments, which will override other formats.
+    // 3. Handle single-line comments
+    QRegularExpression singleLineCommentExpression(QStringLiteral("//[^\n]*"));
+    QRegularExpressionMatchIterator slcIterator = singleLineCommentExpression.globalMatch(text);
+    while (slcIterator.hasNext()) {
+        QRegularExpressionMatch match = slcIterator.next();
+        setFormat(match.capturedStart(), match.capturedLength(), singleLineCommentFormat);
+    }
+
+    // 4. Handle multi-line comments
+    setCurrentBlockState(Normal);
     int startIndex = 0;
     if (previousBlockState() != InComment) {
         startIndex = text.indexOf(QRegularExpression("/\\*"));
@@ -75,13 +87,5 @@ void CppSyntaxHighlighter::highlightBlock(const QString &text)
         }
         setFormat(startIndex, commentLength, multiLineCommentFormat);
         startIndex = text.indexOf(QRegularExpression("/\\*"), startIndex + commentLength);
-    }
-
-    // Handle strings, which will override other formats.
-    QRegularExpression stringExpression(QStringLiteral("\"([^\"\\\\]|\\\\.)*\""));
-    QRegularExpressionMatchIterator i = stringExpression.globalMatch(text);
-    while (i.hasNext()) {
-        QRegularExpressionMatch match = i.next();
-        setFormat(match.capturedStart(), match.capturedLength(), stringFormat);
     }
 }

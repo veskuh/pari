@@ -159,4 +159,14 @@ void TestCppSyntaxHighlighter::testNestedConstructs()
     doc.setPlainText("\"this is not a /* comment */\"");
     highlighter.rehighlight();
     QVERIFY(checkFormat(doc, 0, 29, stringFormat));
+
+    // Test for string in a single-line comment
+    doc.setPlainText("// item->description = \"<p><b>Changes...</b></p>\";");
+    highlighter.rehighlight();
+    QVERIFY(checkFormat(doc, 0, doc.toPlainText().length(), commentFormat));
+
+    // Test for string in a multi-line comment
+    doc.setPlainText("/* \"sw\" */");
+    highlighter.rehighlight();
+    QVERIFY(checkFormat(doc, 0, 10, commentFormat));
 }
