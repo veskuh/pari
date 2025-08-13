@@ -155,6 +155,12 @@ ApplicationWindow {
                     }
                 }
             }
+            Connections {
+                target: fileSystemView
+                function onModelChanged() {
+                    fileSystemView.rootIndex = fileSystem.currentRootIndex
+                }
+            }
         }
 
         // Pane 2: Code Editor (40% width)
@@ -355,9 +361,11 @@ ApplicationWindow {
         target: fileSystem
         function onRootPathChanged() {
             fileSystemView.model = fileSystem.model
-            fileSystemView.rootIndex = fileSystem.currentRootIndex
         }
-        function onFileContentReady(content) { codeEditor.text = content; }
+        function onFileContentReady(filePath, content) {
+            codeEditor.text = content;
+            syntaxHighlighterProvider.attachHighlighter(codeEditor.textDocument, filePath);
+        }
         function onFileSaved(filePath) { customStatusBar.text = qsTr("File saved: %1").arg(filePath) }
     }
 

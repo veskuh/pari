@@ -67,7 +67,7 @@ void FileSystem::loadFileContent(const QString &filePath)
     QFile file(filePath);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);
-        emit fileContentReady(in.readAll());
+        emit fileContentReady(filePath, in.readAll());
         file.close();
         setCurrentFilePath(filePath);
         qDebug() << "FileSystem: File loaded successfully.";

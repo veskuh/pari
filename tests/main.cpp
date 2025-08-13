@@ -3,6 +3,7 @@
 #include "test_filesystem.h"
 #include "test_markdownformatter.h"
 #include "test_llm.h"
+#include "test_cppsyntaxhighlighter.h"
 
 int main(int argc, char *argv[])
 {
