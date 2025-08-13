@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     Settings *appSettings = new Settings(&app);
     engine.rootContext()->setContextProperty("appSettings", appSettings);
 
-    FileSystem *fileSystem = new FileSystem(&app);
+    FileSystem *fileSystem = new FileSystem(appSettings, &app);
     engine.rootContext()->setContextProperty("fileSystem", fileSystem);
 
     Llm *llm = new Llm(appSettings, &app);

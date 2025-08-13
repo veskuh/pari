@@ -14,6 +14,7 @@ class Settings : public QObject
     Q_PROPERTY(QString fontFamily READ fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
     Q_PROPERTY(QStringList availableModels READ availableModels WRITE setAvailableModels NOTIFY availableModelsChanged)
+    Q_PROPERTY(QStringList recentFiles READ recentFiles WRITE setRecentFiles NOTIFY recentFilesChanged)
 
 public:
     explicit Settings(QObject *parent = nullptr);
@@ -33,12 +34,19 @@ public:
     QStringList availableModels() const;
     void setAvailableModels(const QStringList &models);
 
+    QStringList recentFiles() const;
+    void setRecentFiles(const QStringList &files);
+
+    Q_INVOKABLE void addRecentFile(const QString &file);
+    Q_INVOKABLE void clearRecentFiles();
+
 signals:
     void ollamaUrlChanged();
     void ollamaModelChanged();
     void fontFamilyChanged();
     void fontSizeChanged();
     void availableModelsChanged();
+    void recentFilesChanged();
 
 private:
     void loadSettings();
@@ -48,6 +56,7 @@ private:
     QString m_fontFamily;
     int m_fontSize;
     QStringList m_availableModels;
+    QStringList m_recentFiles;
 
     QSettings m_qsettings;
 };
