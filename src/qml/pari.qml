@@ -184,10 +184,15 @@ ApplicationWindow {
                 TextArea {
                     id: codeEditor
                     placeholderText: "Open a file or start typing..."
-                    // Text wrapping is essential for panes with variable width.
                     wrapMode: Text.WordWrap
                     font.family: appSettings.fontFamily
                     font.pointSize: appSettings.fontSize
+                    tabStopDistance: 4 * textMetrics.advanceWidth
+
+                    TextMetrics {
+                        id: textMetrics
+                        font: codeEditor.font
+                    }
                 }
             }
         }
