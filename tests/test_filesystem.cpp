@@ -1,12 +1,14 @@
 #include "test_filesystem.h"
 #include <QtTest>
 #include "../src/app/filesystem.h"
+#include "../src/app/settings.h"
 #include <QTemporaryDir>
 #include <QFile>
 
 void TestFileSystem::testSaveFile()
 {
-    FileSystem fileSystem;
+    Settings settings;
+    FileSystem fileSystem(&settings);
     QTemporaryDir tempDir;
     QString filePath = tempDir.path() + "/test.txt";
     QString content = "Hello, World!";

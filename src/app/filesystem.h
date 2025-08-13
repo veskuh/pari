@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QFileSystemModel>
 
+class Settings;
+
 class FileSystem : public QObject
 {
     Q_OBJECT
@@ -15,7 +17,7 @@ class FileSystem : public QObject
     Q_PROPERTY(QString homePath READ homePath CONSTANT)
 
 public:
-    explicit FileSystem(QObject *parent = nullptr);
+    explicit FileSystem(Settings *settings, QObject *parent = nullptr);
 
     QFileSystemModel* model() const;
     QString rootPath() const;
@@ -48,6 +50,7 @@ private:
     QString m_lastOpenedPath;
     QString m_currentFilePath;
     QString m_homePath;
+    Settings* m_settings;
 };
 
 #endif // FILESYSTEM_H

@@ -1,20 +1,23 @@
 #include "filesystem.h"
+#include "settings.h"
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
 #include <QSettings>
+#include <QDir>
 
-FileSystem::FileSystem(QObject *parent)
+FileSystem::FileSystem(Settings *settings, QObject *parent)
     : QObject{parent}
     , m_rootPath("")
     , m_currentRootIndex()
     , m_currentFilePath("")
+    , m_settings(settings)
 {
     m_model = new QFileSystemModel(this);
     m_model->setRootPath(m_rootPath);
 
-    QSettings settings("Pari", "Pari");
-    m_lastOpenedPath = settings.value("lastOpenedPath", QDir::homePath()).toString();
+    QSettings qsettings("veskuh.net", "Pari");
+    m_lastOpenedPath = qsettings.value("lastOpenedPath", QDir::homePath()).toString();
     m_homePath = QDir::homePath();
 }
 
@@ -42,7 +45,7 @@ void FileSystem::setLastOpenedPath(const QString &path)
 {
     if (m_lastOpenedPath != path) {
         m_lastOpenedPath = path;
-        QSettings settings("Pari", "Pari");
+        QSettings settings("veskuh.net", "Pari");
         settings.setValue("lastOpenedPath", m_lastOpenedPath);
         emit lastOpenedPathChanged();
     }
@@ -70,6 +73,7 @@ void FileSystem::loadFileContent(const QString &filePath)
         emit fileContentReady(in.readAll());
         file.close();
         setCurrentFilePath(filePath);
+        m_settings->addRecentFile(filePath);
         qDebug() << "FileSystem: File loaded successfully.";
     } else {
         qWarning() << "FileSystem: Could not open file:" << filePath << ", Error:" << file.errorString();
@@ -84,6 +88,7 @@ void FileSystem::saveFile(const QString &filePath, const QString &content)
         out << content;
         file.close();
         setCurrentFilePath(filePath);
+        m_settings->addRecentFile(filePath);
         emit fileSaved(filePath);
     } else {
         qWarning() << "Could not save file:" << file.errorString();

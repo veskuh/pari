@@ -1,5 +1,7 @@
 #include "settings.h"
 #include <QDebug>
+#include <QDir>
+#include <QFile>
 
 Settings::Settings(QObject *parent)
     : QObject{parent},
@@ -28,6 +30,45 @@ void Settings::loadSettings()
     m_ollamaModel = m_qsettings.value("ollama/model", "gemma3:12b").toString();
     m_fontFamily = m_qsettings.value("editor/fontFamily", "monospace").toString();
     m_fontSize = m_qsettings.value("editor/fontSize", 12).toInt();
+    m_recentFiles = m_qsettings.value("files/recent", QStringList()).toStringList();
+}
+
+QStringList Settings::recentFiles() const
+{
+    return m_recentFiles;
+}
+
+void Settings::setRecentFiles(const QStringList &files)
+{
+    if (m_recentFiles == files)
+        return;
+
+    m_recentFiles = files;
+    m_qsettings.setValue("files/recent", m_recentFiles);
+    emit recentFilesChanged();
+}
+
+void Settings::addRecentFile(const QString &file)
+{
+    if (!QFile::exists(file)) {
+        m_recentFiles.removeAll(file);
+        setRecentFiles(m_recentFiles);
+        return;
+    }
+
+    m_recentFiles.removeAll(file);
+    m_recentFiles.prepend(file);
+
+    // Limit to 10 recent files
+    if (m_recentFiles.size() > 10)
+        m_recentFiles.removeLast();
+
+    setRecentFiles(m_recentFiles);
+}
+
+void Settings::clearRecentFiles()
+{
+    setRecentFiles(QStringList());
 }
 
 QString Settings::ollamaUrl() const

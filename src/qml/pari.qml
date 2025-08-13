@@ -41,6 +41,24 @@ ApplicationWindow {
         Menu {
             title: qsTr("File")
             MenuItem { text: qsTr("Open"); action: openAction }
+            Menu {
+                title: qsTr("Recent Files")
+                enabled: appSettings.recentFiles.length > 0
+
+                Repeater {
+                    model: appSettings.recentFiles
+                    MenuItem {
+                        text: modelData.toString().replace("file://", "")
+                        onTriggered: fileSystem.loadFileContent(modelData.toString().replace("file://", ""))
+                    }
+                }
+
+                MenuSeparator {}
+                MenuItem {
+                    text: qsTr("Clear Recents")
+                    onTriggered: appSettings.clearRecentFiles()
+                }
+            }
             MenuItem { text: qsTr("Save"); action: saveAction }
             MenuItem { text: qsTr("Save As..."); action: saveAsAction }
             MenuItem { text: qsTr("Exit"); onTriggered: Qt.exit(0) }
