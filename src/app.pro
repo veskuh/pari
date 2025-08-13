@@ -7,18 +7,14 @@ HEADERS += \
     app/llm.h \
     app/filesystem.h \
     app/settings.h \
-    app/markdownformatter.h \
-    app/cppsyntaxhighlighter.h \
-    app/syntaxhighlighterprovider.h
+    app/markdownformatter.h
 
 SOURCES += \
     app/pari.cpp \
     app/llm.cpp \
     app/filesystem.cpp \
     app/settings.cpp \
-    app/markdownformatter.cpp \
-    app/cppsyntaxhighlighter.cpp \
-    app/syntaxhighlighterprovider.cpp
+    app/markdownformatter.cpp
 
 # QML resources
 RESOURCES += \

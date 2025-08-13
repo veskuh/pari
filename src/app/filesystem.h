@@ -36,7 +36,7 @@ public slots:
     Q_INVOKABLE bool isDirectory(const QString &filePath);
 
 signals:
-    void fileContentReady(const QString &filePath, const QString &content);
+    void fileContentReady(const QString &content);
     void rootPathChanged();
     void currentRootIndexChanged();
     void lastOpenedPathChanged();

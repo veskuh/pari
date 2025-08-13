@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QDir>
+#include <QFileInfo>
 
 FileSystem::FileSystem(Settings *settings, QObject *parent)
     : QObject{parent}
@@ -70,10 +71,9 @@ void FileSystem::loadFileContent(const QString &filePath)
     QFile file(filePath);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);
-        emit fileContentReady(filePath, in.readAll());
+        emit fileContentReady(in.readAll());
         file.close();
         setCurrentFilePath(filePath);
-        m_settings->addRecentFile(filePath);
         qDebug() << "FileSystem: File loaded successfully.";
     } else {
         qWarning() << "FileSystem: Could not open file:" << filePath << ", Error:" << file.errorString();
@@ -88,7 +88,7 @@ void FileSystem::saveFile(const QString &filePath, const QString &content)
         out << content;
         file.close();
         setCurrentFilePath(filePath);
-        m_settings->addRecentFile(filePath);
+        m_settings->addRecentFolder(QFileInfo(filePath).path());
         emit fileSaved(filePath);
     } else {
         qWarning() << "Could not save file:" << file.errorString();
@@ -101,6 +101,7 @@ void FileSystem::setRootPath(const QString &path)
         m_rootPath = path;
         m_currentRootIndex = m_model->setRootPath(m_rootPath);
         qDebug() << "FileSystem: Setting root path to" << m_rootPath;
+        m_settings->addRecentFolder(path);
         emit rootPathChanged();
         emit currentRootIndexChanged();
         setLastOpenedPath(path); // Save the last opened path

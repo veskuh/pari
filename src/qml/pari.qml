@@ -42,21 +42,21 @@ ApplicationWindow {
             title: qsTr("File")
             MenuItem { text: qsTr("Open"); action: openAction }
             Menu {
-                title: qsTr("Recent Files")
-                enabled: appSettings.recentFiles.length > 0
+                title: qsTr("Recent Folders")
+                enabled: appSettings.recentFolders.length > 0
 
                 Repeater {
-                    model: appSettings.recentFiles
+                    model: appSettings.recentFolders
                     MenuItem {
                         text: modelData.toString().replace("file://", "")
-                        onTriggered: fileSystem.loadFileContent(modelData.toString().replace("file://", ""))
+                        onTriggered: fileSystem.setRootPath(modelData.toString().replace("file://", ""))
                     }
                 }
 
                 MenuSeparator {}
                 MenuItem {
-                    text: qsTr("Clear Recents")
-                    onTriggered: appSettings.clearRecentFiles()
+                    text: qsTr("Clear Recent Folders")
+                    onTriggered: appSettings.clearRecentFolders()
                 }
             }
             MenuItem { text: qsTr("Save"); action: saveAction }
@@ -173,12 +173,6 @@ ApplicationWindow {
                     }
                 }
             }
-            Connections {
-                target: fileSystemView
-                function onModelChanged() {
-                    fileSystemView.rootIndex = fileSystem.currentRootIndex
-                }
-            }
         }
 
         // Pane 2: Code Editor (40% width)
@@ -202,15 +196,10 @@ ApplicationWindow {
                 TextArea {
                     id: codeEditor
                     placeholderText: "Open a file or start typing..."
+                    // Text wrapping is essential for panes with variable width.
                     wrapMode: Text.WordWrap
                     font.family: appSettings.fontFamily
                     font.pointSize: appSettings.fontSize
-                    tabStopDistance: 4 * textMetrics.advanceWidth
-
-                    TextMetrics {
-                        id: textMetrics
-                        font: codeEditor.font
-                    }
                 }
             }
         }
@@ -384,11 +373,9 @@ ApplicationWindow {
         target: fileSystem
         function onRootPathChanged() {
             fileSystemView.model = fileSystem.model
+            fileSystemView.rootIndex = fileSystem.currentRootIndex
         }
-        function onFileContentReady(filePath, content) {
-            codeEditor.text = content;
-            syntaxHighlighterProvider.attachHighlighter(codeEditor.textDocument, filePath);
-        }
+        function onFileContentReady(content) { codeEditor.text = content; }
         function onFileSaved(filePath) { customStatusBar.text = qsTr("File saved: %1").arg(filePath) }
     }
 

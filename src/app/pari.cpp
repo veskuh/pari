@@ -4,7 +4,6 @@
 #include "filesystem.h"
 #include "llm.h"
 #include "settings.h"
-#include "syntaxhighlighterprovider.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,9 +22,6 @@ int main(int argc, char *argv[])
 
     Llm *llm = new Llm(appSettings, &app);
     engine.rootContext()->setContextProperty("llm", static_cast<QObject*>(llm));
-
-    SyntaxHighlighterProvider *syntaxHighlighterProvider = new SyntaxHighlighterProvider(&app);
-    engine.rootContext()->setContextProperty("syntaxHighlighterProvider", syntaxHighlighterProvider);
 
     const QUrl url("qrc:/qml/pari.qml");
 

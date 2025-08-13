@@ -1,7 +1,6 @@
 #include "settings.h"
 #include <QDebug>
 #include <QDir>
-#include <QFile>
 
 Settings::Settings(QObject *parent)
     : QObject{parent},
@@ -30,45 +29,44 @@ void Settings::loadSettings()
     m_ollamaModel = m_qsettings.value("ollama/model", "gemma3:12b").toString();
     m_fontFamily = m_qsettings.value("editor/fontFamily", "monospace").toString();
     m_fontSize = m_qsettings.value("editor/fontSize", 12).toInt();
-    m_recentFiles = m_qsettings.value("files/recent", QStringList()).toStringList();
+    m_recentFolders = m_qsettings.value("folders/recent", QStringList()).toStringList();
 }
 
-QStringList Settings::recentFiles() const
+QStringList Settings::recentFolders() const
 {
-    return m_recentFiles;
+    return m_recentFolders;
 }
 
-void Settings::setRecentFiles(const QStringList &files)
+void Settings::setRecentFolders(const QStringList &folders)
 {
-    if (m_recentFiles == files)
+    if (m_recentFolders == folders)
         return;
 
-    m_recentFiles = files;
-    m_qsettings.setValue("files/recent", m_recentFiles);
-    emit recentFilesChanged();
+    m_recentFolders = folders;
+    m_qsettings.setValue("folders/recent", m_recentFolders);
+    emit recentFoldersChanged();
 }
 
-void Settings::addRecentFile(const QString &file)
+void Settings::addRecentFolder(const QString &folder)
 {
-    if (!QFile::exists(file)) {
-        m_recentFiles.removeAll(file);
-        setRecentFiles(m_recentFiles);
+    if (!QDir(folder).exists()) {
+        m_recentFolders.removeAll(folder);
+        setRecentFolders(m_recentFolders);
         return;
     }
 
-    m_recentFiles.removeAll(file);
-    m_recentFiles.prepend(file);
+    m_recentFolders.removeAll(folder);
+    m_recentFolders.prepend(folder);
 
-    // Limit to 10 recent files
-    if (m_recentFiles.size() > 10)
-        m_recentFiles.removeLast();
+    if (m_recentFolders.size() > 10)
+        m_recentFolders.removeLast();
 
-    setRecentFiles(m_recentFiles);
+    setRecentFolders(m_recentFolders);
 }
 
-void Settings::clearRecentFiles()
+void Settings::clearRecentFolders()
 {
-    setRecentFiles(QStringList());
+    setRecentFolders(QStringList());
 }
 
 QString Settings::ollamaUrl() const

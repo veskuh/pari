@@ -65,7 +65,7 @@ QString MarkdownFormatter::toHtml(const QString &markdown) {
             continue;
         }
 
-        if (line.startsWith("* ") || line.startsWith("- ")) {
+        if (line.startsWith("* ")) {
             close_paragraph();
             if (in_list_ol) { result += "</ol>\n"; in_list_ol = false; }
             if (in_blockquote) { result += "</blockquote>\n"; in_blockquote = false; }

@@ -14,7 +14,7 @@ class Settings : public QObject
     Q_PROPERTY(QString fontFamily READ fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
     Q_PROPERTY(QStringList availableModels READ availableModels WRITE setAvailableModels NOTIFY availableModelsChanged)
-    Q_PROPERTY(QStringList recentFiles READ recentFiles WRITE setRecentFiles NOTIFY recentFilesChanged)
+    Q_PROPERTY(QStringList recentFolders READ recentFolders WRITE setRecentFolders NOTIFY recentFoldersChanged)
 
 public:
     explicit Settings(QObject *parent = nullptr);
@@ -34,11 +34,11 @@ public:
     QStringList availableModels() const;
     void setAvailableModels(const QStringList &models);
 
-    QStringList recentFiles() const;
-    void setRecentFiles(const QStringList &files);
+    QStringList recentFolders() const;
+    void setRecentFolders(const QStringList &folders);
 
-    Q_INVOKABLE void addRecentFile(const QString &file);
-    Q_INVOKABLE void clearRecentFiles();
+    Q_INVOKABLE void addRecentFolder(const QString &folder);
+    Q_INVOKABLE void clearRecentFolders();
 
 signals:
     void ollamaUrlChanged();
@@ -46,7 +46,7 @@ signals:
     void fontFamilyChanged();
     void fontSizeChanged();
     void availableModelsChanged();
-    void recentFilesChanged();
+    void recentFoldersChanged();
 
 private:
     void loadSettings();
@@ -56,7 +56,7 @@ private:
     QString m_fontFamily;
     int m_fontSize;
     QStringList m_availableModels;
-    QStringList m_recentFiles;
+    QStringList m_recentFolders;
 
     QSettings m_qsettings;
 };

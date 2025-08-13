@@ -62,10 +62,3 @@ void TestMarkdownFormatter::testEscapeHtml()
     QString expected = "<p>&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;</p>\n";
     QCOMPARE(formatter.toHtml(markdown), expected);
 }
-
-void TestMarkdownFormatter::testUnorderedListsWithDash()
-{
-    QString markdown = "- item 1\n- item 2";
-    QString expected = "<ul>\n<li>item 1</li>\n<li>item 2</li>\n</ul>\n";
-    QCOMPARE(formatter.toHtml(markdown), expected);
-}
