@@ -6,7 +6,7 @@ CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent)
     HighlightingRule rule;
 
     // Keywords
-    keywordFormat.setForeground(QColor(255, 121, 198)); // Pink
+    keywordFormat.setForeground(QColor(250, 0, 60)); // Red
     QStringList keywordPatterns = {
         QStringLiteral("\\bclass\\b"), QStringLiteral("\\bint\\b"), QStringLiteral("\\breturn\\b"),
         QStringLiteral("\\bif\\b"),    QStringLiteral("\\belse\\b"),  QStringLiteral("\\bfor\\b"),
@@ -20,7 +20,7 @@ CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent)
     }
 
     // Includes
-    includeFormat.setForeground(QColor(255, 184, 108)); // Orange
+    includeFormat.setForeground(QColor(205, 154, 88)); // Orange
     rule.pattern = QRegularExpression(QStringLiteral("^\\s*#include\\s*[<\"][^>\"]*[\">]"));
     rule.format = includeFormat;
     highlightingRules.append(rule);
@@ -32,13 +32,13 @@ CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent)
     highlightingRules.append(rule);
 
     // Single-line comments
-    singleLineCommentFormat.setForeground(QColor(98, 114, 164));
+    singleLineCommentFormat.setForeground(QColor(150, 105, 140));
 
     // Multi-line comments
-    multiLineCommentFormat.setForeground(QColor(98, 114, 164));
+    multiLineCommentFormat.setForeground(QColor(150, 105, 140));
 
     // Strings
-    stringFormat.setForeground(QColor(241, 250, 140)); // Yellow
+    stringFormat.setForeground(QColor(0, 220, 0)); // green
 }
 
 void CppSyntaxHighlighter::highlightBlock(const QString &text)
