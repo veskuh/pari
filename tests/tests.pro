@@ -14,17 +14,21 @@ SOURCES += \
     test_filesystem.cpp \
     test_markdownformatter.cpp \
     test_llm.cpp \
+    test_cppsyntaxhighlighter.cpp \
     ../src/app/filesystem.cpp \
     ../src/app/settings.cpp \
     ../src/app/markdownformatter.cpp \
-    ../src/app/llm.cpp
+    ../src/app/llm.cpp \
+    ../src/app/cppsyntaxhighlighter.cpp
 
 HEADERS += \
     test_settings.h \
     test_filesystem.h \
     test_markdownformatter.h \
     test_llm.h \
+    test_cppsyntaxhighlighter.h \
     ../src/app/settings.h \
     ../src/app/filesystem.h \
     ../src/app/markdownformatter.h \
-    ../src/app/llm.h
+    ../src/app/llm.h \
+    ../src/app/cppsyntaxhighlighter.h
