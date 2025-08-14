@@ -36,7 +36,7 @@ private:
     QByteArray m_buffer;
     QString m_currentResponse;
     QString m_partialLine;
-    MarkdownFormatter m_markdownFormatter;
+    
     QStringList m_chatLog;
 
     Q_PROPERTY(bool busy READ busy WRITE setBusy NOTIFY busyChanged)

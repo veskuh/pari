@@ -5,6 +5,7 @@
 #include "llm.h"
 #include "settings.h"
 #include "syntaxhighlighterprovider.h"
+#include "diffutils.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,8 @@ int main(int argc, char *argv[])
     app.setOrganizationName("veskuh.net");
     app.setOrganizationDomain("veskuh.net");
     app.setApplicationName("Pari");
+
+    qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
 
     QQmlApplicationEngine engine;
 

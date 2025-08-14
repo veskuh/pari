@@ -3,9 +3,14 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import QtQuick.Dialogs
+import net.veskuh.pari 1.0
 
 ApplicationWindow {
     id: appWindow
+
+    DiffUtils {
+        id: diffUtils
+    }
     width: 1280 // Increased default width for better 3-pane view
     height: 768
     visible: true
@@ -72,6 +77,15 @@ ApplicationWindow {
 
     footer: CustomStatusBar {
         id: customStatusBar
+    }
+
+    function updateDiff() {
+        if (codeEditor.text.length > 0 && aiOutputPane.text.length > 0) {
+            const diff = diffUtils.createDiff(codeEditor.text, aiOutputPane.text)
+            diffView.text = diff
+        } else {
+            diffView.text = ""
+        }
     }
 
     // --- REFACTORED MAIN CONTENT AREA ---
@@ -188,6 +202,7 @@ ApplicationWindow {
                     font.family: appSettings.fontFamily
                     font.pointSize: appSettings.fontSize
                     tabStopDistance: 4 * textMetrics.advanceWidth
+                    onTextChanged: updateDiff()
 
                     TextMetrics {
                         id: textMetrics
@@ -197,117 +212,115 @@ ApplicationWindow {
             }
         }
 
-        // Pane 3: AI Section (40% width)
+        // Pane 3: AI Section (40% width) - Refactored with Tabs
         ColumnLayout {
-            id: aiPane
+            id: aiPane // Keep the ID for isThinking property
             property bool isThinking: false
             property string thinkingText: ""
 
             SplitView.preferredWidth: appWindow.width * 0.40
             SplitView.minimumWidth: 250
 
-            // Top part: AI Output
-            Label {
-                text: qsTr("AI Output")
-                font.bold: true
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: 5
-                Layout.bottomMargin: 5
+            TabBar {
+                id: rightSideTabBar
+                Layout.fillWidth: true
+                currentIndex: 0
+                TabButton {
+                    text: qsTr("AI Output")
+                }
+                TabButton {
+                    text: qsTr("Diff View")
+                }
             }
-            Item {
+
+            StackLayout {
+                id: rightSideStackLayout
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                currentIndex: rightSideTabBar.currentIndex
 
-                ScrollView {
-                    id: aiOutputScrollView
-                    anchors.fill: parent
-                    clip: true
+                // Pane for AI Output
+                Item {
+                    id: aiOutputItem
+                    ScrollView {
+                        id: aiOutputScrollView
+                        width: aiOutputItem.width
+                        height: aiOutputItem.height
+                        clip: true
 
-                    TextArea { // Using a read-only TextArea for better selection/copying
-                        id: aiOutputPane
-                        readOnly: true
-                        placeholderText: "AI assistant output will appear here..."
-                        wrapMode: Text.WordWrap
-                        textFormat: Text.RichText // Keep RichText if you use markdown formatting
-                    }
-                }
-
-                // Thinking Overlay
-                Rectangle {
-                    id: thinkingOverlay
-                    anchors.fill: parent
-                    color: "#AA000000" // Semi-transparent black
-
-                    opacity: aiPane.isThinking ? 1.0 : 0.0
-                    visible: opacity > 0.01
-                    z: 10 // Ensure it's on top
-
-                    // Define the animation to be applied whenever the opacity property changes
-                    Behavior on opacity {
-                        // This is the animation that will run when the opacity value changes
-                        PropertyAnimation {
-                            duration: 500
-                            easing.type: Easing.InOutQuad
+                        TextArea {
+                            id: aiOutputPane
+                            readOnly: true
+                            placeholderText: "AI assistant output will appear here..."
+                            wrapMode: Text.WordWrap
+                            textFormat: Text.MarkdownText
                         }
                     }
 
-
-
-                    ColumnLayout {
+                    // Thinking Overlay
+                    Rectangle {
+                        id: thinkingOverlay
                         anchors.fill: parent
-                        anchors.margins: 10
+                        color: "#AA000000"
+                        opacity: aiPane.isThinking ? 1.0 : 0.0
+                        visible: opacity > 0.01
+                        z: 10
+                        Behavior on opacity { PropertyAnimation { duration: 500; easing.type: Easing.InOutQuad } }
 
-                        Label {
-                            text: "Thinking..."
-                            font.bold: true
-                            color: "white"
-                        }
-
-                        ScrollView {
-
-                            id: scroll
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-
-                            clip: true
-
-                            Flickable {
-                                id: flickable
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            Label { text: "Thinking..."; font.bold: true; color: "white" }
+                            ScrollView {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                contentHeight: thinkingOutput.contentHeight // Bind directly to the TextArea content height
                                 clip: true
-                                interactive: true
-
-                                TextArea {
-                                    id: thinkingOutput
-                                    width: parent.width
-                                    height: scroll.height
-                                    readOnly: true
-                                    text: aiPane.thinkingText
-                                    color: "white"
-                                    wrapMode: Text.WordWrap
-                                    font.family: appSettings.fontFamily
-                                    font.pointSize: appSettings.fontSize
-                                    background: Rectangle { color: "transparent" }
-
-                                    // Auto-scroll to the bottom when text changes
-                                    onTextChanged: {
-                                        if (contentHeight > height) {
-                                            flickable.contentY = contentHeight - height
+                                Flickable {
+                                    id: flickable
+                                    contentHeight: thinkingOutput.contentHeight
+                                    clip: true
+                                    TextArea {
+                                        id: thinkingOutput
+                                        width: parent.width
+                                        readOnly: true
+                                        text: aiPane.thinkingText
+                                        color: "white"
+                                        wrapMode: Text.WordWrap
+                                        font.family: appSettings.fontFamily
+                                        font.pointSize: appSettings.fontSize
+                                        background: Rectangle { color: "transparent" }
+                                        onTextChanged: {
+                                            if (contentHeight > flickable.height) {
+                                                flickable.contentY = contentHeight - flickable.height
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                    }
+                }
 
-
+                // Pane for Diff View
+                Item {
+                    id: diffViewItem
+                    ScrollView {
+                        width: diffViewItem.width
+                        height: diffViewItem.height
+                        clip: true
+                        TextArea {
+                            id: diffView
+                            textFormat: Text.RichText
+                            readOnly: true
+                            placeholderText: "Diff will appear here..."
+                            wrapMode: Text.NoWrap
+                            font.family: "Courier"
+                        }
                     }
                 }
             }
 
-            // Bottom part: AI Input Controls
+            // AI Input Controls - Placed below the tab view
             Label {
                 text: qsTr("AI Prompt")
                 font.bold: true
@@ -317,14 +330,14 @@ ApplicationWindow {
             TextArea {
                 id: aiMessagePane
                 Layout.fillWidth: true
-                Layout.preferredHeight: 100 // Give the input a reasonable starting height
+                Layout.preferredHeight: 100
                 Layout.minimumHeight: 50
                 wrapMode: Text.WordWrap
                 placeholderText: "Type a prompt or select a command..."
             }
             RowLayout {
                 Layout.topMargin: 5
-                Layout.alignment: Qt.AlignRight // Align controls to the right
+                Layout.alignment: Qt.AlignRight
 
                 ComboBox {
                     id: promptComboBox
@@ -332,18 +345,10 @@ ApplicationWindow {
                     onCurrentTextChanged: {
                         var prompt = ""
                         switch (currentIndex) {
-                            case 0:
-                                prompt = "Add comments to the following code. Do not add any other text, just the commented code."
-                                break
-                            case 1:
-                                prompt = "Explain the following code in a clear and concise way. Focus on the overall purpose of the code and the role of each major component."
-                                break
-                            case 2:
-                                prompt = "Refactor the following code to improve its readability, performance, and maintainability. Do not add any new functionality."
-                                break
-                            case 3:
-                                prompt = "Write unit tests for the following code. Use the Qt Test framework and cover all major functionality."
-                                break
+                            case 0: prompt = "Add comments to the following code. Do not add any other text, just the commented code."; break;
+                            case 1: prompt = "Explain the following code in a clear and concise way. Focus on the overall purpose of the code and the role of each major component."; break;
+                            case 2: prompt = "Refactor the following code to improve its readability, performance, and maintainability. Do not add any new functionality."; break;
+                            case 3: prompt = "Write unit tests for the following code. Use the Qt Test framework and cover all major functionality."; break;
                         }
                         aiMessagePane.text = prompt
                     }
@@ -353,10 +358,11 @@ ApplicationWindow {
                     enabled: codeEditor.text !== "" && aiMessagePane.text !== ""
                     onClicked: {
                         aiOutputPane.text = ""; // Clear previous output
+                        diffView.text = ""; // Clear previous diff
                         var prompt = aiMessagePane.text
                         llm.sendPrompt("You are AI code assistant. Follow the instructions given for the code in the end of message. Be short in your response, no chatting or politness, just code or comment. " + prompt + "\n```\n" + codeEditor.text + "\n```");
                     }
-                    highlighted: true // Makes the primary action button stand out
+                    highlighted: true
                 }
             }
         }
@@ -379,12 +385,15 @@ ApplicationWindow {
         function onResponseReady(response) {
             aiOutputPane.text = response;
             customStatusBar.text = qsTr("AI response received.");
+            updateDiff();
         }
         function onBusyChanged() {
             if (llm.busy) {
                 customStatusBar.text = qsTr("Processing AI request...");
             } else {
                 customStatusBar.text = qsTr("Ready");
+                // When AI is done, update the diff
+                updateDiff();
             }
         }
         function onNewLineReceived(line) {
