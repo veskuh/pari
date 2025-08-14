@@ -1,53 +1,76 @@
 #include "diffutils.h"
 #include <QStringList>
+#include <QVector>
+#include <algorithm>
 
-DiffUtils::DiffUtils(QObject *parent) : QObject(parent)
-{
+// Using a standard dynamic programming approach to find the Longest Common Subsequence (LCS).
+QVector<QString> lcs(const QStringList &a, const QStringList &b) {
+    QVector<QVector<int>> lengths(a.size() + 1, QVector<int>(b.size() + 1, 0));
+
+    // build the lengths table
+    for (int i = 0; i < a.size(); i++) {
+        for (int j = 0; j < b.size(); j++) {
+            if (a[i] == b[j]) {
+                lengths[i + 1][j + 1] = lengths[i][j] + 1;
+            } else {
+                lengths[i + 1][j + 1] = std::max(lengths[i + 1][j], lengths[i][j + 1]);
+            }
+        }
+    }
+
+    // read the LCS from the lengths table
+    QVector<QString> result;
+    for (int x = a.size(), y = b.size(); x != 0 && y != 0; ) {
+        if (lengths[x][y] == lengths[x - 1][y]) {
+            x--;
+        } else if (lengths[x][y] == lengths[x][y - 1]) {
+            y--;
+        } else {
+            result.prepend(a[x - 1]);
+            x--;
+            y--;
+        }
+    }
+    return result;
 }
 
-QString DiffUtils::createDiff(const QString &text1, const QString &text2) const
-{
-    if (text1.isEmpty() && text2.isEmpty()) {
-        return "";
-    }
+DiffUtils::DiffUtils(QObject *parent) : QObject(parent) {}
 
+QString DiffUtils::createDiff(const QString &text1, const QString &text2) const {
     QStringList lines1 = text1.split('\n');
-    if (text1.isEmpty()) {
-        lines1.clear();
-    }
+    if (text1.isEmpty()) lines1.clear();
 
     QStringList lines2 = text2.split('\n');
-    if (text2.isEmpty()) {
-        lines2.clear();
+    if (text2.isEmpty()) lines2.clear();
+
+    QVector<QString> common = lcs(lines1, lines2);
+    QStringList result;
+    int i = 0, j = 0, k = 0;
+
+    while (k < common.size()) {
+        // Deleted lines
+        while (i < lines1.size() && lines1[i] != common[k]) {
+            result.append("- " + lines1[i++]);
+        }
+        // Added lines
+        while (j < lines2.size() && lines2[j] != common[k]) {
+            result.append("+ " + lines2[j++]);
+        }
+        // Common line
+        if (i < lines1.size() && j < lines2.size()) {
+            result.append("  " + common[k]);
+            i++; j++; k++;
+        }
     }
 
-    QStringList diffResult;
-
-    int prefix = 0;
-    while (prefix < lines1.size() && prefix < lines2.size() && lines1[prefix] == lines2[prefix]) {
-        prefix++;
+    // Remaining deleted lines
+    while (i < lines1.size()) {
+        result.append("- " + lines1[i++]);
+    }
+    // Remaining added lines
+    while (j < lines2.size()) {
+        result.append("+ " + lines2[j++]);
     }
 
-    int suffix = 0;
-    while (suffix + prefix < lines1.size() && suffix + prefix < lines2.size() && lines1[lines1.size() - 1 - suffix] == lines2[lines2.size() - 1 - suffix]) {
-        suffix++;
-    }
-
-    for (int i = 0; i < prefix; ++i) {
-        diffResult.append("  " + lines1[i]);
-    }
-
-    for (int i = prefix; i < lines1.size() - suffix; ++i) {
-        diffResult.append("- " + lines1[i]);
-    }
-
-    for (int i = prefix; i < lines2.size() - suffix; ++i) {
-        diffResult.append("+ " + lines2[i]);
-    }
-
-    for (int i = lines1.size() - suffix; i < lines1.size(); ++i) {
-        diffResult.append("  " + lines1[i]);
-    }
-
-    return diffResult.join('\n');
+    return result.join('\n');
 }

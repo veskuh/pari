@@ -15,6 +15,8 @@ private slots:
     void testEmptyInputs();
     void testAllAdded();
     void testAllRemoved();
+    void testComplexChanges();
+    void testChangeAtStartAndEnd();
 };
 
 #endif // TEST_DIFFUTILS_H
