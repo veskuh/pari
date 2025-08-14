@@ -15,11 +15,13 @@ SOURCES += \
     test_markdownformatter.cpp \
     test_llm.cpp \
     test_cppsyntaxhighlighter.cpp \
+    test_diffutils.cpp \
     ../src/app/filesystem.cpp \
     ../src/app/settings.cpp \
     ../src/app/markdownformatter.cpp \
     ../src/app/llm.cpp \
-    ../src/app/cppsyntaxhighlighter.cpp
+    ../src/app/cppsyntaxhighlighter.cpp \
+    ../src/app/diffutils.cpp
 
 HEADERS += \
     test_settings.h \
@@ -27,8 +29,10 @@ HEADERS += \
     test_markdownformatter.h \
     test_llm.h \
     test_cppsyntaxhighlighter.h \
+    test_diffutils.h \
     ../src/app/settings.h \
     ../src/app/filesystem.h \
     ../src/app/markdownformatter.h \
     ../src/app/llm.h \
-    ../src/app/cppsyntaxhighlighter.h
+    ../src/app/cppsyntaxhighlighter.h \
+    ../src/app/diffutils.h

@@ -9,7 +9,8 @@ HEADERS += \
     app/settings.h \
     app/markdownformatter.h \
     app/cppsyntaxhighlighter.h \
-    app/syntaxhighlighterprovider.h
+    app/syntaxhighlighterprovider.h \
+    app/diffutils.h
 
 SOURCES += \
     app/pari.cpp \
@@ -18,7 +19,8 @@ SOURCES += \
     app/settings.cpp \
     app/markdownformatter.cpp \
     app/cppsyntaxhighlighter.cpp \
-    app/syntaxhighlighterprovider.cpp
+    app/syntaxhighlighterprovider.cpp \
+    app/diffutils.cpp
 
 # QML resources
 RESOURCES += \
