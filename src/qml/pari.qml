@@ -310,10 +310,11 @@ ApplicationWindow {
                         clip: true
                         TextArea {
                             id: diffView
+                            textFormat: Text.RichText
                             readOnly: true
                             placeholderText: "Diff will appear here..."
                             wrapMode: Text.NoWrap
-                            font.family: "monospace"
+                            font.family: "Courier"
                         }
                     }
                 }

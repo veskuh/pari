@@ -50,26 +50,26 @@ QString DiffUtils::createDiff(const QString &text1, const QString &text2) const 
     while (k < common.size()) {
         // Deleted lines
         while (i < lines1.size() && lines1[i] != common[k]) {
-            result.append("- " + lines1[i++]);
+            result.append(QString("<span style=\"color: red;\">- %1</span><br>").arg(lines1[i++].toHtmlEscaped()));
         }
         // Added lines
         while (j < lines2.size() && lines2[j] != common[k]) {
-            result.append("+ " + lines2[j++]);
+            result.append(QString("<span style=\"color: green;\">+ %1</span><br>").arg(lines2[j++].toHtmlEscaped()));
         }
         // Common line
         if (i < lines1.size() && j < lines2.size()) {
-            result.append("  " + common[k]);
+            result.append(QString("  %1<br>").arg(common[k].toHtmlEscaped()));
             i++; j++; k++;
         }
     }
 
     // Remaining deleted lines
     while (i < lines1.size()) {
-        result.append("- " + lines1[i++]);
+        result.append(QString("<span style=\"color: red;\">- %1</span>").arg(lines1[i++].toHtmlEscaped()));
     }
     // Remaining added lines
     while (j < lines2.size()) {
-        result.append("+ " + lines2[j++]);
+        result.append(QString("<span style=\"color: green;\">+ %1</span>").arg(lines2[j++].toHtmlEscaped()));
     }
 
     return result.join('\n');
