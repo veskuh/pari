@@ -385,16 +385,14 @@ ApplicationWindow {
             aiOutputPane.text = response;
             customStatusBar.text = qsTr("AI response received.");
             updateDiff();
-            rightSideTabBar.currentIndex = 1; // Switch to diff view
         }
         function onBusyChanged() {
             if (llm.busy) {
                 customStatusBar.text = qsTr("Processing AI request...");
             } else {
                 customStatusBar.text = qsTr("Ready");
-                // When AI is done, update the diff and switch to the tab
+                // When AI is done, update the diff
                 updateDiff();
-                rightSideTabBar.currentIndex = 1;
             }
         }
         function onNewLineReceived(line) {
