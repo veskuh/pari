@@ -136,7 +136,7 @@ void Llm::onNetworkReply()
         addToChatLog("AI: " + m_currentResponse);
         QString finalResponse = m_currentResponse;
         finalResponse.replace(QRegularExpression("<think>.*?</think>", QRegularExpression::DotMatchesEverythingOption), "");
-        emit responseReady(m_markdownFormatter.toHtml(finalResponse));
+        emit responseReady(finalResponse);
     } else {
         qDebug() << "Network error: " << reply->errorString();
         addToChatLog("ERROR: " + reply->errorString());

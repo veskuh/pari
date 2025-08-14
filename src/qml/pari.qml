@@ -253,7 +253,7 @@ ApplicationWindow {
                             readOnly: true
                             placeholderText: "AI assistant output will appear here..."
                             wrapMode: Text.WordWrap
-                            textFormat: Text.RichText
+                            textFormat: Text.MarkdownText
                         }
                     }
 
