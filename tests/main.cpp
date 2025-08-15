@@ -4,6 +4,7 @@
 #include "test_markdownformatter.h"
 #include "test_llm.h"
 #include "test_cppsyntaxhighlighter.h"
+#include "test_qmlsyntaxhighlighter.h"
 #include "test_diffutils.h"
 
 int main(int argc, char *argv[])
@@ -22,6 +23,9 @@ int main(int argc, char *argv[])
 
     TestLlm tc_llm;
     status |= QTest::qExec(&tc_llm, argc, argv);
+
+    TestQmlSyntaxHighlighter tc_qml;
+    status |= QTest::qExec(&tc_qml, argc, argv);
 
     TestDiffUtils tc_diff;
     status |= QTest::qExec(&tc_diff, argc, argv);

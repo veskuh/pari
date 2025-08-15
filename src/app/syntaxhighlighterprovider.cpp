@@ -1,4 +1,6 @@
 #include "syntaxhighlighterprovider.h"
+#include "cppsyntaxhighlighter.h"
+#include "qmlsyntaxhighlighter.h"
 #include <QFileInfo>
 
 SyntaxHighlighterProvider::SyntaxHighlighterProvider(QObject *parent)
@@ -28,5 +30,7 @@ void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const
 
     if (cppExtensions.contains(extension)) {
         m_highlighter = new CppSyntaxHighlighter(textDoc);
+    } else if (extension == "qml") {
+        m_highlighter = new QmlSyntaxHighlighter(textDoc);
     }
 }
