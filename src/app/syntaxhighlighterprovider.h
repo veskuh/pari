@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QQuickTextDocument>
-#include "cppsyntaxhighlighter.h"
+class QSyntaxHighlighter;
 
 class SyntaxHighlighterProvider : public QObject
 {
@@ -14,7 +14,7 @@ public:
     Q_INVOKABLE void attachHighlighter(QQuickTextDocument *doc, const QString &filePath);
 
 private:
-    CppSyntaxHighlighter *m_highlighter;
+    QSyntaxHighlighter *m_highlighter;
 };
 
 #endif // SYNTAXHIGHLIGHTERPROVIDER_H
