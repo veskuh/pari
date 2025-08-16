@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Dialogs
 
 ApplicationWindow {
     id: settingsWindow
@@ -10,8 +11,14 @@ ApplicationWindow {
 
     property alias ollamaUrl: ollamaUrlField.text
     property alias ollamaModel: ollamaModelComboBox.currentValue
-    property alias fontFamily: fontFamilyField.text
-    property alias fontSize: fontSizeSpinBox.value
+
+    FontDialog {
+        id: fontDialog
+        title: "Select Font"
+        onAccepted: {
+            fontValue.text = `${fontDialog.selectedFont.family}, ${fontDialog.selectedFont.pointSize}`
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -56,19 +63,20 @@ ApplicationWindow {
             columns: 2
             columnSpacing: 10
 
-            Label { text: "Font Family:" }
-            TextField {
-                id: fontFamilyField
-                Layout.fillWidth: true
+            Label { text: "Font:" }
+            RowLayout {
+                Label {
+                    id: fontValue
+                    text: `${appSettings.fontFamily}, ${appSettings.fontSize}`
+                    Layout.fillWidth: true
+                }
+                Button {
+                    text: "Select"
+                    onClicked: fontDialog.open()
+                }
             }
 
-            Label { text: "Font Size:" }
-            SpinBox {
-                id: fontSizeSpinBox
-                from: 8
-                to: 72
-                stepSize: 1
-            }
+            
         }
 
         Item {
@@ -84,8 +92,8 @@ ApplicationWindow {
                 onClicked: {
                     appSettings.ollamaUrl = ollamaUrlField.text
                     appSettings.ollamaModel = ollamaModelComboBox.currentValue
-                    appSettings.fontFamily = fontFamilyField.text
-                    appSettings.fontSize = fontSizeSpinBox.value
+                    appSettings.fontFamily = fontDialog.selectedFont.family
+                    appSettings.fontSize = fontDialog.selectedFont.pointSize
                     settingsWindow.close()
                 }
             }
@@ -118,8 +126,7 @@ ApplicationWindow {
         if (modelIndex !== -1) {
             ollamaModelComboBox.currentIndex = modelIndex
         }
-        fontFamilyField.text = appSettings.fontFamily
-        fontSizeSpinBox.value = appSettings.fontSize
+        fontValue.text = `${appSettings.fontFamily}, ${appSettings.fontSize}`
         timer.start()
     }
 }
