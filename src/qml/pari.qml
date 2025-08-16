@@ -58,6 +58,21 @@ ApplicationWindow {
         Menu {
             title: qsTr("File")
             MenuItem { text: qsTr("Open"); action: openAction }
+            Menu {
+                title: qsTr("Recents")
+                Repeater {
+                    model: appSettings.recentFolders
+                    MenuItem {
+                        text: modelData
+                        onTriggered: fileSystem.setRootPath(modelData)
+                    }
+                }
+                MenuSeparator {}
+                MenuItem {
+                    text: qsTr("Clear Recents")
+                    onTriggered: appSettings.clearRecentFolders()
+                }
+            }
             MenuItem { text: qsTr("Save"); action: saveAction }
             MenuItem { text: qsTr("Save As..."); action: saveAsAction }
             MenuItem { text: qsTr("Exit"); onTriggered: Qt.exit(0) }
@@ -487,7 +502,9 @@ ApplicationWindow {
         currentFolder: fileSystem.lastOpenedPath
         onAccepted: {
             if (fileDialog.selectedFolder) {
-                fileSystem.setRootPath(fileDialog.selectedFolder.toString().replace("file://", ""));
+                const folderPath = fileDialog.selectedFolder.toString().replace("file://", "");
+                fileSystem.setRootPath(folderPath);
+                appSettings.addRecentFolder(folderPath);
             }
         }
     }

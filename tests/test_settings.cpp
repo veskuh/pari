@@ -98,3 +98,37 @@ void TestSettings::testAvailableModels()
     settings.setAvailableModels(models);
     QCOMPARE(spy.count(), 1);
 }
+
+void TestSettings::testRecentFolders()
+{
+    Settings settings;
+    QSignalSpy spy(&settings, &Settings::recentFoldersChanged);
+
+    settings.addRecentFolder("/foo/bar");
+    QCOMPARE(settings.recentFolders().size(), 1);
+    QCOMPARE(settings.recentFolders().first(), "/foo/bar");
+    QCOMPARE(spy.count(), 1);
+
+    settings.addRecentFolder("/foo/baz");
+    QCOMPARE(settings.recentFolders().size(), 2);
+    QCOMPARE(settings.recentFolders().first(), "/foo/baz");
+    QCOMPARE(spy.count(), 2);
+
+    // Test adding an existing folder moves it to the front
+    settings.addRecentFolder("/foo/bar");
+    QCOMPARE(settings.recentFolders().size(), 2);
+    QCOMPARE(settings.recentFolders().first(), "/foo/bar");
+    QCOMPARE(spy.count(), 3);
+
+    // Test that the list is capped at 10
+    for (int i = 0; i < 15; ++i) {
+        settings.addRecentFolder(QString("/folder%1").arg(i));
+    }
+    QCOMPARE(settings.recentFolders().size(), 10);
+    QCOMPARE(settings.recentFolders().first(), "/folder14");
+    QCOMPARE(settings.recentFolders().last(), "/folder5");
+
+    // Test clearing the list
+    settings.clearRecentFolders();
+    QCOMPARE(settings.recentFolders().size(), 0);
+}

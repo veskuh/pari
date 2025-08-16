@@ -28,6 +28,7 @@ void Settings::loadSettings()
     m_ollamaModel = m_qsettings.value("ollama/model", "gemma3:12b").toString();
     m_fontFamily = m_qsettings.value("editor/fontFamily", "monospace").toString();
     m_fontSize = m_qsettings.value("editor/fontSize", 12).toInt();
+    m_recentFolders = m_qsettings.value("recentFolders").toStringList();
 }
 
 QString Settings::ollamaUrl() const
@@ -84,4 +85,30 @@ void Settings::setFontSize(int size)
         m_qsettings.setValue("editor/fontSize", m_fontSize);
         emit fontSizeChanged();
     }
+}
+
+QStringList Settings::recentFolders() const
+{
+    return m_recentFolders;
+}
+
+void Settings::addRecentFolder(const QString &folder)
+{
+    m_recentFolders.removeAll(folder);
+    m_recentFolders.prepend(folder);
+    if (m_recentFolders.size() > 10)
+        m_recentFolders.removeLast();
+    setRecentFolders(m_recentFolders);
+}
+
+void Settings::clearRecentFolders()
+{
+    setRecentFolders({});
+}
+
+void Settings::setRecentFolders(const QStringList &recentFolders)
+{
+    m_recentFolders = recentFolders;
+    m_qsettings.setValue("recentFolders", m_recentFolders);
+    emit recentFoldersChanged();
 }
