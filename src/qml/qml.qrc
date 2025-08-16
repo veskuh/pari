@@ -5,5 +5,6 @@
     <file>SettingsWindow.qml</file>
     <file>AboutWindow.qml</file>
     <file>ChatLogWindow.qml</file>
+    <file>FindOverlay.qml</file>
 </qresource>
 </RCC>

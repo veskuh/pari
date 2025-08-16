@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "syntaxhighlighterprovider.h"
 #include "diffutils.h"
+#include "textdocumentsearcher.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +16,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("Pari");
 
     qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
+    qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
 
     QQmlApplicationEngine engine;
 
