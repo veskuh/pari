@@ -32,9 +32,6 @@ Rectangle {
             placeholderText: "Search..."
             onAccepted: findOverlay.findNext()
             color: findOverlay.textColor
-            background: Rectangle {
-                color: findOverlay.textBackgroundColor
-            }
         }
 
         Label {

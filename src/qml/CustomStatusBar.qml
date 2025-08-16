@@ -6,12 +6,22 @@ ToolBar {
     id: customStatusBar
    
     property alias text: statusLabel.text
+    property alias modelName: modelLabel.text
+
+    Label {
+        id: modelLabel
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 5
+        text: qsTr("")
+    }
 
     Label {
         id: statusLabel
         anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: 5
+        anchors.right: parent.right
+        anchors.rightMargin: 5
         text: qsTr("Ready")
     }
+
 }

@@ -90,6 +90,7 @@ ApplicationWindow {
 
     footer: CustomStatusBar {
         id: customStatusBar
+        modelName: appSettings.ollamaModel
     }
 
     function updateDiff() {
@@ -328,18 +329,16 @@ ApplicationWindow {
                                 clip: true
                                 Flickable {
                                     id: flickable
-                                    contentHeight: thinkingOutput.contentHeight
                                     clip: true
-                                    TextArea {
+                                    Text {
                                         id: thinkingOutput
                                         width: parent.width
-                                        readOnly: true
+
                                         text: aiPane.thinkingText
                                         color: "white"
                                         wrapMode: Text.WordWrap
                                         font.family: appSettings.fontFamily
                                         font.pointSize: appSettings.fontSize
-                                        background: Rectangle { color: "transparent" }
                                         onTextChanged: {
                                             if (contentHeight > flickable.height) {
                                                 flickable.contentY = contentHeight - flickable.height
@@ -406,7 +405,7 @@ ApplicationWindow {
                 }
                 Button {
                     text: "Send"
-                    enabled: codeEditor.text !== "" && aiMessagePane.text !== ""
+                    enabled: codeEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy
                     onClicked: {
                         aiOutputPane.text = ""; // Clear previous output
                         diffView.text = ""; // Clear previous diff

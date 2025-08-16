@@ -12,6 +12,9 @@ class Llm : public QObject
     Q_OBJECT
 public:
     explicit Llm(Settings *settings, QObject *parent = nullptr);
+    bool busy() const;
+    void setBusy(bool busy);
+    QStringList chatLog() const;
 
 public slots:
     void sendPrompt(const QString &prompt);
@@ -22,6 +25,7 @@ signals:
     void newLineReceived(const QString &line);
     void modelsListed(const QStringList &models);
     void chatLogChanged();
+    void busyChanged();
 
 private slots:
     void onNetworkReply();
@@ -42,13 +46,6 @@ private:
     Q_PROPERTY(bool busy READ busy WRITE setBusy NOTIFY busyChanged)
     Q_PROPERTY(QStringList chatLog READ chatLog NOTIFY chatLogChanged)
 
-public:
-    bool busy() const;
-    void setBusy(bool busy);
-    QStringList chatLog() const;
-
-signals:
-    void busyChanged();
 };
 
 #endif // LLM_H
