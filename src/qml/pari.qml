@@ -11,6 +11,11 @@ ApplicationWindow {
     DiffUtils {
         id: diffUtils
     }
+
+    TextDocumentSearcher {
+        id: textDocumentSearcher
+    }
+
     width: 1280 // Increased default width for better 3-pane view
     height: 768
     visible: true
@@ -42,6 +47,13 @@ ApplicationWindow {
         onTriggered: saveAsDialog.open()
     }
 
+    Action {
+        id: findAction
+        text: qsTr("Find")
+        shortcut: StandardKey.Find
+        onTriggered: findOverlay.open()
+    }
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -55,6 +67,7 @@ ApplicationWindow {
             MenuItem { text: qsTr("Cut") }
             MenuItem { text: qsTr("Copy") }
             MenuItem { text: qsTr("Paste") }
+            MenuItem { text: qsTr("Find"); action: findAction }
             MenuItem { text: qsTr("Settings..."); onTriggered: settingsDialog.show() }
         }
         Menu {
@@ -189,11 +202,49 @@ ApplicationWindow {
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
             }
+
+            FindOverlay {
+                id: findOverlay
+                width: parent.width
+                color: appWindow.palette.window
+                borderColor: appWindow.palette.windowText
+                textColor: appWindow.palette.text
+                textBackgroundColor: appWindow.palette.base
+                onFindNext: {
+                    var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 0)
+                    if (newPos !== -1) {
+                        codeEditor.cursorPosition = newPos;
+                        codeEditor.select(newPos-searchText.length, newPos)
+                    }
+                    var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
+                    findOverlay.updateResults(occurrences);
+                }
+
+                onFindPrevious: {
+                    var oldPos = codeEditor.cursorPosition
+                    var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 1)
+                    if (codeEditor.cursorPosition === newPos) {
+                        newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition-findOverlay.searchText.length, 1)
+                    }
+
+                    if (newPos !== -1) {
+                        codeEditor.cursorPosition = newPos;
+                        codeEditor.select(newPos-searchText.length, newPos)
+                    }
+                    var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
+                    findOverlay.updateResults(occurrences);
+                }
+                onCloseOverlay: close()
+            }
+
             // ScrollView is necessary for when content exceeds the visible area.
             ScrollView {
+                id: codeEditorScrollView
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true // Ensures content doesn't draw outside the ScrollView
+
+
 
                 TextArea {
                     id: codeEditor
