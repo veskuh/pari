@@ -1,10 +1,11 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/qml">
-    <file>pari.qml</file>
-    <file>CustomStatusBar.qml</file>
-    <file>SettingsWindow.qml</file>
-    <file>AboutWindow.qml</file>
-    <file>ChatLogWindow.qml</file>
-    <file>FindOverlay.qml</file>
-</qresource>
+<RCC>
+    <qresource prefix="/qml">
+        <file>pari.qml</file>
+        <file>CustomStatusBar.qml</file>
+        <file>SettingsWindow.qml</file>
+        <file>AboutWindow.qml</file>
+        <file>ChatLogWindow.qml</file>
+        <file>FindOverlay.qml</file>
+        <file>ColorButton.qml</file>
+    </qresource>
 </RCC>

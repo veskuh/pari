@@ -24,39 +24,7 @@ ApplicationWindow {
         id: colorDialog
     }
 
-    Component {
-        id: colorPickerButtonComponent
-        Button {
-            property color displayColor: "transparent"
-            property bool done: false
-
-            width: 50
-            height: 25
-
-            background: Rectangle {
-                color: displayColor
-                border.color: "gray"
-                border.width: 1
-            }
-
-            onClicked: {
-                colorDialog.selectedColor = displayColor;
-                done = false
-                colorDialog.open();
-//                colorDialog.accepted.disconnectAll(updateDisplayColor);
-//colorDialog.accepted.disconnectAll();
-                colorDialog.accepted.connect(updateDisplayColor);
-            }
-            function updateDisplayColor() {
-                if (!done) {
-                    displayColor = colorDialog.selectedColor;
-                    done = true
-                }
-                //colorDialog.disconnect(updateDisplayColor)
-
-            }
-        }
-    }
+    
 
     ColumnLayout {
         anchors.fill: parent
@@ -130,75 +98,207 @@ ApplicationWindow {
             Label { text: "Light:" }
 
             Label { text: "Keyword Color:" }
-            Loader {
-                id: darkKeywordColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.darkTheme.keywordColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.darkTheme.keywordColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.darkTheme.keywordColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.darkTheme.keywordColor = colorDialog.selectedColor;
+                }
             }
-            Loader {
-                id: lightKeywordColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.lightTheme.keywordColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.lightTheme.keywordColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.lightTheme.keywordColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.lightTheme.keywordColor = colorDialog.selectedColor;
+                }
             }
 
             Label { text: "String Color:" }
-            Loader {
-                id: darkStringColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.darkTheme.stringColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.darkTheme.stringColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.darkTheme.stringColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.darkTheme.stringColor = colorDialog.selectedColor;
+                }
             }
-            Loader {
-                id: lightStringColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.lightTheme.stringColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.lightTheme.stringColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.lightTheme.stringColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.lightTheme.stringColor = colorDialog.selectedColor;
+                }
             }
 
             Label { text: "Comment Color:" }
-            Loader {
-                id: darkCommentColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.darkTheme.commentColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.darkTheme.commentColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.darkTheme.commentColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.darkTheme.commentColor = colorDialog.selectedColor;
+                }
             }
-            Loader {
-                id: lightCommentColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.lightTheme.commentColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.lightTheme.commentColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.lightTheme.commentColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.lightTheme.commentColor = colorDialog.selectedColor;
+                }
             }
 
             Label { text: "Type Color:" }
-            Loader {
-                id: darkTypeColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.darkTheme.typeColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.darkTheme.typeColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.darkTheme.typeColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.darkTheme.typeColor = colorDialog.selectedColor;
+                }
             }
-            Loader {
-                id: lightTypeColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.lightTheme.typeColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.lightTheme.typeColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.lightTheme.typeColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.lightTheme.typeColor = colorDialog.selectedColor;
+                }
             }
 
             Label { text: "Number Color:" }
-            Loader {
-                id: darkNumberColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.darkTheme.numberColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.darkTheme.numberColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.darkTheme.numberColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.darkTheme.numberColor = colorDialog.selectedColor;
+                }
             }
-            Loader {
-                id: lightNumberColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.lightTheme.numberColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.lightTheme.numberColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.lightTheme.numberColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.lightTheme.numberColor = colorDialog.selectedColor;
+                }
             }
 
             Label { text: "Preprocessor Color:" }
-            Loader {
-                id: darkPreprocessorColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.darkTheme.preprocessorColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.darkTheme.preprocessorColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.darkTheme.preprocessorColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.darkTheme.preprocessorColor = colorDialog.selectedColor;
+                }
             }
-            Loader {
-                id: lightPreprocessorColorLoader
-                sourceComponent: colorPickerButtonComponent
-                property color displayColor: appSettings.lightTheme.preprocessorColor
+            ColorButton {
+                width: 50
+                height: 25
+                color: appSettings.lightTheme.preprocessorColor
+                border.color: "gray"
+                border.width: 1
+                onClicked: () => {
+                    colorDialog.selectedColor = appSettings.lightTheme.preprocessorColor;
+                    colorDialog.open();
+                    colorDialog.accepted.disconnect(this.updateColor); // Disconnect previous
+                    colorDialog.accepted.connect(this.updateColor); // Connect new
+                }
+                function updateColor() {
+                    appSettings.lightTheme.preprocessorColor = colorDialog.selectedColor;
+                }
             }
         }
 
@@ -218,22 +318,7 @@ ApplicationWindow {
                     appSettings.fontFamily = fontDialog.selectedFont.family
                     appSettings.fontSize = fontDialog.selectedFont.pointSize
 
-                    var currentTheme = appSettings.darkTheme;
-                    currentTheme.keywordColor = darkKeywordColorLoader.item.displayColor;
-                    currentTheme.stringColor = darkStringColorLoader.item.displayColor;
-                    currentTheme.commentColor = darkCommentColorLoader.item.displayColor;
-                    currentTheme.typeColor = darkTypeColorLoader.item.displayColor;
-                    currentTheme.numberColor = darkNumberColorLoader.item.displayColor;
-                    currentTheme.preprocessorColor = darkPreprocessorColorLoader.item.displayColor;
-
-
-                    currentTheme = appSettings.lightTheme;
-                    currentTheme.keywordColor = lightKeywordColorLoader.item.displayColor;
-                    currentTheme.stringColor = lightStringColorLoader.item.displayColor;
-                    currentTheme.commentColor = lightCommentColorLoader.item.displayColor;
-                    currentTheme.typeColor = lightTypeColorLoader.item.displayColor;
-                    currentTheme.numberColor = lightNumberColorLoader.item.displayColor;
-                    currentTheme.preprocessorColor = lightPreprocessorColorLoader.item.displayColor;
+                    // Colors are now directly bound, no need to update here
 
                     settingsWindow.close()
                 }
@@ -269,21 +354,7 @@ ApplicationWindow {
         }
         fontValue.text = `${appSettings.fontFamily}, ${appSettings.fontSize}`
 
-        var currentTheme = appSettings.lightTheme;
-        lightKeywordColorLoader.item.displayColor = currentTheme.keywordColor;
-        lightStringColorLoader.item.displayColor = currentTheme.stringColor;
-        lightCommentColorLoader.item.displayColor = currentTheme.commentColor;
-        lightTypeColorLoader.item.displayColor = currentTheme.typeColor;
-        lightNumberColorLoader.item.displayColor = currentTheme.numberColor;
-        lightPreprocessorColorLoader.item.displayColor = currentTheme.preprocessorColor;
-
-        currentTheme = appSettings.darkTheme;
-        darkKeywordColorLoader.item.displayColor = currentTheme.keywordColor;
-        darkStringColorLoader.item.displayColor = currentTheme.stringColor;
-        darkCommentColorLoader.item.displayColor = currentTheme.commentColor;
-        darkTypeColorLoader.item.displayColor = currentTheme.typeColor;
-        darkNumberColorLoader.item.displayColor = currentTheme.numberColor;
-        darkPreprocessorColorLoader.item.displayColor = currentTheme.preprocessorColor;
+        // Colors are now directly bound, no need to update here
 
         console.log("Colors set")
 
