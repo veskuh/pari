@@ -1,12 +1,16 @@
 #include "cppsyntaxhighlighter.h"
 
-CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent)
-    : QSyntaxHighlighter(parent)
+CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
+    : QSyntaxHighlighter(parent), m_theme(theme)
 {
     HighlightingRule rule;
 
+    if (!m_theme) {
+        return;
+    }
+
     // Keywords
-    keywordFormat.setForeground(QColor(250, 0, 60)); // Red
+    keywordFormat.setForeground(m_theme->keywordColor);
     QStringList keywordPatterns = {
         QStringLiteral("\\bclass\\b"), QStringLiteral("\\bint\\b"), QStringLiteral("\\breturn\\b"),
         QStringLiteral("\\bif\\b"),    QStringLiteral("\\belse\\b"),  QStringLiteral("\\bfor\\b"),
@@ -20,25 +24,25 @@ CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent)
     }
 
     // Includes
-    includeFormat.setForeground(QColor(205, 154, 88)); // Orange
+    includeFormat.setForeground(m_theme->preprocessorColor); // Using preprocessor color for includes
     rule.pattern = QRegularExpression(QStringLiteral("^\\s*#include\\s*[<\"][^>\"]*[\">]"));
     rule.format = includeFormat;
     highlightingRules.append(rule);
 
     // Macros
-    macroFormat.setForeground(QColor(255, 184, 108)); // Orange
+    macroFormat.setForeground(m_theme->preprocessorColor); // Using preprocessor color for macros
     rule.pattern = QRegularExpression(QStringLiteral("^\\s*#define.*"));
     rule.format = macroFormat;
     highlightingRules.append(rule);
 
     // Single-line comments
-    singleLineCommentFormat.setForeground(QColor(150, 105, 140));
+    singleLineCommentFormat.setForeground(m_theme->commentColor);
 
     // Multi-line comments
-    multiLineCommentFormat.setForeground(QColor(150, 105, 140));
+    multiLineCommentFormat.setForeground(m_theme->commentColor);
 
     // Strings
-    stringFormat.setForeground(QColor(0, 220, 0)); // green
+    stringFormat.setForeground(m_theme->stringColor);
 }
 
 void CppSyntaxHighlighter::highlightBlock(const QString &text)

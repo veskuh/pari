@@ -1,12 +1,16 @@
 #include "qmlsyntaxhighlighter.h"
 
-QmlSyntaxHighlighter::QmlSyntaxHighlighter(QTextDocument *parent)
-    : QSyntaxHighlighter(parent)
+QmlSyntaxHighlighter::QmlSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
+    : QSyntaxHighlighter(parent), m_theme(theme)
 {
     HighlightingRule rule;
 
+    if (!m_theme) {
+        return;
+    }
+
     // Keyword format
-    keywordFormat.setForeground(QColor(255, 192, 203));
+    keywordFormat.setForeground(m_theme->keywordColor);
     QStringList keywordPatterns = {
         "\\bimport\\b", "\\bproperty\\b", "\\bfunction\\b", "\\bvar\\b", "\\brole\\b",
         "\\bsignal\\b", "\\benum\\b", "\\bfalse\\b", "\\btrue\\b", "\\bnull\\b",
@@ -19,19 +23,19 @@ QmlSyntaxHighlighter::QmlSyntaxHighlighter(QTextDocument *parent)
     }
 
     // Component format
-    componentFormat.setForeground(QColor(135, 206, 250));
+    componentFormat.setForeground(m_theme->typeColor);
     rule.pattern = QRegularExpression("\\b[A-Z][a-zA-Z0-9]+\\b");
     rule.format = componentFormat;
     highlightingRules.append(rule);
 
     // String format
-    stringFormat.setForeground(QColor(0, 255, 255));
+    stringFormat.setForeground(m_theme->stringColor);
 
     // Single line comment format
-    singleLineCommentFormat.setForeground(QColor(128, 128, 128));
+    singleLineCommentFormat.setForeground(m_theme->commentColor);
 
     // Multi-line comment format
-    multiLineCommentFormat.setForeground(QColor(128, 128, 128));
+    multiLineCommentFormat.setForeground(m_theme->commentColor);
     multiLineCommentStartExpression = QRegularExpression("/\\*");
     multiLineCommentEndExpression = QRegularExpression("\\*/");
 }

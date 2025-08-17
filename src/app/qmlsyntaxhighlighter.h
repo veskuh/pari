@@ -5,13 +5,14 @@
 #include <QRegularExpression>
 #include <QTextCharFormat>
 #include <QVector>
+#include "settings.h"
 
 class QmlSyntaxHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
 
 public:
-    explicit QmlSyntaxHighlighter(QTextDocument *parent = nullptr);
+    explicit QmlSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
 protected:
     void highlightBlock(const QString &text) override;
@@ -38,6 +39,8 @@ private:
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat stringFormat;
+
+    SyntaxTheme *m_theme;
 };
 
 #endif // QMLSYNTAXHIGHLIGHTER_H

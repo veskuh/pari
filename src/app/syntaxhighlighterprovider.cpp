@@ -4,8 +4,18 @@
 #include <QFileInfo>
 
 SyntaxHighlighterProvider::SyntaxHighlighterProvider(QObject *parent)
-    : QObject{parent}, m_highlighter(nullptr)
+    : QObject{parent}, m_highlighter(nullptr), m_settings(nullptr), m_document(nullptr)
 {
+}
+
+void SyntaxHighlighterProvider::setSettings(Settings *settings)
+{
+    m_settings = settings;
+    if (m_settings) {
+        connect(m_settings, &Settings::systemThemeIsDarkChanged, this, &SyntaxHighlighterProvider::updateHighlighterTheme);
+        connect(m_settings, &Settings::lightThemeChanged, this, &SyntaxHighlighterProvider::updateHighlighterTheme);
+        connect(m_settings, &Settings::darkThemeChanged, this, &SyntaxHighlighterProvider::updateHighlighterTheme);
+    }
 }
 
 void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const QString &filePath)
@@ -13,7 +23,18 @@ void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const
     if (!doc)
         return;
 
-    QTextDocument *textDoc = doc->textDocument();
+    m_document = doc;
+    m_filePath = filePath;
+
+    updateHighlighterTheme();
+}
+
+void SyntaxHighlighterProvider::updateHighlighterTheme()
+{
+    if (!m_document || m_filePath.isEmpty() || !m_settings)
+        return;
+
+    QTextDocument *textDoc = m_document->textDocument();
     if (!textDoc)
         return;
 
@@ -24,13 +45,15 @@ void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const
         m_highlighter = nullptr;
     }
 
-    QFileInfo fileInfo(filePath);
+    QFileInfo fileInfo(m_filePath);
     QString extension = fileInfo.suffix();
     QStringList cppExtensions = {"cpp", "h", "cxx", "hxx", "cc", "hh"};
 
+    SyntaxTheme *currentTheme = m_settings->systemThemeIsDark() ? m_settings->darkTheme() : m_settings->lightTheme();
+
     if (cppExtensions.contains(extension)) {
-        m_highlighter = new CppSyntaxHighlighter(textDoc);
+        m_highlighter = new CppSyntaxHighlighter(textDoc, currentTheme);
     } else if (extension == "qml") {
-        m_highlighter = new QmlSyntaxHighlighter(textDoc);
+        m_highlighter = new QmlSyntaxHighlighter(textDoc, currentTheme);
     }
 }

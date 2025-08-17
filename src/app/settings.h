@@ -5,6 +5,9 @@
 #include <QString>
 #include <QFont>
 #include <QSettings>
+#include <QColor>
+
+#include "syntaxtheme.h"
 
 class Settings : public QObject
 {
@@ -15,6 +18,9 @@ class Settings : public QObject
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
     Q_PROPERTY(QStringList availableModels READ availableModels WRITE setAvailableModels NOTIFY availableModelsChanged)
     Q_PROPERTY(QStringList recentFolders READ recentFolders WRITE setRecentFolders NOTIFY recentFoldersChanged)
+    Q_PROPERTY(bool systemThemeIsDark READ systemThemeIsDark NOTIFY systemThemeIsDarkChanged)
+    Q_PROPERTY(SyntaxTheme* lightTheme READ lightTheme NOTIFY lightThemeChanged)
+    Q_PROPERTY(SyntaxTheme* darkTheme READ darkTheme NOTIFY darkThemeChanged)
 
 public:
     explicit Settings(QObject *parent = nullptr);
@@ -38,6 +44,12 @@ public:
     Q_INVOKABLE void addRecentFolder(const QString &folder);
     Q_INVOKABLE void clearRecentFolders();
 
+    bool systemThemeIsDark() const;
+    void setSystemTheme(bool isDark);
+
+    SyntaxTheme* lightTheme() const;
+    SyntaxTheme* darkTheme() const;
+
 signals:
     void ollamaUrlChanged();
     void ollamaModelChanged();
@@ -45,10 +57,15 @@ signals:
     void fontSizeChanged();
     void availableModelsChanged();
     void recentFoldersChanged();
+    void systemThemeIsDarkChanged();
+    void lightThemeChanged();
+    void darkThemeChanged();
 
 private:
     void loadSettings();
     void setRecentFolders(const QStringList &recentFolders);
+    bool m_systemThemeIsDark;
+    bool querySystemTheme() const;
 
     QString m_ollamaUrl;
     QString m_ollamaModel;
@@ -56,6 +73,8 @@ private:
     int m_fontSize;
     QStringList m_availableModels;
     QStringList m_recentFolders;
+    SyntaxTheme *m_lightTheme;
+    SyntaxTheme *m_darkTheme;
 
     QSettings m_qsettings;
 };

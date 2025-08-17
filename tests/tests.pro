@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = tst_all
 CONFIG += console
 CONFIG -= app_bundle
-QT += testlib core network
+QT += testlib core network widgets
 
 # Include path to find the application headers
 INCLUDEPATH += ../src
@@ -23,6 +23,7 @@ SOURCES += \
     ../src/app/llm.cpp \
     ../src/app/cppsyntaxhighlighter.cpp \
     ../src/app/qmlsyntaxhighlighter.cpp \
+    ../src/app/syntaxtheme.cpp \
     ../src/app/diffutils.cpp
 
 HEADERS += \
@@ -39,4 +40,6 @@ HEADERS += \
     ../src/app/llm.h \
     ../src/app/cppsyntaxhighlighter.h \
     ../src/app/qmlsyntaxhighlighter.h \
-    ../src/app/diffutils.h
+    ../src/app/diffutils.h \
+    ../src/app/syntaxtheme.h
+

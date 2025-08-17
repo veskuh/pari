@@ -1,11 +1,23 @@
 #include "settings.h"
+#include "syntaxtheme.h"
 #include <QDebug>
+#include <QTimer>
+#include <QPalette>
 
 Settings::Settings(QObject *parent)
-    : QObject{parent},
-      m_qsettings("veskuh.net", "Pari")
+    : QObject{parent}
+    , m_lightTheme(new SyntaxTheme(this))
+    , m_darkTheme(new SyntaxTheme(this))
+    , m_qsettings("veskuh.net", "Pari")
 {
     loadSettings();
+    // Initialize m_systemThemeIsDark based on current system theme
+    m_systemThemeIsDark = querySystemTheme();
+}
+
+bool Settings::querySystemTheme() const
+{
+    return m_systemThemeIsDark;
 }
 
 QStringList Settings::availableModels() const
@@ -29,6 +41,20 @@ void Settings::loadSettings()
     m_fontFamily = m_qsettings.value("editor/fontFamily", "monospace").toString();
     m_fontSize = m_qsettings.value("editor/fontSize", 12).toInt();
     m_recentFolders = m_qsettings.value("recentFolders").toStringList();
+
+    m_lightTheme->keywordColor = m_qsettings.value("theme/light/keywordColor", QColor("#0000FF")).value<QColor>();
+    m_lightTheme->stringColor = m_qsettings.value("theme/light/stringColor", QColor("#A31515")).value<QColor>();
+    m_lightTheme->commentColor = m_qsettings.value("theme/light/commentColor", QColor("#008000")).value<QColor>();
+    m_lightTheme->typeColor = m_qsettings.value("theme/light/typeColor", QColor("#2B91AF")).value<QColor>();
+    m_lightTheme->numberColor = m_qsettings.value("theme/light/numberColor", QColor("#FF0000")).value<QColor>();
+    m_lightTheme->preprocessorColor = m_qsettings.value("theme/light/preprocessorColor", QColor("#800000")).value<QColor>();
+
+    m_darkTheme->keywordColor = m_qsettings.value("theme/dark/keywordColor", QColor("#569CD6")).value<QColor>();
+    m_darkTheme->stringColor = m_qsettings.value("theme/dark/stringColor", QColor("#D69D85")).value<QColor>();
+    m_darkTheme->commentColor = m_qsettings.value("theme/dark/commentColor", QColor("#6A9955")).value<QColor>();
+    m_darkTheme->typeColor = m_qsettings.value("theme/dark/typeColor", QColor("#4EC9B0")).value<QColor>();
+    m_darkTheme->numberColor = m_qsettings.value("theme/dark/numberColor", QColor("#B5CEA8")).value<QColor>();
+    m_darkTheme->preprocessorColor = m_qsettings.value("theme/dark/preprocessorColor", QColor("#9B9B9B")).value<QColor>();
 }
 
 QString Settings::ollamaUrl() const
@@ -111,4 +137,24 @@ void Settings::setRecentFolders(const QStringList &recentFolders)
     m_recentFolders = recentFolders;
     m_qsettings.setValue("recentFolders", m_recentFolders);
     emit recentFoldersChanged();
+}
+
+bool Settings::systemThemeIsDark() const
+{
+    return m_systemThemeIsDark;
+}
+
+void Settings::setSystemTheme(bool isDark)
+{
+    m_systemThemeIsDark = isDark;
+}
+
+SyntaxTheme* Settings::lightTheme() const
+{
+    return m_lightTheme;
+}
+
+SyntaxTheme* Settings::darkTheme() const
+{
+    return m_darkTheme;
 }
