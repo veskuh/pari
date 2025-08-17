@@ -139,6 +139,23 @@ void Settings::setRecentFolders(const QStringList &recentFolders)
     emit recentFoldersChanged();
 }
 
+void Settings::saveColors()
+{
+    m_qsettings.setValue("theme/light/keywordColor", m_lightTheme->keywordColor);
+    m_qsettings.setValue("theme/light/stringColor", m_lightTheme->stringColor);
+    m_qsettings.setValue("theme/light/commentColor", m_lightTheme->commentColor);
+    m_qsettings.setValue("theme/light/typeColor", m_lightTheme->typeColor);
+    m_qsettings.setValue("theme/light/numberColor", m_lightTheme->numberColor);
+    m_qsettings.setValue("theme/light/preprocessorColor", m_lightTheme->preprocessorColor);
+
+    m_qsettings.setValue("theme/dark/keywordColor", m_darkTheme->keywordColor);
+    m_qsettings.setValue("theme/dark/stringColor", m_darkTheme->stringColor);
+    m_qsettings.setValue("theme/dark/commentColor", m_darkTheme->commentColor);
+    m_qsettings.setValue("theme/dark/typeColor", m_darkTheme->typeColor);
+    m_qsettings.setValue("theme/dark/numberColor", m_darkTheme->numberColor);
+    m_qsettings.setValue("theme/dark/preprocessorColor", m_darkTheme->preprocessorColor);
+}
+
 bool Settings::systemThemeIsDark() const
 {
     return m_systemThemeIsDark;

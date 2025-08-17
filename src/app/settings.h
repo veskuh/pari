@@ -43,6 +43,7 @@ public:
     QStringList recentFolders() const;
     Q_INVOKABLE void addRecentFolder(const QString &folder);
     Q_INVOKABLE void clearRecentFolders();
+    Q_INVOKABLE void saveColors();
 
     bool systemThemeIsDark() const;
     void setSystemTheme(bool isDark);

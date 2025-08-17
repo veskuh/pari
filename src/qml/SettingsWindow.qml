@@ -318,7 +318,7 @@ ApplicationWindow {
                     appSettings.fontFamily = fontDialog.selectedFont.family
                     appSettings.fontSize = fontDialog.selectedFont.pointSize
 
-                    // Colors are now directly bound, no need to update here
+                    appSettings.saveColors()
 
                     settingsWindow.close()
                 }
