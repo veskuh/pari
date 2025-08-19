@@ -1,6 +1,7 @@
 #include "syntaxhighlighterprovider.h"
 #include "cppsyntaxhighlighter.h"
 #include "qmlsyntaxhighlighter.h"
+#include "shellsyntaxhighlighter.h"
 #include <QFileInfo>
 
 SyntaxHighlighterProvider::SyntaxHighlighterProvider(QObject *parent)
@@ -51,9 +52,12 @@ void SyntaxHighlighterProvider::updateHighlighterTheme()
 
     SyntaxTheme *currentTheme = m_settings->systemThemeIsDark() ? m_settings->darkTheme() : m_settings->lightTheme();
 
+    QStringList shellExtensions = {"sh", "bash", "zsh"};
     if (cppExtensions.contains(extension)) {
         m_highlighter = new CppSyntaxHighlighter(textDoc, currentTheme);
     } else if (extension == "qml") {
         m_highlighter = new QmlSyntaxHighlighter(textDoc, currentTheme);
+    } else if (shellExtensions.contains(extension)) {
+        m_highlighter = new ShellSyntaxHighlighter(textDoc, currentTheme);
     }
 }
