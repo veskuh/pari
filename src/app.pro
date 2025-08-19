@@ -11,6 +11,7 @@ HEADERS += \
     app/cppsyntaxhighlighter.h \
     app/syntaxhighlighterprovider.h \
     app/qmlsyntaxhighlighter.h \
+    app/shellsyntaxhighlighter.h \
     app/diffutils.h \
     app/textdocumentsearcher.h \
     app/syntaxtheme.h
@@ -24,6 +25,7 @@ SOURCES += \
     app/cppsyntaxhighlighter.cpp \
     app/syntaxhighlighterprovider.cpp \
     app/qmlsyntaxhighlighter.cpp \
+    app/shellsyntaxhighlighter.cpp \
     app/diffutils.cpp \
     app/textdocumentsearcher.cpp \
     app/syntaxtheme.cpp

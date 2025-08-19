@@ -3,7 +3,12 @@
 SyntaxTheme::SyntaxTheme(QObject *parent)
     : QObject{parent}
 {
-
+    keywordColor = QColor(Qt::transparent);
+    stringColor = QColor(Qt::transparent);
+    commentColor = QColor(Qt::transparent);
+    typeColor = QColor(Qt::transparent);
+    numberColor = QColor(Qt::transparent);
+    preprocessorColor = QColor(Qt::transparent);
 }
 
 void SyntaxTheme::setKeywordColor(const QColor &color)
