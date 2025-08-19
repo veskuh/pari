@@ -281,12 +281,6 @@ ApplicationWindow {
             ollamaModelComboBox.currentIndex = modelIndex
         }
         fontValue.text = `${appSettings.fontFamily}, ${appSettings.fontSize}`
-
-        // Colors are now directly bound, no need to update here
-
-        console.log("Colors set")
-
-
         timer.start()
     }
 }

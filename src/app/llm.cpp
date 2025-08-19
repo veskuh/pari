@@ -20,7 +20,6 @@ Llm::Llm(Settings *settings, QObject *parent)
     , m_busy(false)
     , m_partialLine("")
 {
-    qDebug() << "Llm initialized, busy:" << m_busy;
     m_networkAccessManager = new QNetworkAccessManager(this);
     connect(m_networkAccessManager, &QNetworkAccessManager::finished, this, &Llm::onNetworkReply);
 

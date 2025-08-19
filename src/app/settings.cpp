@@ -27,7 +27,6 @@ QStringList Settings::availableModels() const
 
 void Settings::setAvailableModels(const QStringList &models)
 {
-    qDebug() << models;
     if (m_availableModels == models)
         return;
     m_availableModels = models;

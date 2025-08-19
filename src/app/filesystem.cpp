@@ -63,14 +63,12 @@ void FileSystem::setCurrentFilePath(const QString &path)
 
 void FileSystem::loadFileContent(const QString &filePath)
 {
-    qDebug() << "FileSystem: Attempting to load file:" << filePath;
     QFile file(filePath);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);
         emit fileContentReady(filePath, in.readAll());
         file.close();
         setCurrentFilePath(filePath);
-        qDebug() << "FileSystem: File loaded successfully.";
     } else {
         qWarning() << "FileSystem: Could not open file:" << filePath << ", Error:" << file.errorString();
     }
@@ -95,7 +93,6 @@ void FileSystem::setRootPath(const QString &path)
     if (m_rootPath != path) {
         m_rootPath = path;
         m_currentRootIndex = m_model->setRootPath(m_rootPath);
-        qDebug() << "FileSystem: Setting root path to" << m_rootPath;
         emit rootPathChanged();
         emit currentRootIndexChanged();
         setLastOpenedPath(path); // Save the last opened path

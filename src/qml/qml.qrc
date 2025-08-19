@@ -7,5 +7,6 @@
         <file>ChatLogWindow.qml</file>
         <file>FindOverlay.qml</file>
         <file>ColorButton.qml</file>
+        <file>FileTreeDelegate.qml</file>
     </qresource>
 </RCC>
