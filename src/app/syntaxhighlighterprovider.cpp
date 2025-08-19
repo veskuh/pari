@@ -52,12 +52,14 @@ void SyntaxHighlighterProvider::updateHighlighterTheme()
 
     SyntaxTheme *currentTheme = m_settings->systemThemeIsDark() ? m_settings->darkTheme() : m_settings->lightTheme();
 
-    QStringList shellExtensions = {"sh", "bash", "zsh"};
+    QStringList shellExtensions = {"sh", "bash", "zsh","pro","cmake","py","pl","ps1","rb","conf","ini","cfg","yaml","mk"};
+    QStringList buildFiles = {"Makefile", "CMakeLists.txt"};
+
     if (cppExtensions.contains(extension)) {
         m_highlighter = new CppSyntaxHighlighter(textDoc, currentTheme);
     } else if (extension == "qml") {
         m_highlighter = new QmlSyntaxHighlighter(textDoc, currentTheme);
-    } else if (shellExtensions.contains(extension)) {
+    } else if (shellExtensions.contains(extension) || buildFiles.contains(fileInfo.fileName())) {
         m_highlighter = new ShellSyntaxHighlighter(textDoc, currentTheme);
     }
 }
