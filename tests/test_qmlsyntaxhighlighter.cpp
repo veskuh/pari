@@ -34,7 +34,13 @@ void TestQmlSyntaxHighlighter::testKeywords()
     QString text = "import QtQuick 2.0";
     doc.setPlainText(text);
     highlighter.rehighlight();
-    //QVERIFY(checkFormat(doc, 0, 6, m_theme->keywordColor));
+
+    QTextBlock block = doc.firstBlock();
+    QTextLayout *layout = block.layout();
+    QList<QTextLayout::FormatRange> formats = layout->formats();
+
+    QVERIFY(!formats.isEmpty());
+    QCOMPARE(formats.first().format.foreground().color(), m_theme->keywordColor);
 }
 
 void TestQmlSyntaxHighlighter::testStrings()
@@ -44,7 +50,12 @@ void TestQmlSyntaxHighlighter::testStrings()
     QString text = "property string myString: \"hello\"";
     doc.setPlainText(text);
     highlighter.rehighlight();
-    //QVERIFY(checkFormat(doc, 27, 7, m_theme->stringColor));
+    QTextBlock block = doc.lastBlock();
+    QTextLayout *layout = block.layout();
+    QList<QTextLayout::FormatRange> formats = layout->formats();
+
+    QVERIFY(!formats.isEmpty());
+    QCOMPARE(formats.last().format.foreground().color(), m_theme->stringColor);
 }
 
 void TestQmlSyntaxHighlighter::testComments()
@@ -54,5 +65,11 @@ void TestQmlSyntaxHighlighter::testComments()
     QString text = "// this is a comment";
     doc.setPlainText(text);
     highlighter.rehighlight();
-    //QVERIFY(checkFormat(doc, 0, 20, m_theme->commentColor));
+
+    QTextBlock block = doc.firstBlock();
+    QTextLayout *layout = block.layout();
+    QList<QTextLayout::FormatRange> formats = layout->formats();
+
+    QVERIFY(!formats.isEmpty());
+    QCOMPARE(formats.first().format.foreground().color(), m_theme->commentColor);
 }
