@@ -149,7 +149,7 @@ ApplicationWindow {
                 id: fileTreeFindBar
                 width: parent.width
                 visible: false
-                onFindChanged: fileSystem.setFilter(pattern)
+                onFindChanged: function(pattern) { fileSystem.setFilter(pattern) }
                 onClosed: {
                     visible = false
                     fileSystem.setFilter("")
