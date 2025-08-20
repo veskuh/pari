@@ -158,3 +158,29 @@ void TestMarkdownSyntaxHighlighter::testHighlight_Comments()
     QVERIFY(!formats.isEmpty());
     QCOMPARE(formats.first().format.foreground().color(), QColor("silver"));
 }
+
+void TestMarkdownSyntaxHighlighter::testHighlight_MultipleCodeBlocks()
+{
+    QTextDocument doc;
+    SyntaxTheme theme;
+    theme.stringColor = QColor("orange");
+    MarkdownSyntaxHighlighter highlighter(&doc, &theme);
+
+    QString text = "```\ncode1\n```\n\nnot code\n\n```\ncode2\n```";
+    doc.setPlainText(text);
+    highlighter.rehighlight();
+
+    // Line 1: "code1"
+    QTextBlock block1 = doc.findBlockByLineNumber(1);
+    QVERIFY(!block1.layout()->formats().isEmpty());
+    QCOMPARE(block1.layout()->formats().first().format.foreground().color(), QColor("orange"));
+
+    // Line 3: "not code"
+    QTextBlock block2 = doc.findBlockByLineNumber(4);
+    QVERIFY(block2.layout()->formats().isEmpty());
+
+    // Line 6: "code2"
+    QTextBlock block3 = doc.findBlockByLineNumber(7);
+    QVERIFY(!block3.layout()->formats().isEmpty());
+    QCOMPARE(block3.layout()->formats().first().format.foreground().color(), QColor("orange"));
+}

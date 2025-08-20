@@ -18,6 +18,8 @@ protected:
     void highlightBlock(const QString &text) override;
 
 private:
+    void applyNormalRules(const QString &text, int offset, int length);
+
     struct HighlightingRule
     {
         QRegularExpression pattern;

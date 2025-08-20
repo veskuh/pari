@@ -69,31 +69,58 @@ MarkdownSyntaxHighlighter::MarkdownSyntaxHighlighter(QTextDocument *parent, Synt
 
 void MarkdownSyntaxHighlighter::highlightBlock(const QString &text)
 {
-    for (const HighlightingRule &rule : highlightingRules) {
-        QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
-        while (matchIterator.hasNext()) {
-            QRegularExpressionMatch match = matchIterator.next();
-            setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+    int state = previousBlockState();
+    if (state == -1) state = 0;
+
+    int offset = 0;
+
+    if (state == 1) { // In a code block
+        int endIndex = text.indexOf(codeBlockEndExpression);
+        if (endIndex == -1) { // Block continues
+            setFormat(0, text.length(), codeBlockFormat);
+            setCurrentBlockState(1);
+            return;
+        } else { // Block ends
+            setFormat(0, endIndex + 3, codeBlockFormat);
+            offset = endIndex + 3;
+            state = 0;
         }
     }
 
-    setCurrentBlockState(0);
+    setCurrentBlockState(state);
 
-    int startIndex = 0;
-    if (previousBlockState() != 1)
-        startIndex = text.indexOf(codeBlockStartExpression);
-
-    while (startIndex >= 0) {
-        QRegularExpressionMatch endMatch;
-        int endIndex = text.indexOf(codeBlockEndExpression, startIndex + 3);
-        int commentLength;
-        if (endIndex == -1) {
-            setCurrentBlockState(1);
-            commentLength = text.length() - startIndex;
-        } else {
-            commentLength = endIndex - startIndex + 3;
+    // Apply single-line rules to the rest of the line
+    int searchOffset = offset;
+    while (searchOffset < text.length()) {
+        int startIndex = text.indexOf(codeBlockStartExpression, searchOffset);
+        if (startIndex == -1) {
+            applyNormalRules(text, searchOffset, text.length() - searchOffset);
+            break;
         }
-        setFormat(startIndex, commentLength, codeBlockFormat);
-        startIndex = text.indexOf(codeBlockStartExpression, startIndex + commentLength);
+
+        applyNormalRules(text, searchOffset, startIndex - searchOffset);
+
+        int endIndex = text.indexOf(codeBlockEndExpression, startIndex + 3);
+        if (endIndex == -1) {
+            setFormat(startIndex, text.length() - startIndex, codeBlockFormat);
+            setCurrentBlockState(1);
+            break;
+        }
+
+        setFormat(startIndex, endIndex - startIndex + 3, codeBlockFormat);
+        searchOffset = endIndex + 3;
+    }
+}
+
+void MarkdownSyntaxHighlighter::applyNormalRules(const QString &text, int offset, int length)
+{
+    if (length <= 0) return;
+    QString subString = text.mid(offset, length);
+    for (const HighlightingRule &rule : highlightingRules) {
+        QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(subString);
+        while (matchIterator.hasNext()) {
+            QRegularExpressionMatch match = matchIterator.next();
+            setFormat(offset + match.capturedStart(), match.capturedLength(), rule.format);
+        }
     }
 }

@@ -20,6 +20,7 @@ private slots:
     void testHighlight_InlineCode();
     void testHighlight_CodeBlocks();
     void testHighlight_Comments();
+    void testHighlight_MultipleCodeBlocks();
 
 private:
     // Test data and helper methods can be added here
