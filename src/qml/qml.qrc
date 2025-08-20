@@ -8,5 +8,6 @@
         <file>FindOverlay.qml</file>
         <file>ColorButton.qml</file>
         <file>FileTreeDelegate.qml</file>
+        <file>FileTreeFindBar.qml</file>
     </qresource>
 </RCC>

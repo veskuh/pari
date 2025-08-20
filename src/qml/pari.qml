@@ -54,6 +54,13 @@ ApplicationWindow {
         onTriggered: findOverlay.open()
     }
 
+    Action {
+        id: findFilesAction
+        text: qsTr("Find Files")
+        shortcut: "Ctrl+Shift+F"
+        onTriggered: fileTreeFindBar.visible = true
+    }
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -87,6 +94,7 @@ ApplicationWindow {
         }
         Menu {
             title: qsTr("View")
+            MenuItem { text: qsTr("Find Files"); action: findFilesAction }
             MenuItem { text: qsTr("Chat log"); onTriggered: chatLogWindow.show() }
         }
         Menu {
@@ -135,6 +143,17 @@ ApplicationWindow {
                 Layout.leftMargin: 10
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
+            }
+
+            FileTreeFindBar {
+                id: fileTreeFindBar
+                width: parent.width
+                visible: false
+                onFindChanged: fileSystem.setFilter(pattern)
+                onClosed: {
+                    visible = false
+                    fileSystem.setFilter("")
+                }
             }
 
             TreeView {

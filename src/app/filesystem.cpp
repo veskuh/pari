@@ -12,15 +12,22 @@ FileSystem::FileSystem(QObject *parent)
 {
     m_model = new QFileSystemModel(this);
     m_model->setRootPath(m_rootPath);
+    m_model->setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
+
+    m_proxyModel = new QSortFilterProxyModel(this);
+    m_proxyModel->setSourceModel(m_model);
+    m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_proxyModel->setFilterKeyColumn(0);
+    m_proxyModel->setRecursiveFilteringEnabled(true);
 
     QSettings settings("Pari", "Pari");
     m_lastOpenedPath = settings.value("lastOpenedPath", QDir::homePath()).toString();
     m_homePath = QDir::homePath();
 }
 
-QFileSystemModel* FileSystem::model() const
+QObject* FileSystem::model() const
 {
-    return m_model;
+    return m_proxyModel;
 }
 
 QString FileSystem::rootPath() const
@@ -107,4 +114,9 @@ bool FileSystem::isDirectory(const QString &filePath)
 QString FileSystem::homePath() const
 {
     return m_homePath;
+}
+
+void FileSystem::setFilter(const QString &filter)
+{
+    m_proxyModel->setFilterRegularExpression(filter);
 }

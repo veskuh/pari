@@ -4,6 +4,8 @@
 #include <QTemporaryDir>
 #include <QFile>
 
+#include <QSortFilterProxyModel>
+
 void TestFileSystem::testSaveFile()
 {
     FileSystem fileSystem;

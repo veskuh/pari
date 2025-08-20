@@ -3,11 +3,12 @@
 
 #include <QObject>
 #include <QFileSystemModel>
+#include <QSortFilterProxyModel>
 
 class FileSystem : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QFileSystemModel* model READ model CONSTANT)
+    Q_PROPERTY(QObject* model READ model CONSTANT)
     Q_PROPERTY(QString rootPath READ rootPath NOTIFY rootPathChanged)
     Q_PROPERTY(QModelIndex currentRootIndex READ currentRootIndex NOTIFY currentRootIndexChanged)
     Q_PROPERTY(QString lastOpenedPath READ lastOpenedPath WRITE setLastOpenedPath NOTIFY lastOpenedPathChanged)
@@ -17,7 +18,7 @@ class FileSystem : public QObject
 public:
     explicit FileSystem(QObject *parent = nullptr);
 
-    QFileSystemModel* model() const;
+    QObject* model() const;
     QString rootPath() const;
     QModelIndex currentRootIndex() const;
     QString lastOpenedPath() const;
@@ -30,6 +31,7 @@ public slots:
     void loadFileContent(const QString &filePath);
     void setRootPath(const QString &path);
     void saveFile(const QString &filePath, const QString &content);
+    void setFilter(const QString &filter);
 
     Q_INVOKABLE bool isDirectory(const QString &filePath);
 
@@ -43,6 +45,7 @@ signals:
 
 private:
     QFileSystemModel* m_model;
+    QSortFilterProxyModel* m_proxyModel;
     QString m_rootPath;
     QModelIndex m_currentRootIndex;
     QString m_lastOpenedPath;
