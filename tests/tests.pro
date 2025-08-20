@@ -28,7 +28,8 @@ SOURCES += \
     ../src/app/shellsyntaxhighlighter.cpp \
     ../src/app/syntaxtheme.cpp \
     ../src/app/diffutils.cpp \
-    ../src/app/markdownsyntaxhighlighter.cpp
+    ../src/app/markdownsyntaxhighlighter.cpp \
+    ../src/app/filetreeproxymodel.cpp
 
 HEADERS += \
     test_settings.h \
@@ -49,5 +50,6 @@ HEADERS += \
     ../src/app/shellsyntaxhighlighter.h \
     ../src/app/diffutils.h \
     ../src/app/syntaxtheme.h \
-    ../src/app/markdownsyntaxhighlighter.h
+    ../src/app/markdownsyntaxhighlighter.h \
+    ../src/app/filetreeproxymodel.h
 

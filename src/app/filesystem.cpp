@@ -14,7 +14,7 @@ FileSystem::FileSystem(QObject *parent)
     m_model->setRootPath(m_rootPath);
     m_model->setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
 
-    m_proxyModel = new QSortFilterProxyModel(this);
+    m_proxyModel = new FileTreeProxyModel(this);
     m_proxyModel->setSourceModel(m_model);
     m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel->setFilterKeyColumn(0);

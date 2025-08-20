@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QFileSystemModel>
-#include <QSortFilterProxyModel>
+#include "filetreeproxymodel.h"
 
 class FileSystem : public QObject
 {
@@ -46,7 +46,7 @@ signals:
 
 private:
     QFileSystemModel* m_model;
-    QSortFilterProxyModel* m_proxyModel;
+    FileTreeProxyModel* m_proxyModel;
     QString m_rootPath;
     QModelIndex m_currentRootIndex;
     QString m_lastOpenedPath;
