@@ -18,6 +18,7 @@ SOURCES += \
     test_qmlsyntaxhighlighter.cpp \
     test_shellsyntaxhighlighter.cpp \
     test_diffutils.cpp \
+    test_markdownsyntaxhighlighter.cpp \
     ../src/app/filesystem.cpp \
     ../src/app/settings.cpp \
     ../src/app/markdownformatter.cpp \
@@ -26,7 +27,8 @@ SOURCES += \
     ../src/app/qmlsyntaxhighlighter.cpp \
     ../src/app/shellsyntaxhighlighter.cpp \
     ../src/app/syntaxtheme.cpp \
-    ../src/app/diffutils.cpp
+    ../src/app/diffutils.cpp \
+    ../src/app/markdownsyntaxhighlighter.cpp
 
 HEADERS += \
     test_settings.h \
@@ -37,6 +39,7 @@ HEADERS += \
     test_qmlsyntaxhighlighter.h \
     test_shellsyntaxhighlighter.h \
     test_diffutils.h \
+    test_markdownsyntaxhighlighter.h \
     ../src/app/settings.h \
     ../src/app/filesystem.h \
     ../src/app/markdownformatter.h \
@@ -45,5 +48,6 @@ HEADERS += \
     ../src/app/qmlsyntaxhighlighter.h \
     ../src/app/shellsyntaxhighlighter.h \
     ../src/app/diffutils.h \
-    ../src/app/syntaxtheme.h
+    ../src/app/syntaxtheme.h \
+    ../src/app/markdownsyntaxhighlighter.h
 
