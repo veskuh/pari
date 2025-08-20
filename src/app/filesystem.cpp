@@ -120,3 +120,8 @@ void FileSystem::setFilter(const QString &filter)
 {
     m_proxyModel->setFilterRegularExpression(filter);
 }
+
+QModelIndex FileSystem::mapToProxy(const QModelIndex &sourceIndex)
+{
+    return m_proxyModel->mapFromSource(sourceIndex);
+}

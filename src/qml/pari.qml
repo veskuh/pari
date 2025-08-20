@@ -168,7 +168,7 @@ ApplicationWindow {
             Connections {
                 target: fileSystemView
                 function onModelChanged() {
-                    fileSystemView.rootIndex = fileSystem.currentRootIndex
+                    fileSystemView.rootIndex = fileSystem.mapToProxy(fileSystem.currentRootIndex)
                 }
             }
         }

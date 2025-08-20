@@ -34,6 +34,7 @@ public slots:
     void setFilter(const QString &filter);
 
     Q_INVOKABLE bool isDirectory(const QString &filePath);
+    Q_INVOKABLE QModelIndex mapToProxy(const QModelIndex &sourceIndex);
 
 signals:
     void fileContentReady(const QString &filePath, const QString &content);
