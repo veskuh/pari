@@ -31,7 +31,7 @@ CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *t
 
     // Macros
     macroFormat.setForeground(m_theme->preprocessorColor); // Using preprocessor color for macros
-    rule.pattern = QRegularExpression(QStringLiteral("^\\s*#define.*"));
+    rule.pattern = QRegularExpression(QStringLiteral("^\\s*#(define|ifndef|endif).*"));
     rule.format = macroFormat;
     highlightingRules.append(rule);
 
