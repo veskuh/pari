@@ -14,7 +14,8 @@ HEADERS += \
     app/shellsyntaxhighlighter.h \
     app/diffutils.h \
     app/textdocumentsearcher.h \
-    app/syntaxtheme.h
+    app/syntaxtheme.h \
+    app/markdownsyntaxhighlighter.h
 
 SOURCES += \
     app/pari.cpp \
@@ -28,7 +29,8 @@ SOURCES += \
     app/shellsyntaxhighlighter.cpp \
     app/diffutils.cpp \
     app/textdocumentsearcher.cpp \
-    app/syntaxtheme.cpp
+    app/syntaxtheme.cpp \
+    app/markdownsyntaxhighlighter.cpp
 
 # QML resources
 RESOURCES += \

@@ -2,6 +2,7 @@
 #include "cppsyntaxhighlighter.h"
 #include "qmlsyntaxhighlighter.h"
 #include "shellsyntaxhighlighter.h"
+#include "markdownsyntaxhighlighter.h"
 #include <QFileInfo>
 
 SyntaxHighlighterProvider::SyntaxHighlighterProvider(QObject *parent)
@@ -61,5 +62,7 @@ void SyntaxHighlighterProvider::updateHighlighterTheme()
         m_highlighter = new QmlSyntaxHighlighter(textDoc, currentTheme);
     } else if (shellExtensions.contains(extension) || buildFiles.contains(fileInfo.fileName())) {
         m_highlighter = new ShellSyntaxHighlighter(textDoc, currentTheme);
+    } else if (extension == "md" || extension == "markdown") {
+        m_highlighter = new MarkdownSyntaxHighlighter(textDoc, currentTheme);
     }
 }
