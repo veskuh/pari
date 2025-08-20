@@ -4,14 +4,8 @@
 #include <QTextDocument>
 #include <QTextCursor>
 #include <QTextCharFormat>
+#include <QTest>
 
-// Helper function to check the format of a specific range of text
-static bool checkFormat(const QTextDocument &doc, int start, int length, const QTextCharFormat &expectedFormat) {
-    QTextCursor cursor(doc.findBlock(start));
-    cursor.setPosition(start);
-    cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, length);
-    return cursor.charFormat().foreground() == expectedFormat.foreground();
-}
 
 void TestShellSyntaxHighlighter::testComment()
 {
@@ -25,9 +19,15 @@ void TestShellSyntaxHighlighter::testComment()
 
     doc.setPlainText("# This is a comment");
     highlighter.rehighlight();
-    QTest::qWait(0);
 
-    // QVERIFY(checkFormat(doc, 0, 19, commentFormat));
+    QTextBlock block = doc.firstBlock();
+    QTextLayout *layout = block.layout();
+    QList<QTextLayout::FormatRange> formats = layout->formats();
+    QVERIFY(!formats.isEmpty());
+
+    QColor color = formats.first().format.foreground().color();
+    QColor comment = theme.commentColor;
+    QCOMPARE(color,comment);
 }
 
 void TestShellSyntaxHighlighter::testSingleQuotedString()
@@ -44,7 +44,15 @@ void TestShellSyntaxHighlighter::testSingleQuotedString()
     highlighter.rehighlight();
     QTest::qWait(0);
 
-    // QVERIFY(checkFormat(doc, 0, 13, stringFormat));
+
+    QTextBlock block = doc.firstBlock();
+    QTextLayout *layout = block.layout();
+    QList<QTextLayout::FormatRange> formats = layout->formats();
+    QVERIFY(!formats.isEmpty());
+
+    QColor color = formats.first().format.foreground().color();
+    QColor comment = theme.stringColor;
+    QCOMPARE(color,comment);
 }
 
 void TestShellSyntaxHighlighter::testDoubleQuotedString()
@@ -61,7 +69,15 @@ void TestShellSyntaxHighlighter::testDoubleQuotedString()
     highlighter.rehighlight();
     QTest::qWait(0);
 
-    // QVERIFY(checkFormat(doc, 0, 13, stringFormat));
+    QTextBlock block = doc.firstBlock();
+    QTextLayout *layout = block.layout();
+    QList<QTextLayout::FormatRange> formats = layout->formats();
+    QVERIFY(!formats.isEmpty());
+
+    QColor color = formats.first().format.foreground().color();
+    QColor comment = theme.stringColor;
+    QCOMPARE(color,comment);
+
 }
 
 void TestShellSyntaxHighlighter::testStringWithComment()
@@ -78,8 +94,14 @@ void TestShellSyntaxHighlighter::testStringWithComment()
     highlighter.rehighlight();
     QTest::qWait(0);
 
-    // QVERIFY(checkFormat(doc, 5, 15, stringFormat));
-    // QVERIFY(checkFormat(doc, 12, 1, stringFormat));
+    QTextBlock block = doc.lastBlock();
+    QTextLayout *layout = block.layout();
+    QList<QTextLayout::FormatRange> formats = layout->formats();
+    QVERIFY(!formats.isEmpty());
+
+    QColor color = formats.last().format.foreground().color();
+    QColor comment = theme.stringColor;
+    QCOMPARE(color,comment);
 }
 
 void TestShellSyntaxHighlighter::testCommentWithString()
@@ -96,5 +118,12 @@ void TestShellSyntaxHighlighter::testCommentWithString()
     highlighter.rehighlight();
     QTest::qWait(0);
 
-    // QVERIFY(checkFormat(doc, 0, 19, commentFormat));
+    QTextBlock block = doc.firstBlock();
+    QTextLayout *layout = block.layout();
+    QList<QTextLayout::FormatRange> formats = layout->formats();
+    QVERIFY(!formats.isEmpty());
+
+    QColor color = formats.first().format.foreground().color();
+    QColor comment = theme.commentColor;
+    QCOMPARE(color,comment);
 }
