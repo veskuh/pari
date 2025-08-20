@@ -15,14 +15,12 @@ HEADERS += \
     app/diffutils.h \
     app/textdocumentsearcher.h \
     app/syntaxtheme.h \
-    app/markdownsyntaxhighlighter.h \
-    app/filetreeproxymodel.h
+    app/markdownsyntaxhighlighter.h
 
 SOURCES += \
     app/pari.cpp \
     app/llm.cpp \
     app/filesystem.cpp \
-    app/filetreeproxymodel.cpp \
     app/settings.cpp \
     app/markdownformatter.cpp \
     app/cppsyntaxhighlighter.cpp \

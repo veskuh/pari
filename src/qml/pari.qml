@@ -161,15 +161,7 @@ ApplicationWindow {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 model: fileSystem.model
-                property string selectedPath: ""
-
                 delegate: FileTreeDelegate {}
-            }
-            Connections {
-                target: fileSystemView
-                function onModelChanged() {
-                    fileSystemView.rootIndex = fileSystem.mapToProxy(fileSystem.currentRootIndex)
-                }
             }
         }
 
@@ -404,6 +396,7 @@ ApplicationWindow {
         target: fileSystem
         function onRootPathChanged() {
             fileSystemView.model = fileSystem.model
+            fileSystemView.rootIndex = fileSystem.mapToProxy(fileSystem.currentRootIndex)
         }
         function onFileContentReady(filePath, content) {
             codeEditor.text = content;

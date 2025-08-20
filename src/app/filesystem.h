@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QFileSystemModel>
-#include "filetreeproxymodel.h"
+#include <QSortFilterProxyModel>
 
 class FileSystem : public QObject
 {
@@ -32,9 +32,9 @@ public slots:
     void setRootPath(const QString &path);
     void saveFile(const QString &filePath, const QString &content);
     void setFilter(const QString &filter);
+    Q_INVOKABLE QModelIndex mapToProxy(const QModelIndex &sourceIndex);
 
     Q_INVOKABLE bool isDirectory(const QString &filePath);
-    Q_INVOKABLE QModelIndex mapToProxy(const QModelIndex &sourceIndex);
 
 signals:
     void fileContentReady(const QString &filePath, const QString &content);
@@ -46,7 +46,7 @@ signals:
 
 private:
     QFileSystemModel* m_model;
-    FileTreeProxyModel* m_proxyModel;
+    QSortFilterProxyModel* m_proxyModel;
     QString m_rootPath;
     QModelIndex m_currentRootIndex;
     QString m_lastOpenedPath;
