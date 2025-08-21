@@ -1,13 +1,14 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Window
 
-Dialog {
-    id: buildConfigurationDialog
+Window {
+    id: buildConfigurationWindow
     title: "Configure Build"
+    width: 600
+    height: 300
     modal: true
-    width: 400
-    height: 250
 
     property string buildCommand: ""
     property string runCommand: ""
@@ -15,43 +16,64 @@ Dialog {
 
     signal saveConfiguration(string buildCommand, string runCommand, string cleanCommand)
 
-    contentItem: ColumnLayout {
-        spacing: 10
-        anchors.fill: parent
+    contentItem: Pane {
+        padding: 10
 
-        TextField {
-            id: buildCommandField
-            placeholderText: "Build Command"
-            text: buildConfigurationDialog.buildCommand
-            Layout.fillWidth: true
-        }
+        ColumnLayout {
+            spacing: 10
+            anchors.fill: parent
 
-        TextField {
-            id: runCommandField
-            placeholderText: "Run Command"
-            text: buildConfigurationDialog.runCommand
-            Layout.fillWidth: true
-        }
-
-        TextField {
-            id: cleanCommandField
-            placeholderText: "Clean Command"
-            text: buildConfigurationDialog.cleanCommand
-            Layout.fillWidth: true
-        }
-
-        RowLayout {
-            Layout.alignment: Qt.AlignRight
-            Button {
-                text: "Save"
-                onClicked: {
-                    buildConfigurationDialog.saveConfiguration(buildCommandField.text, runCommandField.text, cleanCommandField.text)
-                    buildConfigurationDialog.close()
-                }
+            Label {
+                text: "Build Command:"
+                font.bold: true
             }
-            Button {
-                text: "Cancel"
-                onClicked: buildConfigurationDialog.close()
+            TextField {
+                id: buildCommandField
+                placeholderText: "e.g., make"
+                text: buildConfigurationWindow.buildCommand
+                Layout.fillWidth: true
+            }
+
+            Label {
+                text: "Run Command:"
+                font.bold: true
+            }
+            TextField {
+                id: runCommandField
+                placeholderText: "e.g., ./my_app"
+                text: buildConfigurationWindow.runCommand
+                Layout.fillWidth: true
+            }
+
+            Label {
+                text: "Clean Command:"
+                font.bold: true
+            }
+            TextField {
+                id: cleanCommandField
+                placeholderText: "e.g., make clean"
+                text: buildConfigurationWindow.cleanCommand
+                Layout.fillWidth: true
+            }
+
+            Item {
+                Layout.fillHeight: true
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignRight
+                Button {
+                    text: "Save"
+                    onClicked: {
+                        buildConfigurationWindow.saveConfiguration(buildCommandField.text, runCommandField.text, cleanCommandField.text)
+                        buildConfigurationWindow.close()
+                    }
+                    highlighted: true
+                }
+                Button {
+                    text: "Cancel"
+                    onClicked: buildConfigurationWindow.close()
+                }
             }
         }
     }

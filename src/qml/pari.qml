@@ -54,6 +54,17 @@ ApplicationWindow {
         onTriggered: findOverlay.open()
     }
 
+    Action {
+        id: configureBuildAction
+        text: "Configure Build..."
+        onTriggered: {
+            buildConfigurationWindow.buildCommand = appSettings.getBuildCommand(fileSystem.rootPath)
+            buildConfigurationWindow.runCommand = appSettings.getRunCommand(fileSystem.rootPath)
+            buildConfigurationWindow.cleanCommand = appSettings.getCleanCommand(fileSystem.rootPath)
+            buildConfigurationWindow.visible = true
+        }
+    }
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -123,14 +134,7 @@ ApplicationWindow {
             }
             MenuSeparator {}
             MenuItem {
-                id: configureBuildAction
-                text: "Configure Build..."
-                onTriggered: {
-                    buildConfigurationDialog.buildCommand = appSettings.getBuildCommand(fileSystem.currentRootPath)
-                    buildConfigurationDialog.runCommand = appSettings.getRunCommand(fileSystem.currentRootPath)
-                    buildConfigurationDialog.cleanCommand = appSettings.getCleanCommand(fileSystem.currentRootPath)
-                    buildConfigurationDialog.open()
-                }
+                action: configureBuildAction
             }
         }
         Menu {
@@ -571,15 +575,15 @@ ApplicationWindow {
     Connections {
         target: fileSystem
         function onRootPathChanged() {
-            var buildCommand = appSettings.getBuildCommand(fileSystem.currentRootPath)
+            var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath)
             hasBuildConfiguration = buildCommand !== ""
         }
     }
 
     BuildConfigurationDialog {
-        id: buildConfigurationDialog
-        onSaveConfiguration: {
-            appSettings.setBuildCommands(fileSystem.currentRootPath, buildCommand, runCommand, cleanCommand)
+        id: buildConfigurationWindow
+        onSaveConfiguration: function(buildCommand, runCommand, cleanCommand) {
+            appSettings.setBuildCommands(fileSystem.rootPath, buildCommand, runCommand, cleanCommand)
             hasBuildConfiguration = buildCommand !== ""
         }
     }
