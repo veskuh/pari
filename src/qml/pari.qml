@@ -54,6 +54,17 @@ ApplicationWindow {
         onTriggered: findOverlay.open()
     }
 
+    Action {
+        id: configureBuildAction
+        text: "Build setup..."
+        onTriggered: {
+            buildConfigurationWindow.buildCommand = appSettings.getBuildCommand(fileSystem.rootPath)
+            buildConfigurationWindow.runCommand = appSettings.getRunCommand(fileSystem.rootPath)
+            buildConfigurationWindow.cleanCommand = appSettings.getCleanCommand(fileSystem.rootPath)
+            buildConfigurationWindow.visible = true
+        }
+    }
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -88,6 +99,43 @@ ApplicationWindow {
         Menu {
             title: qsTr("View")
             MenuItem { text: qsTr("Chat log"); onTriggered: chatLogWindow.show() }
+        }
+        Menu {
+            title: qsTr("Build")
+            MenuItem {
+                id: buildAction
+                text: "Build"
+                enabled: hasBuildConfiguration
+                onTriggered: {
+                    outputArea.text = ""
+                    outputPanel.visible = true
+                    buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath)
+                }
+            }
+            MenuItem {
+                id: runAction
+                text: "Run"
+                enabled: hasBuildConfiguration
+                onTriggered: {
+                    outputArea.text = ""
+                    outputPanel.visible = true
+                    buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath)
+                }
+            }
+            MenuItem {
+                id: cleanAction
+                text: "Clean"
+                enabled: hasBuildConfiguration
+                onTriggered: {
+                    outputArea.text = ""
+                    outputPanel.visible = true
+                    buildManager.executeCommand(appSettings.getCleanCommand(fileSystem.rootPath), fileSystem.rootPath)
+                }
+            }
+            MenuSeparator {}
+            MenuItem {
+                action: configureBuildAction
+            }
         }
         Menu {
             title: qsTr("Help")
@@ -222,6 +270,42 @@ ApplicationWindow {
                     TextMetrics {
                         id: textMetrics
                         font: codeEditor.font
+                    }
+                }
+            }
+
+            Rectangle {
+                id: outputPanel
+                Layout.fillWidth: true
+                Layout.preferredHeight: 200
+                visible: false
+                color: appWindow.palette.window
+                border.color: appWindow.palette.windowText
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 5
+
+                    RowLayout {
+                        Label {
+                            text: "Build Output"
+                            font.bold: true
+                        }
+                        Button {
+                            text: "Close"
+                            onClicked: outputPanel.visible = false
+                            Layout.alignment: Qt.AlignRight
+                        }
+                    }
+
+                    ScrollView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        TextArea {
+                            id: outputArea
+                            readOnly: true
+                            wrapMode: Text.WordWrap
+                        }
                     }
                 }
             }
@@ -381,6 +465,16 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: buildManager
+        function onOutputReady(output) {
+            outputArea.text += output
+        }
+        function onErrorReady(error) {
+            outputArea.text += error
+        }
+    }
+
    Connections {
         target: fileSystem
         function onRootPathChanged() {
@@ -474,6 +568,24 @@ ApplicationWindow {
     ChatLogWindow {
         id: chatLogWindow
         chatLlm: llm
+    }
+
+    property bool hasBuildConfiguration: false
+
+    Connections {
+        target: fileSystem
+        function onRootPathChanged() {
+            var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath)
+            hasBuildConfiguration = buildCommand !== ""
+        }
+    }
+
+    BuildConfigurationDialog {
+        id: buildConfigurationWindow
+        onSaveConfiguration: function(buildCommand, runCommand, cleanCommand) {
+            appSettings.setBuildCommands(fileSystem.rootPath, buildCommand, runCommand, cleanCommand)
+            hasBuildConfiguration = buildCommand !== ""
+        }
     }
 
     Component.onCompleted: {
