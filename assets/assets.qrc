@@ -1,12 +1,17 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/assets">
-    <file>cpp.png</file>
-    <file>png.png</file>
-    <file>qml.png</file>
-    <file>file.png</file>
-    <file>txt.png</file>
-    <file>md.png</file>
-    <file>folder.png</file>
-    <file>pari.png</file>
-</qresource>
+<RCC>
+    <qresource prefix="/assets">
+        <file>cpp.png</file>
+        <file>png.png</file>
+        <file>qml.png</file>
+        <file>file.png</file>
+        <file>txt.png</file>
+        <file>md.png</file>
+        <file>folder.png</file>
+        <file>pari.png</file>
+        <file>accept.png</file>
+        <file>build.png</file>
+        <file>play.png</file>
+        <file>search.png</file>
+        <file>diff.png</file>
+    </qresource>
 </RCC>

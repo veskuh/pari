@@ -54,6 +54,42 @@ ApplicationWindow {
         onTriggered: findOverlay.open()
     }
 
+    Action {
+        id: configureBuildAction
+        text: "Build setup..."
+        onTriggered: {
+            buildConfigurationWindow.buildCommand = appSettings.getBuildCommand(fileSystem.rootPath)
+            buildConfigurationWindow.runCommand = appSettings.getRunCommand(fileSystem.rootPath)
+            buildConfigurationWindow.cleanCommand = appSettings.getCleanCommand(fileSystem.rootPath)
+            buildConfigurationWindow.visible = true
+        }
+    }
+
+    Action {
+        id: buildAction
+        text: "Build"
+        enabled: hasBuildConfiguration
+        shortcut: "Ctrl+b"
+        onTriggered: {
+            outputArea.text = ""
+            outputPanel.visible = true
+            buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath)
+        }
+    }
+
+    Action {
+        id: runAction
+        text: "Run"
+        enabled: hasBuildConfiguration
+        shortcut: "Ctrl+r"
+        onTriggered: {
+            outputArea.text = ""
+            outputPanel.visible = true
+            buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath)
+        }
+    }
+
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -90,16 +126,85 @@ ApplicationWindow {
             MenuItem { text: qsTr("Chat log"); onTriggered: chatLogWindow.show() }
         }
         Menu {
+            title: qsTr("Build")
+            MenuItem {
+                text: "Build"
+                action: buildAction
+            }
+            MenuItem {
+                text: "Run"
+                action: runAction
+            }
+            MenuItem {
+                id: cleanAction
+                text: "Clean"
+                enabled: hasBuildConfiguration
+                onTriggered: {
+                    outputArea.text = ""
+                    outputPanel.visible = true
+                    buildManager.executeCommand(appSettings.getCleanCommand(fileSystem.rootPath), fileSystem.rootPath)
+                }
+            }
+            MenuSeparator {}
+            MenuItem {
+                action: configureBuildAction
+            }
+        }
+        Menu {
             title: qsTr("Help")
             MenuItem { text: qsTr("About"); onTriggered: aboutWindow.show() }
         }
     }
 
     header: ToolBar {
-        RowLayout {
-            ToolButton { text: qsTr("Open"); action: openAction }
-            ToolButton { text: qsTr("Save"); action: saveAction }
-            ToolButton { text: qsTr("Build") }
+        height: 64
+
+        Row {
+            ToolButton { text: qsTr("Build")
+                icon.source: "qrc:/assets/build.png"
+                icon.width: 32
+                icon.height: 32
+                display: AbstractButton.TextUnderIcon
+                width: 64
+                action: buildAction
+            }
+            ToolButton { text: qsTr("Run")
+                icon.source: "qrc:/assets/play.png"
+                icon.width: 32
+                icon.height: 32
+                display: AbstractButton.TextUnderIcon
+                width: 64
+                action:  runAction
+            }
+            ToolButton { text: qsTr("Search")
+                icon.source: "qrc:/assets/search.png"
+                icon.width: 32
+                icon.height: 32
+                display: AbstractButton.TextUnderIcon
+                width: 64
+
+                action: findAction
+            }
+        }
+
+        Row {
+            anchors.right: parent.right
+            visible: false // TBD
+
+            ToolButton { text: qsTr("Diff")
+                icon.source: "qrc:/assets/diff.png"
+                icon.width: 32
+                icon.height: 32
+                display: AbstractButton.TextUnderIcon
+                width: 64
+            }
+            ToolButton { text: qsTr("Use")
+                icon.source: "qrc:/assets/accept.png"
+                icon.width: 32
+                icon.height: 32
+                display: AbstractButton.TextUnderIcon
+                width: 64
+            }
         }
     }
 
