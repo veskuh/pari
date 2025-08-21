@@ -8,7 +8,6 @@ Window {
     title: "Configure Build"
     width: 600
     height: 300
-    modal: true
 
     property string buildCommand: ""
     property string runCommand: ""
@@ -16,7 +15,7 @@ Window {
 
     signal saveConfiguration(string buildCommand, string runCommand, string cleanCommand)
 
-    contentItem: Pane {
+    Pane {
         padding: 10
 
         ColumnLayout {
