@@ -132,3 +132,42 @@ void TestSettings::testRecentFolders()
     settings.clearRecentFolders();
     QCOMPARE(settings.recentFolders().size(), 0);
 }
+
+void TestSettings::testBuildCommands()
+{
+    Settings settings;
+    const QString projectPath = "/test/project";
+    const QString buildCommand = "make";
+    const QString runCommand = "./my_app";
+    const QString cleanCommand = "make clean";
+
+    // 1. Initially, commands should be empty
+    QCOMPARE(settings.getBuildCommand(projectPath), "");
+    QCOMPARE(settings.getRunCommand(projectPath), "");
+    QCOMPARE(settings.getCleanCommand(projectPath), "");
+
+    // 2. Set the commands
+    settings.setBuildCommands(projectPath, buildCommand, runCommand, cleanCommand);
+
+    // 3. Verify the commands are set correctly
+    QCOMPARE(settings.getBuildCommand(projectPath), buildCommand);
+    QCOMPARE(settings.getRunCommand(projectPath), runCommand);
+    QCOMPARE(settings.getCleanCommand(projectPath), cleanCommand);
+
+    // 4. Test persistence
+    {
+        Settings settings2;
+        QCOMPARE(settings2.getBuildCommand(projectPath), buildCommand);
+        QCOMPARE(settings2.getRunCommand(projectPath), runCommand);
+        QCOMPARE(settings2.getCleanCommand(projectPath), cleanCommand);
+    }
+
+    // 5. Test with a different project path
+    const QString otherProjectPath = "/another/project";
+    QCOMPARE(settings.getBuildCommand(otherProjectPath), "");
+    settings.setBuildCommands(otherProjectPath, "qmake", "./app", "rm *.o");
+    QCOMPARE(settings.getBuildCommand(otherProjectPath), "qmake");
+
+    // 6. Ensure the original project's settings are still intact
+    QCOMPARE(settings.getBuildCommand(projectPath), buildCommand);
+}

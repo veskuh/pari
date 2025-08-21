@@ -10,6 +10,7 @@
 #include "diffutils.h"
 #include "textdocumentsearcher.h"
 #include "syntaxtheme.h"
+#include "buildmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -38,6 +39,9 @@ int main(int argc, char *argv[])
     SyntaxHighlighterProvider *syntaxHighlighterProvider = new SyntaxHighlighterProvider(&app);
     engine.rootContext()->setContextProperty("syntaxHighlighterProvider", syntaxHighlighterProvider);
     syntaxHighlighterProvider->setSettings(appSettings);
+
+    BuildManager *buildManager = new BuildManager(&app);
+    engine.rootContext()->setContextProperty("buildManager", buildManager);
 
     const QUrl url("qrc:/qml/pari.qml");
 

@@ -21,3 +21,9 @@ notes.md
 .DS_Store
 *.app
 src/qrc_*
+/src/pari
+/tests/tst_all
+test_project/
+/src/pari
+/tests/tst_all
+test_project/

@@ -8,5 +8,6 @@
         <file>FindOverlay.qml</file>
         <file>ColorButton.qml</file>
         <file>FileTreeDelegate.qml</file>
+        <file>BuildConfigurationDialog.qml</file>
     </qresource>
 </RCC>

@@ -7,6 +7,7 @@
 #include "test_qmlsyntaxhighlighter.h"
 #include "test_shellsyntaxhighlighter.h"
 #include "test_diffutils.h"
+#include "test_buildmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -33,6 +34,9 @@ int main(int argc, char *argv[])
 
     TestShellSyntaxHighlighter tc_shell;
     status |= QTest::qExec(&tc_shell, argc, argv);
+
+    TestBuildManager tc_build;
+    status |= QTest::qExec(&tc_build, argc, argv);
 
     return status;
 }

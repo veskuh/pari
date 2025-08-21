@@ -138,6 +138,36 @@ void Settings::setRecentFolders(const QStringList &recentFolders)
     emit recentFoldersChanged();
 }
 
+QString Settings::getBuildCommand(const QString &projectPath)
+{
+    QString hash = QString(QCryptographicHash::hash(projectPath.toUtf8(), QCryptographicHash::Sha256).toHex());
+    return m_qsettings.value("Builds/" + hash + "/build", "").toString();
+}
+
+QString Settings::getRunCommand(const QString &projectPath)
+{
+    QString hash = QString(QCryptographicHash::hash(projectPath.toUtf8(), QCryptographicHash::Sha256).toHex());
+    return m_qsettings.value("Builds/" + hash + "/run", "").toString();
+}
+
+QString Settings::getCleanCommand(const QString &projectPath)
+{
+    QString hash = QString(QCryptographicHash::hash(projectPath.toUtf8(), QCryptographicHash::Sha256).toHex());
+    return m_qsettings.value("Builds/" + hash + "/clean", "").toString();
+}
+
+void Settings::setBuildCommands(const QString &projectPath, const QString &buildCommand, const QString &runCommand, const QString &cleanCommand)
+{
+    QString hash = QString(QCryptographicHash::hash(projectPath.toUtf8(), QCryptographicHash::Sha256).toHex());
+    m_qsettings.beginGroup("Builds");
+    m_qsettings.beginGroup(hash);
+    m_qsettings.setValue("build", buildCommand);
+    m_qsettings.setValue("run", runCommand);
+    m_qsettings.setValue("clean", cleanCommand);
+    m_qsettings.endGroup();
+    m_qsettings.endGroup();
+}
+
 void Settings::saveColors()
 {
     m_qsettings.setValue("theme/light/keywordColor", m_lightTheme->keywordColor);

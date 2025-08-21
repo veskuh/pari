@@ -16,6 +16,7 @@ private slots:
     void testSignals();
     void testAvailableModels();
     void testRecentFolders();
+    void testBuildCommands();
 };
 
 #endif // TEST_SETTINGS_H

@@ -6,6 +6,7 @@
 #include <QFont>
 #include <QSettings>
 #include <QColor>
+#include <QCryptographicHash>
 
 #include "syntaxtheme.h"
 
@@ -44,6 +45,11 @@ public:
     Q_INVOKABLE void addRecentFolder(const QString &folder);
     Q_INVOKABLE void clearRecentFolders();
     Q_INVOKABLE void saveColors();
+
+    Q_INVOKABLE QString getBuildCommand(const QString &projectPath);
+    Q_INVOKABLE QString getRunCommand(const QString &projectPath);
+    Q_INVOKABLE QString getCleanCommand(const QString &projectPath);
+    Q_INVOKABLE void setBuildCommands(const QString &projectPath, const QString &buildCommand, const QString &runCommand, const QString &cleanCommand);
 
     bool systemThemeIsDark() const;
     void setSystemTheme(bool isDark);
