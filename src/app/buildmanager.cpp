@@ -13,7 +13,7 @@ BuildManager::BuildManager(QObject *parent)
 
 void BuildManager::executeCommand(const QString &command, const QString &workingDirectory)
 {
-    if (m_process->state() == QProcess::NotRunning) {
+    if (m_process->state() == QProcess::NotRunning && !command.isEmpty()) {
         m_process->setWorkingDirectory(workingDirectory);
         m_process->startCommand(command);
     }

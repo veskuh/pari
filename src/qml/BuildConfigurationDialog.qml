@@ -6,8 +6,8 @@ import QtQuick.Window
 Window {
     id: buildConfigurationWindow
     title: "Configure Build"
-    width: 600
-    height: 300
+    width: 450
+    height: 250
 
     property string buildCommand: ""
     property string runCommand: ""
@@ -17,6 +17,7 @@ Window {
 
     Pane {
         padding: 10
+        anchors.fill: parent
 
         ColumnLayout {
             spacing: 10

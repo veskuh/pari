@@ -56,7 +56,7 @@ ApplicationWindow {
 
     Action {
         id: configureBuildAction
-        text: "Configure Build..."
+        text: "Build setup..."
         onTriggered: {
             buildConfigurationWindow.buildCommand = appSettings.getBuildCommand(fileSystem.rootPath)
             buildConfigurationWindow.runCommand = appSettings.getRunCommand(fileSystem.rootPath)
@@ -109,7 +109,7 @@ ApplicationWindow {
                 onTriggered: {
                     outputArea.text = ""
                     outputPanel.visible = true
-                    buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.currentRootPath), fileSystem.currentRootPath)
+                    buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath)
                 }
             }
             MenuItem {
@@ -119,7 +119,7 @@ ApplicationWindow {
                 onTriggered: {
                     outputArea.text = ""
                     outputPanel.visible = true
-                    buildManager.executeCommand(appSettings.getRunCommand(fileSystem.currentRootPath), fileSystem.currentRootPath)
+                    buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath)
                 }
             }
             MenuItem {
@@ -129,7 +129,7 @@ ApplicationWindow {
                 onTriggered: {
                     outputArea.text = ""
                     outputPanel.visible = true
-                    buildManager.executeCommand(appSettings.getCleanCommand(fileSystem.currentRootPath), fileSystem.currentRootPath)
+                    buildManager.executeCommand(appSettings.getCleanCommand(fileSystem.rootPath), fileSystem.rootPath)
                 }
             }
             MenuSeparator {}
