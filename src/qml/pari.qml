@@ -89,7 +89,6 @@ ApplicationWindow {
         }
     }
 
-
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -330,6 +329,42 @@ ApplicationWindow {
                     }
                 }
             }
+
+            Rectangle {
+                id: outputPanel
+                Layout.fillWidth: true
+                Layout.preferredHeight: 200
+                visible: false
+                color: appWindow.palette.window
+                border.color: appWindow.palette.windowText
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 5
+
+                    RowLayout {
+                        Label {
+                            text: "Build Output"
+                            font.bold: true
+                        }
+                        Button {
+                            text: "Close"
+                            onClicked: outputPanel.visible = false
+                            Layout.alignment: Qt.AlignRight
+                        }
+                    }
+
+                    ScrollView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        TextArea {
+                            id: outputArea
+                            readOnly: true
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                }
+            }
         }
 
         // Pane 3: AI Section (40% width) - Refactored with Tabs
@@ -486,6 +521,16 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: buildManager
+        function onOutputReady(output) {
+            outputArea.text += output
+        }
+        function onErrorReady(error) {
+            outputArea.text += error
+        }
+    }
+
    Connections {
         target: fileSystem
         function onRootPathChanged() {
@@ -579,6 +624,24 @@ ApplicationWindow {
     ChatLogWindow {
         id: chatLogWindow
         chatLlm: llm
+    }
+
+    property bool hasBuildConfiguration: false
+
+    Connections {
+        target: fileSystem
+        function onRootPathChanged() {
+            var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath)
+            hasBuildConfiguration = buildCommand !== ""
+        }
+    }
+
+    BuildConfigurationDialog {
+        id: buildConfigurationWindow
+        onSaveConfiguration: function(buildCommand, runCommand, cleanCommand) {
+            appSettings.setBuildCommands(fileSystem.rootPath, buildCommand, runCommand, cleanCommand)
+            hasBuildConfiguration = buildCommand !== ""
+        }
     }
 
     Component.onCompleted: {
