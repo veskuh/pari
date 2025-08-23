@@ -11,36 +11,39 @@ Window {
     property string output: ""
     property string branchName: ""
 
-    ColumnLayout {
+    Pane {
         anchors.fill: parent
-        anchors.margins: 10
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 10
 
-        Label {
-            text: "Branch: " + branchName
-            font.bold: true
-        }
-
-        Label {
-            text: "Command: " + command
-            font.bold: true
-        }
-
-        ScrollView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            TextArea {
-                id: outputArea
-                readOnly: true
-                text: output
-                wrapMode: Text.NoWrap
-                font.family: "monospace"
+            Label {
+                text: "Branch: " + branchName
+                font.bold: true
             }
-        }
 
-        Button {
-            text: "Close"
-            onClicked: gitOutputWindow.close()
-            Layout.alignment: Qt.AlignRight
+            Label {
+                text: "Command: " + command
+                font.bold: true
+            }
+
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                TextArea {
+                    id: outputArea
+                    readOnly: true
+                    text: output
+                    wrapMode: Text.NoWrap
+                    font.family: "monospace"
+                }
+            }
+
+            Button {
+                text: "Close"
+                onClicked: gitOutputWindow.close()
+                Layout.alignment: Qt.AlignRight
+            }
         }
     }
 }
