@@ -13,6 +13,7 @@ class FileSystem : public QObject
     Q_PROPERTY(QString lastOpenedPath READ lastOpenedPath WRITE setLastOpenedPath NOTIFY lastOpenedPathChanged)
     Q_PROPERTY(QString currentFilePath READ currentFilePath WRITE setCurrentFilePath NOTIFY currentFilePathChanged)
     Q_PROPERTY(QString homePath READ homePath CONSTANT)
+    Q_PROPERTY(bool isGitRepository READ isGitRepository NOTIFY isGitRepositoryChanged)
 
 public:
     explicit FileSystem(QObject *parent = nullptr);
@@ -25,6 +26,7 @@ public:
     QString currentFilePath() const;
     void setCurrentFilePath(const QString &path);
     QString homePath() const;
+    bool isGitRepository() const;
 
 public slots:
     void loadFileContent(const QString &filePath);
@@ -40,6 +42,7 @@ signals:
     void lastOpenedPathChanged();
     void currentFilePathChanged();
     void fileSaved(const QString &filePath);
+    void isGitRepositoryChanged();
 
 private:
     QFileSystemModel* m_model;
@@ -48,6 +51,7 @@ private:
     QString m_lastOpenedPath;
     QString m_currentFilePath;
     QString m_homePath;
+    bool m_isGitRepository;
 };
 
 #endif // FILESYSTEM_H

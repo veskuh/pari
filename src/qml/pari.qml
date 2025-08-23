@@ -153,6 +153,28 @@ ApplicationWindow {
             title: qsTr("Help")
             MenuItem { text: qsTr("About"); onTriggered: aboutWindow.show() }
         }
+        Menu {
+            title: qsTr("Git")
+            enabled: fileSystem.isGitRepository
+            MenuItem {
+                text: "git diff"
+                onTriggered: gitManager.runCommand("git diff", fileSystem.rootPath)
+            }
+            MenuItem {
+                text: "git diff current file"
+                enabled: fileSystem.currentFilePath !== ""
+                onTriggered: gitManager.runCommand("git diff " + fileSystem.currentFilePath, fileSystem.rootPath)
+            }
+            MenuItem {
+                text: "git log"
+                onTriggered: gitManager.runCommand("git log", fileSystem.rootPath)
+            }
+            MenuItem {
+                text: "git blame"
+                enabled: fileSystem.currentFilePath !== ""
+                onTriggered: gitManager.runCommand("git blame " + fileSystem.currentFilePath, fileSystem.rootPath)
+            }
+        }
     }
 
     header: ToolBar {
@@ -641,6 +663,31 @@ ApplicationWindow {
         onSaveConfiguration: function(buildCommand, runCommand, cleanCommand) {
             appSettings.setBuildCommands(fileSystem.rootPath, buildCommand, runCommand, cleanCommand)
             hasBuildConfiguration = buildCommand !== ""
+        }
+    }
+
+    function showGitOutput(command, output, branch) {
+        var component = Qt.createComponent("GitOutputWindow.qml");
+        if (component.status === Component.Ready) {
+            var window = component.createObject(appWindow, {
+                "command": command,
+                "output": output,
+                "branchName": branch
+            });
+            if (window) {
+                window.show();
+            } else {
+                console.error("Error creating git output window");
+            }
+        } else {
+            console.error("Error loading git output window component:", component.errorString());
+        }
+    }
+
+    Connections {
+        target: gitManager
+        function onOutputReady(command, output, branchName) {
+            showGitOutput(command, output, branchName)
         }
     }
 

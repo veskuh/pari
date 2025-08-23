@@ -11,6 +11,7 @@
 #include "textdocumentsearcher.h"
 #include "syntaxtheme.h"
 #include "buildmanager.h"
+#include "gitmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +43,9 @@ int main(int argc, char *argv[])
 
     BuildManager *buildManager = new BuildManager(&app);
     engine.rootContext()->setContextProperty("buildManager", buildManager);
+
+    GitManager *gitManager = new GitManager(&app);
+    engine.rootContext()->setContextProperty("gitManager", gitManager);
 
     const QUrl url("qrc:/qml/pari.qml");
 
