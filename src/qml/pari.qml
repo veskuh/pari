@@ -582,6 +582,10 @@ ApplicationWindow {
                 Button {
                     text: "Send"
                     enabled: codeEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy
+                    icon.source:  "qrc:/assets/send.png"
+                    icon.height:24
+                    icon.width: 24
+
                     onClicked: {
                         aiOutputPane.text = ""; // Clear previous output
                         diffView.text = ""; // Clear previous diff
