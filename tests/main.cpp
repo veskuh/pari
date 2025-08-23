@@ -8,6 +8,7 @@
 #include "test_shellsyntaxhighlighter.h"
 #include "test_diffutils.h"
 #include "test_buildmanager.h"
+#include "test_toolmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -37,6 +38,9 @@ int main(int argc, char *argv[])
 
     TestBuildManager tc_build;
     status |= QTest::qExec(&tc_build, argc, argv);
+
+    TestToolManager tc_tool;
+    status |= QTest::qExec(&tc_tool, argc, argv);
 
     return status;
 }

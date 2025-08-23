@@ -9,5 +9,6 @@
         <file>ColorButton.qml</file>
         <file>FileTreeDelegate.qml</file>
         <file>BuildConfigurationDialog.qml</file>
+        <file>GitOutputWindow.qml</file>
     </qresource>
 </RCC>

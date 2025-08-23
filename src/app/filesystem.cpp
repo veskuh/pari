@@ -9,6 +9,7 @@ FileSystem::FileSystem(QObject *parent)
     , m_rootPath("")
     , m_currentRootIndex()
     , m_currentFilePath("")
+    , m_isGitRepository(false)
 {
     m_model = new QFileSystemModel(this);
     m_model->setRootPath(m_rootPath);
@@ -88,6 +89,8 @@ void FileSystem::saveFile(const QString &filePath, const QString &content)
     }
 }
 
+#include <QDir>
+
 void FileSystem::setRootPath(const QString &path)
 {
     if (m_rootPath != path) {
@@ -96,6 +99,13 @@ void FileSystem::setRootPath(const QString &path)
         emit rootPathChanged();
         emit currentRootIndexChanged();
         setLastOpenedPath(path); // Save the last opened path
+
+        QDir dir(path);
+        bool isGit = dir.exists(".git");
+        if (m_isGitRepository != isGit) {
+            m_isGitRepository = isGit;
+            emit isGitRepositoryChanged();
+        }
     }
 }
 
@@ -107,4 +117,9 @@ bool FileSystem::isDirectory(const QString &filePath)
 QString FileSystem::homePath() const
 {
     return m_homePath;
+}
+
+bool FileSystem::isGitRepository() const
+{
+    return m_isGitRepository;
 }

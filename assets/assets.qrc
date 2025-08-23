@@ -13,5 +13,6 @@
         <file>play.png</file>
         <file>search.png</file>
         <file>diff.png</file>
+        <file>send.png</file>
     </qresource>
 </RCC>

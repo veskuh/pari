@@ -35,7 +35,7 @@ ApplicationWindow {
         shortcut: StandardKey.Save
         enabled: codeEditor.text.length > 0 && fileSystem.currentFilePath !== ""
         onTriggered: {
-            fileSystem.saveFile(fileSystem.currentFilePath, codeEditor.text)
+            fileSystem.saveFile(fileSystem.currentFilePath, codeEditor.text);
         }
     }
 
@@ -58,10 +58,10 @@ ApplicationWindow {
         id: configureBuildAction
         text: "Build setup..."
         onTriggered: {
-            buildConfigurationWindow.buildCommand = appSettings.getBuildCommand(fileSystem.rootPath)
-            buildConfigurationWindow.runCommand = appSettings.getRunCommand(fileSystem.rootPath)
-            buildConfigurationWindow.cleanCommand = appSettings.getCleanCommand(fileSystem.rootPath)
-            buildConfigurationWindow.visible = true
+            buildConfigurationWindow.buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
+            buildConfigurationWindow.runCommand = appSettings.getRunCommand(fileSystem.rootPath);
+            buildConfigurationWindow.cleanCommand = appSettings.getCleanCommand(fileSystem.rootPath);
+            buildConfigurationWindow.visible = true;
         }
     }
 
@@ -71,9 +71,9 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+b"
         onTriggered: {
-            outputArea.text = ""
-            outputPanel.visible = true
-            buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath)
+            outputArea.text = "";
+            outputPanel.visible = true;
+            buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
 
@@ -83,16 +83,19 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+r"
         onTriggered: {
-            outputArea.text = ""
-            outputPanel.visible = true
-            buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath)
+            outputArea.text = "";
+            outputPanel.visible = true;
+            buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
 
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
-            MenuItem { text: qsTr("Open"); action: openAction }
+            MenuItem {
+                text: qsTr("Open")
+                action: openAction
+            }
             Menu {
                 title: qsTr("Recents")
                 Repeater {
@@ -108,21 +111,45 @@ ApplicationWindow {
                     onTriggered: appSettings.clearRecentFolders()
                 }
             }
-            MenuItem { text: qsTr("Save"); action: saveAction }
-            MenuItem { text: qsTr("Save As..."); action: saveAsAction }
-            MenuItem { text: qsTr("Exit"); onTriggered: Qt.exit(0) }
+            MenuItem {
+                text: qsTr("Save")
+                action: saveAction
+            }
+            MenuItem {
+                text: qsTr("Save As...")
+                action: saveAsAction
+            }
+            MenuItem {
+                text: qsTr("Exit")
+                onTriggered: Qt.exit(0)
+            }
         }
         Menu {
             title: qsTr("Edit")
-            MenuItem { text: qsTr("Cut") }
-            MenuItem { text: qsTr("Copy") }
-            MenuItem { text: qsTr("Paste") }
-            MenuItem { text: qsTr("Find"); action: findAction }
-            MenuItem { text: qsTr("Settings..."); onTriggered: settingsDialog.show() }
+            MenuItem {
+                text: qsTr("Cut")
+            }
+            MenuItem {
+                text: qsTr("Copy")
+            }
+            MenuItem {
+                text: qsTr("Paste")
+            }
+            MenuItem {
+                text: qsTr("Find")
+                action: findAction
+            }
+            MenuItem {
+                text: qsTr("Settings...")
+                onTriggered: settingsDialog.show()
+            }
         }
         Menu {
             title: qsTr("View")
-            MenuItem { text: qsTr("Chat log"); onTriggered: chatLogWindow.show() }
+            MenuItem {
+                text: qsTr("Chat log")
+                onTriggered: chatLogWindow.show()
+            }
         }
         Menu {
             title: qsTr("Build")
@@ -139,9 +166,9 @@ ApplicationWindow {
                 text: "Clean"
                 enabled: hasBuildConfiguration
                 onTriggered: {
-                    outputArea.text = ""
-                    outputPanel.visible = true
-                    buildManager.executeCommand(appSettings.getCleanCommand(fileSystem.rootPath), fileSystem.rootPath)
+                    outputArea.text = "";
+                    outputPanel.visible = true;
+                    buildManager.executeCommand(appSettings.getCleanCommand(fileSystem.rootPath), fileSystem.rootPath);
                 }
             }
             MenuSeparator {}
@@ -151,7 +178,33 @@ ApplicationWindow {
         }
         Menu {
             title: qsTr("Help")
-            MenuItem { text: qsTr("About"); onTriggered: aboutWindow.show() }
+            MenuItem {
+                text: qsTr("About")
+                onTriggered: aboutWindow.show()
+            }
+        }
+        Menu {
+            title: qsTr("Git")
+            MenuItem {
+                text: "git diff"
+                enabled: fileSystem.isGitRepository
+                onTriggered: toolManager.runCommand("git diff", fileSystem.rootPath)
+            }
+            MenuItem {
+                text: "git diff current file"
+                enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
+                onTriggered: toolManager.runCommand("git diff " + fileSystem.currentFilePath, fileSystem.rootPath)
+            }
+            MenuItem {
+                enabled: fileSystem.isGitRepository
+                text: "git log"
+                onTriggered: toolManager.runCommand("git log", fileSystem.rootPath)
+            }
+            MenuItem {
+                text: "git blame"
+                enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
+                onTriggered: toolManager.runCommand("git blame " + fileSystem.currentFilePath, fileSystem.rootPath)
+            }
         }
     }
 
@@ -159,7 +212,8 @@ ApplicationWindow {
         height: 64
 
         Row {
-            ToolButton { text: qsTr("Build")
+            ToolButton {
+                text: qsTr("Build")
                 icon.source: "qrc:/assets/build.png"
                 icon.width: 32
                 icon.height: 32
@@ -167,15 +221,17 @@ ApplicationWindow {
                 width: 64
                 action: buildAction
             }
-            ToolButton { text: qsTr("Run")
+            ToolButton {
+                text: qsTr("Run")
                 icon.source: "qrc:/assets/play.png"
                 icon.width: 32
                 icon.height: 32
                 display: AbstractButton.TextUnderIcon
                 width: 64
-                action:  runAction
+                action: runAction
             }
-            ToolButton { text: qsTr("Search")
+            ToolButton {
+                text: qsTr("Search")
                 icon.source: "qrc:/assets/search.png"
                 icon.width: 32
                 icon.height: 32
@@ -190,14 +246,16 @@ ApplicationWindow {
             anchors.right: parent.right
             visible: false // TBD
 
-            ToolButton { text: qsTr("Diff")
+            ToolButton {
+                text: qsTr("Diff")
                 icon.source: "qrc:/assets/diff.png"
                 icon.width: 32
                 icon.height: 32
                 display: AbstractButton.TextUnderIcon
                 width: 64
             }
-            ToolButton { text: qsTr("Use")
+            ToolButton {
+                text: qsTr("Use")
                 icon.source: "qrc:/assets/accept.png"
                 icon.width: 32
                 icon.height: 32
@@ -214,10 +272,10 @@ ApplicationWindow {
 
     function updateDiff() {
         if (codeEditor.text.length > 0 && aiOutputPane.text.length > 0) {
-            const diff = diffUtils.createDiff(codeEditor.text, aiOutputPane.text)
-            diffView.text = diff
+            const diff = diffUtils.createDiff(codeEditor.text, aiOutputPane.text);
+            diffView.text = diff;
         } else {
-            diffView.text = ""
+            diffView.text = "";
         }
     }
 
@@ -253,7 +311,7 @@ ApplicationWindow {
             Connections {
                 target: fileSystemView
                 function onModelChanged() {
-                    fileSystemView.rootIndex = fileSystem.currentRootIndex
+                    fileSystemView.rootIndex = fileSystem.currentRootIndex;
                 }
             }
         }
@@ -279,25 +337,25 @@ ApplicationWindow {
                 textColor: appWindow.palette.text
                 textBackgroundColor: appWindow.palette.base
                 onFindNext: {
-                    var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 0)
+                    var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 0);
                     if (newPos !== -1) {
                         codeEditor.cursorPosition = newPos;
-                        codeEditor.select(newPos-searchText.length, newPos)
+                        codeEditor.select(newPos - searchText.length, newPos);
                     }
                     var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
                     findOverlay.updateResults(occurrences);
                 }
 
                 onFindPrevious: {
-                    var oldPos = codeEditor.cursorPosition
-                    var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 1)
+                    var oldPos = codeEditor.cursorPosition;
+                    var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 1);
                     if (codeEditor.cursorPosition === newPos) {
-                        newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition-findOverlay.searchText.length, 1)
+                        newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition - findOverlay.searchText.length, 1);
                     }
 
                     if (newPos !== -1) {
                         codeEditor.cursorPosition = newPos;
-                        codeEditor.select(newPos-searchText.length, newPos)
+                        codeEditor.select(newPos - searchText.length, newPos);
                     }
                     var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
                     findOverlay.updateResults(occurrences);
@@ -311,8 +369,6 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true // Ensures content doesn't draw outside the ScrollView
-
-
 
                 TextArea {
                     id: codeEditor
@@ -420,12 +476,21 @@ ApplicationWindow {
                         opacity: aiPane.isThinking ? 1.0 : 0.0
                         visible: opacity > 0.01
                         z: 10
-                        Behavior on opacity { PropertyAnimation { duration: 500; easing.type: Easing.InOutQuad } }
+                        Behavior on opacity {
+                            PropertyAnimation {
+                                duration: 500
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
 
                         ColumnLayout {
                             anchors.fill: parent
                             anchors.margins: 10
-                            Label { text: "Thinking..."; font.bold: true; color: "white" }
+                            Label {
+                                text: "Thinking..."
+                                font.bold: true
+                                color: "white"
+                            }
                             ScrollView {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
@@ -444,7 +509,7 @@ ApplicationWindow {
                                         font.pointSize: appSettings.fontSize
                                         onTextChanged: {
                                             if (contentHeight > flickable.height) {
-                                                flickable.contentY = contentHeight - flickable.height
+                                                flickable.contentY = contentHeight - flickable.height;
                                             }
                                         }
                                     }
@@ -496,23 +561,35 @@ ApplicationWindow {
                     id: promptComboBox
                     model: ["Comment the code", "Explain the code", "Refactor the code", "Write unit tests"]
                     onCurrentTextChanged: {
-                        var prompt = ""
+                        var prompt = "";
                         switch (currentIndex) {
-                            case 0: prompt = "Add comments to the following code. Do not add any other text, just the commented code."; break;
-                            case 1: prompt = "Explain the following code in a clear and concise way. Focus on the overall purpose of the code and the role of each major component."; break;
-                            case 2: prompt = "Refactor the following code to improve its readability, performance, and maintainability. Do not add any new functionality."; break;
-                            case 3: prompt = "Write unit tests for the following code. Use the Qt Test framework and cover all major functionality."; break;
+                        case 0:
+                            prompt = "Add comments to the following code. Do not add any other text, just the commented code.";
+                            break;
+                        case 1:
+                            prompt = "Explain the following code in a clear and concise way. Focus on the overall purpose of the code and the role of each major component.";
+                            break;
+                        case 2:
+                            prompt = "Refactor the following code to improve its readability, performance, and maintainability. Do not add any new functionality.";
+                            break;
+                        case 3:
+                            prompt = "Write unit tests for the following code. Use the Qt Test framework and cover all major functionality.";
+                            break;
                         }
-                        aiMessagePane.text = prompt
+                        aiMessagePane.text = prompt;
                     }
                 }
                 Button {
                     text: "Send"
                     enabled: codeEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy
+                    icon.source:  "qrc:/assets/send.png"
+                    icon.height:24
+                    icon.width: 24
+
                     onClicked: {
                         aiOutputPane.text = ""; // Clear previous output
                         diffView.text = ""; // Clear previous diff
-                        var prompt = aiMessagePane.text
+                        var prompt = aiMessagePane.text;
                         llm.sendPrompt("You are AI code assistant. Follow the instructions given for the code in the end of message. Be short in your response, no chatting or politness, just code or comment. " + prompt + "\n```\n" + codeEditor.text + "\n```");
                     }
                     highlighted: true
@@ -524,23 +601,25 @@ ApplicationWindow {
     Connections {
         target: buildManager
         function onOutputReady(output) {
-            outputArea.text += output
+            outputArea.text += output;
         }
         function onErrorReady(error) {
-            outputArea.text += error
+            outputArea.text += error;
         }
     }
 
-   Connections {
+    Connections {
         target: fileSystem
         function onRootPathChanged() {
-            fileSystemView.model = fileSystem.model
+            fileSystemView.model = fileSystem.model;
         }
         function onFileContentReady(filePath, content) {
             codeEditor.text = content;
             syntaxHighlighterProvider.attachHighlighter(codeEditor.textDocument, filePath);
         }
-        function onFileSaved(filePath) { customStatusBar.text = qsTr("File saved: %1").arg(filePath) }
+        function onFileSaved(filePath) {
+            customStatusBar.text = qsTr("File saved: %1").arg(filePath);
+        }
     }
 
     Connections {
@@ -566,13 +645,13 @@ ApplicationWindow {
                     var endThinkIndex = currentLine.indexOf("</think>");
                     if (endThinkIndex !== -1) {
                         aiPane.thinkingText += currentLine.substring(0, endThinkIndex);
-                        aiPane.thinkingText += "<br>"
+                        aiPane.thinkingText += "<br>";
                         aiPane.isThinking = false;
                         currentLine = currentLine.substring(endThinkIndex + 8);
                     } else {
                         aiPane.thinkingText += currentLine;
 
-                        if (currentLine.trim()!=="") {
+                        if (currentLine.trim() !== "") {
                             aiPane.thinkingText += "\n\n";
                         }
 
@@ -614,13 +693,17 @@ ApplicationWindow {
         currentFolder: fileSystem.lastOpenedPath
         onAccepted: {
             if (saveAsDialog.selectedFile) {
-                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), codeEditor.text)
+                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), codeEditor.text);
             }
         }
     }
 
-    SettingsWindow { id: settingsDialog }
-    AboutWindow { id: aboutWindow }
+    SettingsWindow {
+        id: settingsDialog
+    }
+    AboutWindow {
+        id: aboutWindow
+    }
     ChatLogWindow {
         id: chatLogWindow
         chatLlm: llm
@@ -631,20 +714,45 @@ ApplicationWindow {
     Connections {
         target: fileSystem
         function onRootPathChanged() {
-            var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath)
-            hasBuildConfiguration = buildCommand !== ""
+            var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
+            hasBuildConfiguration = buildCommand !== "";
         }
     }
 
     BuildConfigurationDialog {
         id: buildConfigurationWindow
-        onSaveConfiguration: function(buildCommand, runCommand, cleanCommand) {
-            appSettings.setBuildCommands(fileSystem.rootPath, buildCommand, runCommand, cleanCommand)
-            hasBuildConfiguration = buildCommand !== ""
+        onSaveConfiguration: function (buildCommand, runCommand, cleanCommand) {
+            appSettings.setBuildCommands(fileSystem.rootPath, buildCommand, runCommand, cleanCommand);
+            hasBuildConfiguration = buildCommand !== "";
+        }
+    }
+
+    function showGitOutput(command, output, branch) {
+        var component = Qt.createComponent("GitOutputWindow.qml");
+        if (component.status === Component.Ready) {
+            var window = component.createObject(appWindow, {
+                "command": command,
+                "output": output,
+                "branchName": branch
+            });
+            if (window) {
+                window.show();
+            } else {
+                console.error("Error creating git output window");
+            }
+        } else {
+            console.error("Error loading git output window component:", component.errorString());
+        }
+    }
+
+    Connections {
+        target: toolManager
+        function onOutputReady(command, output, branchName) {
+            showGitOutput(command, output, branchName);
         }
     }
 
     Component.onCompleted: {
-        fileSystem.setRootPath(fileSystem.homePath)
+        fileSystem.setRootPath(fileSystem.homePath);
     }
 }

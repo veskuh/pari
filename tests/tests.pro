@@ -20,6 +20,7 @@ SOURCES += \
     test_diffutils.cpp \
     test_markdownsyntaxhighlighter.cpp \
     test_buildmanager.cpp \
+    test_toolmanager.cpp \
     ../src/app/filesystem.cpp \
     ../src/app/settings.cpp \
     ../src/app/markdownformatter.cpp \
@@ -30,7 +31,8 @@ SOURCES += \
     ../src/app/syntaxtheme.cpp \
     ../src/app/diffutils.cpp \
     ../src/app/markdownsyntaxhighlighter.cpp \
-    ../src/app/buildmanager.cpp
+    ../src/app/buildmanager.cpp \
+    ../src/app/toolmanager.cpp
 
 HEADERS += \
     test_settings.h \
@@ -43,6 +45,7 @@ HEADERS += \
     test_diffutils.h \
     test_markdownsyntaxhighlighter.h \
     test_buildmanager.h \
+    test_toolmanager.h \
     ../src/app/settings.h \
     ../src/app/filesystem.h \
     ../src/app/markdownformatter.h \
@@ -53,5 +56,6 @@ HEADERS += \
     ../src/app/diffutils.h \
     ../src/app/syntaxtheme.h \
     ../src/app/markdownsyntaxhighlighter.h \
-    ../src/app/buildmanager.h
+    ../src/app/buildmanager.h \
+    ../src/app/toolmanager.h
 
