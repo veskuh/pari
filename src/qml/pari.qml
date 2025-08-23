@@ -188,22 +188,22 @@ ApplicationWindow {
             MenuItem {
                 text: "git diff"
                 enabled: fileSystem.isGitRepository
-                onTriggered: gitManager.runCommand("git diff", fileSystem.rootPath)
+                onTriggered: toolManager.runCommand("git diff", fileSystem.rootPath)
             }
             MenuItem {
                 text: "git diff current file"
                 enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
-                onTriggered: gitManager.runCommand("git diff " + fileSystem.currentFilePath, fileSystem.rootPath)
+                onTriggered: toolManager.runCommand("git diff " + fileSystem.currentFilePath, fileSystem.rootPath)
             }
             MenuItem {
                 enabled: fileSystem.isGitRepository
                 text: "git log"
-                onTriggered: gitManager.runCommand("git log", fileSystem.rootPath)
+                onTriggered: toolManager.runCommand("git log", fileSystem.rootPath)
             }
             MenuItem {
                 text: "git blame"
                 enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
-                onTriggered: gitManager.runCommand("git blame " + fileSystem.currentFilePath, fileSystem.rootPath)
+                onTriggered: toolManager.runCommand("git blame " + fileSystem.currentFilePath, fileSystem.rootPath)
             }
         }
     }
@@ -746,7 +746,7 @@ ApplicationWindow {
     }
 
     Connections {
-        target: gitManager
+        target: toolManager
         function onOutputReady(command, output, branchName) {
             showGitOutput(command, output, branchName);
         }

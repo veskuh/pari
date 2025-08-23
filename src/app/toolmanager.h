@@ -1,15 +1,15 @@
-#ifndef GITMANAGER_H
-#define GITMANAGER_H
+#ifndef TOOLMANAGER_H
+#define TOOLMANAGER_H
 
 #include <QObject>
 #include <QProcess>
 #include <QString>
 
-class GitManager : public QObject
+class ToolManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit GitManager(QObject *parent = nullptr);
+    explicit ToolManager(QObject *parent = nullptr);
 
     Q_INVOKABLE void runCommand(const QString &command, const QString &workingDirectory);
 
@@ -30,4 +30,4 @@ private:
     QString m_branchName;
 };
 
-#endif // GITMANAGER_H
+#endif // TOOLMANAGER_H

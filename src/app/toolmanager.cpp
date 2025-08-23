@@ -1,16 +1,16 @@
-#include "gitmanager.h"
+#include "toolmanager.h"
 #include <QDebug>
 
-GitManager::GitManager(QObject *parent)
+ToolManager::ToolManager(QObject *parent)
     : QObject{parent}, m_branchProcess(new QProcess(this)), m_process(new QProcess(this))
 {
-    connect(m_branchProcess, &QProcess::finished, this, &GitManager::onBranchProcessFinished);
-    connect(m_process, &QProcess::finished, this, &GitManager::onProcessFinished);
-    connect(m_process, &QProcess::readyReadStandardOutput, this, &GitManager::onReadyReadStandardOutput);
-    connect(m_process, &QProcess::readyReadStandardError, this, &GitManager::onReadyReadStandardError);
+    connect(m_branchProcess, &QProcess::finished, this, &ToolManager::onBranchProcessFinished);
+    connect(m_process, &QProcess::finished, this, &ToolManager::onProcessFinished);
+    connect(m_process, &QProcess::readyReadStandardOutput, this, &ToolManager::onReadyReadStandardOutput);
+    connect(m_process, &QProcess::readyReadStandardError, this, &ToolManager::onReadyReadStandardError);
 }
 
-void GitManager::runCommand(const QString &command, const QString &workingDirectory)
+void ToolManager::runCommand(const QString &command, const QString &workingDirectory)
 {
     if (m_branchProcess->state() == QProcess::NotRunning && m_process->state() == QProcess::NotRunning) {
         m_command = command;
@@ -20,7 +20,7 @@ void GitManager::runCommand(const QString &command, const QString &workingDirect
     }
 }
 
-void GitManager::onBranchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void ToolManager::onBranchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     if (exitCode == 0 && exitStatus == QProcess::NormalExit) {
         m_branchName = m_branchProcess->readAllStandardOutput().trimmed();
@@ -34,17 +34,17 @@ void GitManager::onBranchProcessFinished(int exitCode, QProcess::ExitStatus exit
     }
 }
 
-void GitManager::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void ToolManager::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    qDebug() << "Git command" << m_command << "finished with exit code" << exitCode << "and exit status" << exitStatus;
+    qDebug() << "Tool command" << m_command << "finished with exit code" << exitCode << "and exit status" << exitStatus;
 }
 
-void GitManager::onReadyReadStandardOutput()
+void ToolManager::onReadyReadStandardOutput()
 {
     emit outputReady(m_command, m_process->readAllStandardOutput(), m_branchName);
 }
 
-void GitManager::onReadyReadStandardError()
+void ToolManager::onReadyReadStandardError()
 {
     emit outputReady(m_command, m_process->readAllStandardError(), m_branchName);
 }
