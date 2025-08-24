@@ -1,13 +1,19 @@
 #include "toolmanager.h"
 #include <QDebug>
+#include <QFile>
+#include <QTextStream>
+#include <QTemporaryFile>
+#include <QCoreApplication>
+#include <QDir>
 
 ToolManager::ToolManager(QObject *parent)
-    : QObject{parent}, m_branchProcess(new QProcess(this)), m_process(new QProcess(this))
+    : QObject{parent}, m_branchProcess(new QProcess(this)), m_process(new QProcess(this)), m_qmlFormatProcess(new QProcess(this)), m_tempQmlFile(nullptr)
 {
     connect(m_branchProcess, &QProcess::finished, this, &ToolManager::onBranchProcessFinished);
     connect(m_process, &QProcess::finished, this, &ToolManager::onProcessFinished);
     connect(m_process, &QProcess::readyReadStandardOutput, this, &ToolManager::onReadyReadStandardOutput);
     connect(m_process, &QProcess::readyReadStandardError, this, &ToolManager::onReadyReadStandardError);
+    connect(m_qmlFormatProcess, &QProcess::finished, this, &ToolManager::onQmlFormatProcessFinished);
 }
 
 void ToolManager::runCommand(const QString &command, const QString &workingDirectory)
@@ -17,6 +23,29 @@ void ToolManager::runCommand(const QString &command, const QString &workingDirec
         m_workingDirectory = workingDirectory;
         m_branchProcess->setWorkingDirectory(workingDirectory);
         m_branchProcess->startCommand("git branch --show-current");
+    }
+}
+
+void ToolManager::indentQmlFile(const QString &filePath, const QString &content)
+{
+    m_originalQmlContent = content;
+
+    if (m_tempQmlFile) {
+        m_tempQmlFile->deleteLater(); // Delete any previous temporary file
+    }
+    m_tempQmlFile = new QTemporaryFile(QDir::temp().filePath("tempfile.XXXXXX.qml"));
+
+    if (m_tempQmlFile->open()) {
+        QTextStream out(m_tempQmlFile);
+        out << content;
+        out.flush();
+        m_tempQmlFile->close();
+
+        m_qmlFormatProcess->start("qmlformat", QStringList() << m_tempQmlFile->fileName());
+    } else {
+        qDebug() << "Failed to create temporary file for QML formatting.";
+        delete m_tempQmlFile;
+        m_tempQmlFile = nullptr;
     }
 }
 
@@ -48,3 +77,22 @@ void ToolManager::onReadyReadStandardError()
 {
     emit outputReady(m_command, m_process->readAllStandardError(), m_branchName);
 }
+
+void ToolManager::onQmlFormatProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    if (m_tempQmlFile) {
+        if (exitCode == 0 && exitStatus == QProcess::NormalExit) {
+            emit qmlFileIndented(m_qmlFormatProcess->readAllStandardOutput());
+        } else {
+            qDebug() << "qmlformat failed with exit code" << exitCode << "and exit status" << exitStatus;
+            qDebug() << m_qmlFormatProcess->readAllStandardError();
+            emit qmlFileIndented(m_originalQmlContent); // Emit original content on error
+        }
+        m_tempQmlFile->deleteLater(); // Schedule for deletion
+        m_tempQmlFile = nullptr;
+    } else {
+        qDebug() << "Temporary QML file object is null.";
+        emit qmlFileIndented(m_originalQmlContent); // Emit original content if temp file is null
+    }
+}
+

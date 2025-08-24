@@ -89,6 +89,19 @@ ApplicationWindow {
         }
     }
 
+    Action {
+        id: indentAction
+        text: qsTr("Indent")
+        enabled: fileSystem.currentFilePath.endsWith(".qml")
+        shortcut: "Ctrl+i"
+        onTriggered: {
+            codeEditor.savedCursorPosition = codeEditor.cursorPosition;
+            toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text);
+        }
+    }
+
+
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -138,6 +151,10 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr("Find")
                 action: findAction
+            }
+            MenuItem {
+                text: qsTr("Auto Intendt")
+                action: indentAction
             }
             MenuItem {
                 text: qsTr("Settings...")
@@ -378,6 +395,7 @@ ApplicationWindow {
                     font.pointSize: appSettings.fontSize
                     tabStopDistance: 4 * textMetrics.advanceWidth
                     onTextChanged: updateDiff()
+                    property int savedCursorPosition: 0
 
                     TextMetrics {
                         id: textMetrics
@@ -749,6 +767,10 @@ ApplicationWindow {
         target: toolManager
         function onOutputReady(command, output, branchName) {
             showGitOutput(command, output, branchName);
+        }
+        function onQmlFileIndented(formattedContent) {
+            codeEditor.text = formattedContent;
+            codeEditor.cursorPosition = codeEditor.savedCursorPosition;
         }
     }
 
