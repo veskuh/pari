@@ -23,6 +23,13 @@ ColumnLayout {
         }
     }
 
+    function sendPrompt() {
+        aiOutputPane.text = ""; // Clear previous output
+        diffView.text = ""; // Clear previous diff
+        var prompt = aiMessagePane.text;
+        llm.sendPrompt("You are AI code assistant. Follow the instructions given for the code in the end of message. Be short in your response, no chatting or politness, just code or comment. " + prompt + "\n```\n" + codeEditor.text + "\n```");
+    }
+
     TabBar {
         id: rightSideTabBar
         Layout.fillWidth: true
@@ -134,15 +141,25 @@ ColumnLayout {
         text: qsTr("AI Prompt")
         font.bold: true
         Layout.topMargin: 10
-        Layout.leftMargin: 5
+        Layout.leftMargin: 10
     }
-    TextArea {
+    TextField {
         id: aiMessagePane
         Layout.fillWidth: true
-        Layout.preferredHeight: 100
-        Layout.minimumHeight: 50
+        Layout.preferredHeight: 80
+        Layout.rightMargin: 10
+        Layout.leftMargin: 10
         wrapMode: Text.WordWrap
+        enabled: sendButton.enabled
         placeholderText: "Type a prompt or select a command..."
+        onTextChanged: {
+            if (text !== promptComboBox.prompt) {
+                promptComboBox.currentIndex = 4;
+            }
+        }
+        onAccepted: {
+            aiPane.sendPrompt();
+        }
     }
     RowLayout {
         Layout.topMargin: 5
@@ -150,9 +167,9 @@ ColumnLayout {
 
         ComboBox {
             id: promptComboBox
-            model: ["Comment the code", "Explain the code", "Refactor the code", "Write unit tests"]
+            property string prompt: "Add comments to the following code. Do not add any other text, just the commented code."
+            model: ["Comment the code", "Explain the code", "Refactor the code", "Write unit tests", "Custom prompt"]
             onCurrentTextChanged: {
-                var prompt = "";
                 switch (currentIndex) {
                 case 0:
                     prompt = "Add comments to the following code. Do not add any other text, just the commented code.";
@@ -171,6 +188,7 @@ ColumnLayout {
             }
         }
         Button {
+            id: sendButton
             text: "Send"
             enabled: codeEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy
             icon.source: "qrc:/assets/send.png"
@@ -178,10 +196,7 @@ ColumnLayout {
             icon.width: 24
 
             onClicked: {
-                aiOutputPane.text = ""; // Clear previous output
-                diffView.text = ""; // Clear previous diff
-                var prompt = aiMessagePane.text;
-                llm.sendPrompt("You are AI code assistant. Follow the instructions given for the code in the end of message. Be short in your response, no chatting or politness, just code or comment. " + prompt + "\n```\n" + codeEditor.text + "\n```");
+                aiPane.sendPrompt();
             }
             highlighted: true
         }
