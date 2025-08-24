@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import net.veskuh.pari 1.0
 
-
 ColumnLayout {
     property alias text: codeEditor.text
     property alias textDocument: codeEditor.textDocument
@@ -18,14 +17,15 @@ ColumnLayout {
     }
 
     function restoreCursorPosition() {
-        codeEditor.cursorPosition = cursorPosition
+        codeEditor.cursorPosition = cursorPosition;
     }
 
     function find() {
-        findOverlay.open()
+        findOverlay.open();
     }
 
     function showBuildPanel() {
+        flickable.contentY = 0;
         outputArea.text = "";
         outputPanel.visible = true;
     }
@@ -153,8 +153,8 @@ ColumnLayout {
             outputArea.text += error;
         }
         function onFinished() {
-            outputArea.text += "Ready."
-            console.log("Ready")
+            outputArea.text += "Ready.";
+            console.log("Ready");
         }
     }
 }
