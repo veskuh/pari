@@ -197,7 +197,7 @@ ColumnLayout {
                     var endThinkIndex = currentLine.indexOf("</think>");
                     if (endThinkIndex !== -1) {
                         aiPane.thinkingText += currentLine.substring(0, endThinkIndex);
-                        aiPane.thinkingText += "<br>";
+                        aiPane.thinkingText += "\n\n";
                         aiPane.isThinking = false;
                         currentLine = currentLine.substring(endThinkIndex + 8);
                     } else {

@@ -1,3 +1,4 @@
+import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -10,10 +11,18 @@ ApplicationWindow {
 
     property bool hasBuildConfiguration: false
 
-    width: 1280 // Increased default width for better 3-pane view
-    height: 768
+    minimumWidth: 800
+    minimumHeight: 480
+    
     visible: true
     title: qsTr("Pari")
+
+    Settings {
+        property alias x: appWindow.x
+        property alias y: appWindow.y
+        property alias width: appWindow.width
+        property alias height: appWindow.height
+    }
 
     // --- Actions, MenuBar, Header, and Footer are unchanged ---
     Action {
@@ -65,7 +74,7 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+b"
         onTriggered: {
-            codeEditor.showBuildPanel()
+            codeEditor.showBuildPanel();
             buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -76,7 +85,7 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+r"
         onTriggered: {
-            codeEditor.showBuildPanel()
+            codeEditor.showBuildPanel();
             buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -87,12 +96,10 @@ ApplicationWindow {
         enabled: fileSystem.currentFilePath.endsWith(".qml")
         shortcut: "Ctrl+i"
         onTriggered: {
-            codeEditor.saveCursorPosition()
+            codeEditor.saveCursorPosition();
             toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text);
         }
     }
-
-
 
     menuBar: MenuBar {
         Menu {
@@ -428,11 +435,11 @@ ApplicationWindow {
     Connections {
         target: toolManager
         function onOutputReady(command, output, branchName) {
-            showGitOutput(command, output, branchName)
+            showGitOutput(command, output, branchName);
         }
         function onQmlFileIndented(formattedContent) {
-            codeEditor.text = formattedContent
-            codeEditor.restoreCursorPosition()
+            codeEditor.text = formattedContent;
+            codeEditor.restoreCursorPosition();
         }
     }
 
