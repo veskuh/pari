@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import net.veskuh.pari 1.0
 
-
 ColumnLayout {
     id: aiPane // Keep the ID for isThinking property
     property bool isThinking: false
@@ -174,8 +173,8 @@ ColumnLayout {
         Button {
             text: "Send"
             enabled: codeEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy
-            icon.source:  "qrc:/assets/send.png"
-            icon.height:24
+            icon.source: "qrc:/assets/send.png"
+            icon.height: 24
             icon.width: 24
 
             onClicked: {

@@ -41,11 +41,19 @@ ApplicationWindow {
             columns: 2
             columnSpacing: 10
 
-            Label { text: "Author:" }
-            Label { text: "vesku.h@gmail.com with help of Gemini CLI and Jules" }
+            Label {
+                text: "Author:"
+            }
+            Label {
+                text: "vesku.h@gmail.com with help of Gemini CLI and Jules"
+            }
 
-            Label { text: "License:" }
-            Label { text: "BSD-3-Clause" }
+            Label {
+                text: "License:"
+            }
+            Label {
+                text: "BSD-3-Clause"
+            }
         }
 
         Button {

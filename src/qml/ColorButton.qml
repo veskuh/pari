@@ -15,5 +15,4 @@ Rectangle {
     }
 
     signal clicked
-
 }

@@ -16,11 +16,9 @@ Rectangle {
 
     property alias searchText: searchInput.text
 
-    signal findNext()
-    signal findPrevious()
-    signal closeOverlay()
-
-
+    signal findNext
+    signal findPrevious
+    signal closeOverlay
 
     RowLayout {
         anchors.fill: parent
@@ -44,13 +42,13 @@ Rectangle {
         }
 
         Button {
-            enabled: searchInput.text!==""
+            enabled: searchInput.text !== ""
             text: "▲"
             onClicked: findOverlay.findPrevious()
         }
 
         Button {
-            enabled: searchInput.text!==""
+            enabled: searchInput.text !== ""
             text: "▼"
             onClicked: findOverlay.findNext()
         }

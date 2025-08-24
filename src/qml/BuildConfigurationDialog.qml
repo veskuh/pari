@@ -65,8 +65,8 @@ Window {
                 Button {
                     text: "Save"
                     onClicked: {
-                        buildConfigurationWindow.saveConfiguration(buildCommandField.text, runCommandField.text, cleanCommandField.text)
-                        buildConfigurationWindow.close()
+                        buildConfigurationWindow.saveConfiguration(buildCommandField.text, runCommandField.text, cleanCommandField.text);
+                        buildConfigurationWindow.close();
                     }
                     highlighted: true
                 }

@@ -12,7 +12,9 @@ Window {
 
     property var chatLlm: null
 
-    SystemPalette { id: palette }
+    SystemPalette {
+        id: palette
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -39,7 +41,7 @@ Window {
                 Connections {
                     target: chatLlm
                     function onChatLogChanged() {
-                        chatLogArea.text = chatLlm.chatLog.join("\\n")
+                        chatLogArea.text = chatLlm.chatLog.join("\\n");
                     }
                 }
             }

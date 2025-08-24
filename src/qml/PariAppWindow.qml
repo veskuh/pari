@@ -13,7 +13,7 @@ ApplicationWindow {
 
     minimumWidth: 800
     minimumHeight: 480
-    
+
     visible: true
     title: qsTr("Pari")
 

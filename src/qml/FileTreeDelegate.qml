@@ -12,7 +12,9 @@ Item {
     property bool isDirectory: fileSystem.isDirectory(model.filePath)
     property bool highlight: model.filePath === fileSystemView.selectedPath
 
-    SystemPalette { id: palette }
+    SystemPalette {
+        id: palette
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -20,8 +22,8 @@ Item {
         anchors.rightMargin: 5
         radius: 5
         visible: highlight || mouseArea.containsMouse
-        opacity: highlight? 1.0 : 0.15
-        color: highlight? palette.highlight : palette.shadow
+        opacity: highlight ? 1.0 : 0.15
+        color: highlight ? palette.highlight : palette.shadow
     }
 
     Label {
@@ -34,14 +36,22 @@ Item {
 
     Image {
         source: {
-            if (model.filePath === null) "qrc:/assets/file.png";
-            else if (model.filePath.endsWith(".cpp") || model.filePath.endsWith(".h")) "qrc:/assets/cpp.png";
-            else if (model.filePath.endsWith(".png")) "qrc:/assets/png.png";
-            else if (model.filePath.endsWith(".qml")) "qrc:/assets/qml.png";
-            else if (isDirectory) "qrc:/assets/folder.png";
-            else if (model.filePath.endsWith(".md")) "qrc:/assets/md.png";
-            else if (model.filePath.endsWith(".txt")) "qrc:/assets/txt.png";
-            else "qrc:/assets/file.png";
+            if (model.filePath === null)
+                "qrc:/assets/file.png";
+            else if (model.filePath.endsWith(".cpp") || model.filePath.endsWith(".h"))
+                "qrc:/assets/cpp.png";
+            else if (model.filePath.endsWith(".png"))
+                "qrc:/assets/png.png";
+            else if (model.filePath.endsWith(".qml"))
+                "qrc:/assets/qml.png";
+            else if (isDirectory)
+                "qrc:/assets/folder.png";
+            else if (model.filePath.endsWith(".md"))
+                "qrc:/assets/md.png";
+            else if (model.filePath.endsWith(".txt"))
+                "qrc:/assets/txt.png";
+            else
+                "qrc:/assets/file.png";
         }
         sourceSize.height: 20
         x: indicator.x + 14

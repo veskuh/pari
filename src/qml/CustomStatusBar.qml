@@ -4,7 +4,7 @@ import QtQuick.Layouts
 
 ToolBar {
     id: customStatusBar
-   
+
     property alias text: statusLabel.text
     property alias modelName: modelLabel.text
 
@@ -23,5 +23,4 @@ ToolBar {
         anchors.rightMargin: 5
         text: qsTr("Ready")
     }
-
 }
