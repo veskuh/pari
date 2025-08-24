@@ -123,10 +123,22 @@ ColumnLayout {
             ScrollView {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                TextArea {
-                    id: outputArea
-                    readOnly: true
-                    wrapMode: Text.WordWrap
+                Flickable {
+                    id: flickable
+                    clip: true
+                    width: parent.width
+                    TextArea {
+                        id: outputArea
+                        readOnly: true
+                        width: parent.width
+                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+                        onTextChanged: {
+                            if (contentHeight > flickable.height) {
+                                flickable.contentY = contentHeight - flickable.height;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -139,6 +151,10 @@ ColumnLayout {
         }
         function onErrorReady(error) {
             outputArea.text += error;
+        }
+        function onFinished() {
+            outputArea.text += "Ready."
+            console.log("Ready")
         }
     }
 }
