@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/qml">
-        <file>pari.qml</file>
+        <file>PariAppWindow.qml</file>
         <file>CustomStatusBar.qml</file>
         <file>SettingsWindow.qml</file>
         <file>AboutWindow.qml</file>
@@ -10,5 +10,7 @@
         <file>FileTreeDelegate.qml</file>
         <file>BuildConfigurationDialog.qml</file>
         <file>GitOutputWindow.qml</file>
+        <file>CodeEditorPane.qml</file>
+        <file>OutputPane.qml</file>
     </qresource>
 </RCC>

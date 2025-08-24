@@ -1,0 +1,144 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import net.veskuh.pari 1.0
+
+
+ColumnLayout {
+    property alias text: codeEditor.text
+    property alias textDocument: codeEditor.textDocument
+    property int cursorPosition: 0
+
+    TextDocumentSearcher {
+        id: textDocumentSearcher
+    }
+
+    function saveCursorPosition() {
+        cursorPosition = codeEditor.cursorPosition;
+    }
+
+    function restoreCursorPosition() {
+        codeEditor.cursorPosition = cursorPosition
+    }
+
+    function find() {
+        findOverlay.open()
+    }
+
+    function showBuildPanel() {
+        outputArea.text = "";
+        outputPanel.visible = true;
+    }
+
+    Label {
+        text: qsTr("Code Editor")
+        font.bold: true
+        Layout.alignment: Qt.AlignHCenter
+        Layout.topMargin: 5
+        Layout.bottomMargin: 5
+    }
+
+    FindOverlay {
+        id: findOverlay
+        width: parent.width
+        color: appWindow.palette.window
+        borderColor: appWindow.palette.windowText
+        textColor: appWindow.palette.text
+        textBackgroundColor: appWindow.palette.base
+        onFindNext: {
+            var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 0);
+            if (newPos !== -1) {
+                codeEditor.cursorPosition = newPos;
+                codeEditor.select(newPos - searchText.length, newPos);
+            }
+            var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
+            findOverlay.updateResults(occurrences);
+        }
+
+        onFindPrevious: {
+            var oldPos = codeEditor.cursorPosition;
+            var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 1);
+            if (codeEditor.cursorPosition === newPos) {
+                newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition - findOverlay.searchText.length, 1);
+            }
+
+            if (newPos !== -1) {
+                codeEditor.cursorPosition = newPos;
+                codeEditor.select(newPos - searchText.length, newPos);
+            }
+            var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
+            findOverlay.updateResults(occurrences);
+        }
+        onCloseOverlay: close()
+    }
+
+    // ScrollView is necessary for when content exceeds the visible area.
+    ScrollView {
+        id: codeEditorScrollView
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        clip: true // Ensures content doesn't draw outside the ScrollView
+
+        TextArea {
+            id: codeEditor
+            placeholderText: "Open a file or start typing..."
+            wrapMode: Text.WordWrap
+            font.family: appSettings.fontFamily
+            font.pointSize: appSettings.fontSize
+            tabStopDistance: 4 * textMetrics.advanceWidth
+            onTextChanged: aiOutputPane.updateDiff(codeEditor.text)
+            property int savedCursorPosition: 0
+
+            TextMetrics {
+                id: textMetrics
+                font: codeEditor.font
+            }
+        }
+    }
+
+    Rectangle {
+        id: outputPanel
+        Layout.fillWidth: true
+        Layout.preferredHeight: 200
+        visible: false
+        color: appWindow.palette.window
+        border.color: appWindow.palette.windowText
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 5
+
+            RowLayout {
+                Label {
+                    text: "Build Output"
+                    font.bold: true
+                }
+                Button {
+                    text: "Close"
+                    onClicked: outputPanel.visible = false
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                TextArea {
+                    id: outputArea
+                    readOnly: true
+                    wrapMode: Text.WordWrap
+                }
+            }
+        }
+    }
+
+    Connections {
+        target: buildManager
+        function onOutputReady(output) {
+            outputArea.text += output;
+        }
+        function onErrorReady(error) {
+            outputArea.text += error;
+        }
+    }
+}

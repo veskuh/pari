@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     ToolManager *toolManager = new ToolManager(&app);
     engine.rootContext()->setContextProperty("toolManager", toolManager);
 
-    const QUrl url("qrc:/qml/pari.qml");
+    const QUrl url("qrc:/qml/PariAppWindow.qml");
 
     if (app.arguments().contains("--selfcheck")) {
         QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
