@@ -630,6 +630,8 @@ ApplicationWindow {
         target: fileSystem
         function onRootPathChanged() {
             fileSystemView.model = fileSystem.model;
+            var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
+            hasBuildConfiguration = buildCommand !== "";
         }
         function onFileContentReady(filePath, content) {
             codeEditor.text = content;
@@ -728,14 +730,6 @@ ApplicationWindow {
     }
 
     property bool hasBuildConfiguration: false
-
-    Connections {
-        target: fileSystem
-        function onRootPathChanged() {
-            var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
-            hasBuildConfiguration = buildCommand !== "";
-        }
-    }
 
     BuildConfigurationDialog {
         id: buildConfigurationWindow
