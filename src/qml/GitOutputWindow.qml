@@ -38,7 +38,7 @@ Window {
 
                 delegate: Component {
                     Item {
-                        width: parent.width
+                        width: logView.width
                         height: childrenRect.height
                         property bool expanded: false
 
