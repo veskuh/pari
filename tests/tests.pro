@@ -21,6 +21,7 @@ SOURCES += \
     test_markdownsyntaxhighlighter.cpp \
     test_buildmanager.cpp \
     test_toolmanager.cpp \
+    test_gitlogmodel.cpp \
     ../src/app/filesystem.cpp \
     ../src/app/settings.cpp \
     ../src/app/markdownformatter.cpp \
@@ -32,7 +33,8 @@ SOURCES += \
     ../src/app/diffutils.cpp \
     ../src/app/markdownsyntaxhighlighter.cpp \
     ../src/app/buildmanager.cpp \
-    ../src/app/toolmanager.cpp
+    ../src/app/toolmanager.cpp \
+    ../src/app/gitlogmodel.cpp
 
 HEADERS += \
     test_settings.h \
@@ -46,6 +48,7 @@ HEADERS += \
     test_markdownsyntaxhighlighter.h \
     test_buildmanager.h \
     test_toolmanager.h \
+    test_gitlogmodel.h \
     ../src/app/settings.h \
     ../src/app/filesystem.h \
     ../src/app/markdownformatter.h \
@@ -57,5 +60,6 @@ HEADERS += \
     ../src/app/syntaxtheme.h \
     ../src/app/markdownsyntaxhighlighter.h \
     ../src/app/buildmanager.h \
-    ../src/app/toolmanager.h
+    ../src/app/toolmanager.h \
+    ../src/app/gitlogmodel.h
 

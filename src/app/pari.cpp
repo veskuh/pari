@@ -12,6 +12,7 @@
 #include "syntaxtheme.h"
 #include "buildmanager.h"
 #include "toolmanager.h"
+#include "gitlogmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +25,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
     qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
+    qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");
 
     QQmlApplicationEngine engine;
 

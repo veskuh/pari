@@ -1,5 +1,5 @@
-import QtCore
 import QtQuick
+import Qt.labs.settings 1.0
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
@@ -8,6 +8,10 @@ import net.veskuh.pari 1.0
 
 ApplicationWindow {
     id: appWindow
+
+    GitLogModel {
+        id: gitLogModel
+    }
 
     property bool hasBuildConfiguration: false
 
@@ -214,7 +218,7 @@ ApplicationWindow {
             MenuItem {
                 enabled: fileSystem.isGitRepository
                 text: "git log"
-                onTriggered: toolManager.runCommand("git log", fileSystem.rootPath)
+                onTriggered: toolManager.runCommand("git log --pretty=format:\"%H%x1f%an%x1f%ae%x1f%ad%x1f%s%n%b%x1e\" --date=rfc", fileSystem.rootPath)
             }
             MenuItem {
                 text: "git blame"
@@ -417,11 +421,17 @@ ApplicationWindow {
     function showGitOutput(command, output, branch) {
         var component = Qt.createComponent("GitOutputWindow.qml");
         if (component.status === Component.Ready) {
-            var window = component.createObject(appWindow, {
+            var properties = {
                 "command": command,
-                "output": output,
                 "branchName": branch
-            });
+            };
+            if (command.startsWith("git log")) {
+                properties.gitLogModel = gitLogModel;
+            } else {
+                properties.output = output;
+            }
+
+            var window = component.createObject(appWindow, properties);
             if (window) {
                 window.show();
             } else {
@@ -440,6 +450,10 @@ ApplicationWindow {
         function onQmlFileIndented(formattedContent) {
             codeEditor.text = formattedContent;
             codeEditor.restoreCursorPosition();
+        }
+        function onGitLogReady(log) {
+            gitLogModel.parseAndSetLog(log);
+            showGitOutput("git log", "", ""); // We don't need to pass output here anymore
         }
     }
 

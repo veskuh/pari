@@ -18,6 +18,7 @@ public:
 signals:
     void outputReady(const QString &command, const QString &output, const QString &branchName);
     void qmlFileIndented(const QString &formattedContent);
+    void gitLogReady(const QString &log);
 
 private slots:
     void onBranchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
