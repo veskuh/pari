@@ -70,7 +70,11 @@ void ToolManager::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
 void ToolManager::onReadyReadStandardOutput()
 {
-    emit outputReady(m_command, m_process->readAllStandardOutput(), m_branchName);
+    if (m_command.startsWith("git log")) {
+        emit gitLogReady(m_process->readAllStandardOutput());
+    } else {
+        emit outputReady(m_command, m_process->readAllStandardOutput(), m_branchName);
+    }
 }
 
 void ToolManager::onReadyReadStandardError()

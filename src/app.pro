@@ -17,7 +17,8 @@ HEADERS += \
     app/syntaxtheme.h \
     app/markdownsyntaxhighlighter.h \
     app/buildmanager.h \
-    app/toolmanager.h
+    app/toolmanager.h \
+    app/gitlogmodel.h
 
 SOURCES += \
     app/pari.cpp \
@@ -34,7 +35,8 @@ SOURCES += \
     app/syntaxtheme.cpp \
     app/markdownsyntaxhighlighter.cpp \
     app/buildmanager.cpp \
-    app/toolmanager.cpp
+    app/toolmanager.cpp \
+    app/gitlogmodel.cpp
 
 # QML resources
 RESOURCES += \
