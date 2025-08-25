@@ -49,20 +49,24 @@ Window {
                                 Label {
                                     text: model.authorName
                                     font.bold: true
+                                    ToolTip.visible: authorMouseArea.containsMouse
+                                    ToolTip.text: model.authorName + " <" + model.authorEmail + ">"
+
                                     MouseArea {
+                                        id: authorMouseArea
                                         anchors.fill: parent
                                         hoverEnabled: true
-                                        ToolTip.visible: hovered
-                                        ToolTip.text: model.authorName + " <" + model.authorEmail + ">"
                                     }
                                 }
                                 Label {
                                     text: model.date
+                                    ToolTip.visible: dateMouseArea.containsMouse
+                                    ToolTip.text: model.date + " " + model.time
+
                                     MouseArea {
+                                        id: dateMouseArea
                                         anchors.fill: parent
                                         hoverEnabled: true
-                                        ToolTip.visible: hovered
-                                        ToolTip.text: model.date + " " + model.time
                                     }
                                 }
                             }
