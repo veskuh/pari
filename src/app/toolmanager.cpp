@@ -73,7 +73,7 @@ void ToolManager::onReadyReadStandardOutput()
     if (m_command.startsWith("git log")) {
         emit gitLogReady(m_process->readAllStandardOutput());
     } else {
-        emit outputReady(m_command, m_process->readAllStandardOutput(), m_branchName);
+        emit outputReady(m_command, formatDiffOutput(m_process->readAllStandardOutput()), m_branchName);
     }
 }
 
@@ -100,3 +100,20 @@ void ToolManager::onQmlFormatProcessFinished(int exitCode, QProcess::ExitStatus 
     }
 }
 
+QString ToolManager::formatDiffOutput(const QString &output) const
+{
+    QStringList lines = output.split('\n');
+    QString formattedOutput;
+    for (const QString &line : lines) {
+        QString escapedLine = line;
+        escapedLine.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+        if (escapedLine.startsWith('+')) {
+            formattedOutput += "<font color=\"green\">" + escapedLine + "</font><br>";
+        } else if (escapedLine.startsWith('-')) {
+            formattedOutput += "<font color=\"red\">" + escapedLine + "</font><br>";
+        } else {
+            formattedOutput += escapedLine + "<br>";
+        }
+    }
+    return formattedOutput;
+}
