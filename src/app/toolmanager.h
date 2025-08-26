@@ -28,6 +28,7 @@ private slots:
     void onQmlFormatProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
+    QString formatDiffOutput(const QString &output) const;
     QProcess *m_branchProcess;
     QProcess *m_process;
     QProcess *m_qmlFormatProcess;

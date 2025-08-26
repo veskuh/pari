@@ -14,5 +14,5 @@ void TestToolManager::testRunCommand()
     QCOMPARE(spy.count(), 1);
     QList<QVariant> arguments = spy.takeFirst();
     QCOMPARE(arguments.at(0).toString(), "echo hello");
-    QCOMPARE(arguments.at(1).toString().trimmed(), "hello");
+    QCOMPARE(arguments.at(1).toString(), "hello<br><br>");
 }

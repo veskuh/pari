@@ -227,7 +227,8 @@ Window {
                     readOnly: true
                     text: output
                     wrapMode: Text.NoWrap
-                    font.family: "monospace"
+                    font.family: Qt.platform.os === 'osx' ? 'Menlo' : 'Noto Sans Mono'
+                    textFormat: Text.RichText
                 }
             }
 
