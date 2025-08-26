@@ -35,6 +35,7 @@ Window {
                 Layout.fillHeight: true
                 model: gitLogModel
                 visible: gitLogModel !== null
+                clip: true
 
                 delegate: Component {
                     // Use Item as the root for better layout control.
@@ -67,7 +68,7 @@ Window {
                             // The main layout for all content, with internal padding.
                             ColumnLayout {
                                 id: column
-                                width: parent.width - 20
+                                width: parent.width - 40
                                 x: 10
                                 y: 10
                                 anchors.margins: 15 // Internal padding for all content
@@ -75,49 +76,14 @@ Window {
 
                                 // Header section with author, date, and expand indicator
                                 RowLayout {
-                                    width: parent.width
+
                                     anchors.margins: 15 // Internal padding for all content
 
-                                    height: childrenRect.height
-
-                                    // Author Name
-                                    Label {
-                                        text: model.authorName
-                                        font.bold: true
-                                        font.pixelSize: 16
-                                        color: "#2c3e50" // A dark, modern blue-gray
-                                        ToolTip.visible: authorMouseArea.containsMouse
-                                        ToolTip.text: model.authorName + " <" + model.authorEmail + ">"
-
-                                        MouseArea {
-                                            id: authorMouseArea
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                        }
-                                    }
-
-                                    // Spacer to push the date to the right
-                                    Item {
-                                        Layout.fillWidth: true
-                                    }
-
-                                    // Date
-                                    Label {
-                                        text: model.date
-                                        font.pixelSize: 13
-                                        color: "#7f8c8d" // A muted gray for secondary info
-                                        ToolTip.visible: dateMouseArea.containsMouse
-                                        ToolTip.text: model.date + " " + model.time
-
-                                        MouseArea {
-                                            id: dateMouseArea
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                        }
-                                    }
+                                    height: headline.implicitHeight
 
                                     // Expand/Collapse Indicator
                                     Label {
+                                        id: arrow
                                         text: "▶" // A simple arrow character
                                         font.pixelSize: 12
                                         color: "#7f8c8d"
@@ -133,17 +99,54 @@ Window {
                                                 }
                                             }
                                         }
+                                        width: implicitWidth
+                                    }
+
+                                    // Date
+                                    Label {
+                                        id: date
+                                        text: model.date
+                                        font.pixelSize: 13
+                                        color: "#7f8c8d" // A muted gray for secondary info
+                                        ToolTip.visible: dateMouseArea.containsMouse
+                                        ToolTip.text: model.date + " " + model.time
+                                        width: implicitWidth
+
+                                        MouseArea {
+                                            id: dateMouseArea
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                        }
+                                    }
+
+                                    // Header
+                                    Label {
+                                        id: headline
+                                        text: model.messageHeader
+                                        font.bold: true
+                                        font.pixelSize: 16
+                                        color: "#2c3e50" // A dark, modern blue-gray
+                                        elide: Text.ElideRight
+                                        width: background.width - arrow.width - date.width - 40
                                     }
                                 }
 
                                 // Commit Message Header
                                 Label {
                                     id: commit
-                                    text: model.messageHeader
-                                    width: parent.width
+                                    text: model.authorName
+                                    width: implicitWidth
+                                    font.pixelSize: 13
+                                    color: "#7f8c8d" // A muted gray for secondary info
                                     wrapMode: Text.WordWrap
-                                    font.pixelSize: 15
-                                    color: "#34495e" // Slightly softer than the author name
+                                    ToolTip.visible: authorMouseArea.containsMouse
+                                    ToolTip.text: model.authorName + " <" + model.authorEmail + ">"
+
+                                    MouseArea {
+                                        id: authorMouseArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                    }
                                 }
 
                                 // --- Key Improvement: Animated Expandable Section ---
@@ -183,7 +186,7 @@ Window {
 
                                     // Divider line for visual separation
                                     Rectangle {
-                                        width: parent.width
+                                        width: background.width - 20
                                         height: 1
                                         color: "#e0e0e0"
                                         Layout.bottomMargin: 5
@@ -191,10 +194,20 @@ Window {
 
                                     // Full Commit Message Body
                                     Label {
+                                        id: messageBody
                                         text: model.messageBody
-                                        width: parent.width
+                                        Layout.preferredWidth: background.width - 20
                                         wrapMode: Text.WordWrap
+                                        textFormat: Text.PlainText
                                         color: "#34495e"
+                                    }
+
+                                    // Divider line for visual separation
+                                    Rectangle {
+                                        width: background.width - 20
+                                        height: 1
+                                        color: "#e0e0e0"
+                                        Layout.bottomMargin: 5
                                     }
 
                                     // Commit SHA
