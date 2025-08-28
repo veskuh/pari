@@ -32,6 +32,7 @@ add_executable(pari
     gitlogmodel.h
     ../qml/qml.qrc
     ../assets/assets.qrc
+    ../assets/pari.icns
 )
 
 target_link_libraries(pari PRIVATE
@@ -46,7 +47,7 @@ target_link_libraries(pari PRIVATE
 if(APPLE)
     set_target_properties(pari PROPERTIES
         MACOSX_BUNDLE ON
-        MACOSX_BUNDLE_ICON_FILE ${CMAKE_SOURCE_DIR}/assets/pari.icns
+        MACOSX_BUNDLE_ICON_FILE pari.icns
     )
 elseif(WIN32)
     set_target_properties(pari PROPERTIES
