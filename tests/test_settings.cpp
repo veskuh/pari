@@ -2,7 +2,7 @@
 #include <QtTest>
 #include <QSettings>
 #include <QSignalSpy>
-#include "app/settings.h"
+#include "settings.h"
 
 void TestSettings::init()
 {

@@ -1,6 +1,6 @@
 #include <QtTest>
 #include "test_diffutils.h"
-#include "app/diffutils.h"
+#include "diffutils.h"
 
 void TestDiffUtils::testNoChange()
 {

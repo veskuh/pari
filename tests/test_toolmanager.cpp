@@ -1,5 +1,5 @@
 #include "test_toolmanager.h"
-#include "../src/app/toolmanager.h"
+#include "toolmanager.h"
 #include <QSignalSpy>
 #include <QDir>
 

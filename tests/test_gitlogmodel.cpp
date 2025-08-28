@@ -1,5 +1,5 @@
 #include "test_gitlogmodel.h"
-#include "../src/app/gitlogmodel.h"
+#include "gitlogmodel.h"
 #include <QtTest>
 
 // Define the separators for consistency

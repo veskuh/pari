@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTest>
 
-#include "app/syntaxtheme.h"
+#include "syntaxtheme.h"
 
 class TestQmlSyntaxHighlighter : public QObject
 {

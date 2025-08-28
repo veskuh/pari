@@ -1,5 +1,5 @@
 #include "test_buildmanager.h"
-#include "app/buildmanager.h"
+#include "buildmanager.h"
 #include <QtTest>
 #include <QSignalSpy>
 

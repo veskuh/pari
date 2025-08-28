@@ -1,8 +1,8 @@
 #include "test_llm.h"
 #include <QtTest>
 #include <QSignalSpy>
-#include "app/llm.h"
-#include "app/settings.h"
+#include "llm.h"
+#include "settings.h"
 
 void TestLlm::init()
 {

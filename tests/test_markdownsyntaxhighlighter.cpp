@@ -1,6 +1,6 @@
 #include "test_markdownsyntaxhighlighter.h"
-#include "../src/app/markdownsyntaxhighlighter.h"
-#include "../src/app/syntaxtheme.h"
+#include "markdownsyntaxhighlighter.h"
+#include "syntaxtheme.h"
 #include <QTextDocument>
 #include <QTest>
 
