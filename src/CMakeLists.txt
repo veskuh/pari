@@ -42,6 +42,7 @@ target_link_libraries(pari PRIVATE
     Qt6::Network
     Qt6::Widgets
     Qt6::LabsSettings
+    Qt6::QuickDialogs2
 )
 
 if(APPLE)
