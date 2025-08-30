@@ -1,4 +1,4 @@
-add_executable(pari
+qt_add_executable(pari
     pari.cpp
     llm.cpp
     llm.h
