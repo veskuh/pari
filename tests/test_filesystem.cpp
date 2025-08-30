@@ -1,6 +1,6 @@
 #include "test_filesystem.h"
 #include <QtTest>
-#include "../src/app/filesystem.h"
+#include "filesystem.h"
 #include <QTemporaryDir>
 #include <QFile>
 

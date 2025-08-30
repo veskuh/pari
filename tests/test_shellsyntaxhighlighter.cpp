@@ -1,6 +1,6 @@
 #include "test_shellsyntaxhighlighter.h"
-#include "../src/app/shellsyntaxhighlighter.h"
-#include "../src/app/syntaxtheme.h"
+#include "shellsyntaxhighlighter.h"
+#include "syntaxtheme.h"
 #include <QTextDocument>
 #include <QTextCursor>
 #include <QTextCharFormat>

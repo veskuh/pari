@@ -2,7 +2,7 @@
 #define TEST_MARKDOWNFORMATTER_H
 
 #include <QObject>
-#include "../src/app/markdownformatter.h"
+#include "markdownformatter.h"
 
 class TestMarkdownFormatter : public QObject
 {

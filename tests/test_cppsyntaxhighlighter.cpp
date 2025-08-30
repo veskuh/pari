@@ -1,5 +1,5 @@
 #include "test_cppsyntaxhighlighter.h"
-#include "../src/app/cppsyntaxhighlighter.h"
+#include "cppsyntaxhighlighter.h"
 #include <QTextDocument>
 #include <QTextCursor>
 #include <QTextCharFormat>

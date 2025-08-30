@@ -1,6 +1,6 @@
 #include "test_qmlsyntaxhighlighter.h"
-#include "app/qmlsyntaxhighlighter.h"
-#include "app/syntaxtheme.h"
+#include "qmlsyntaxhighlighter.h"
+#include "syntaxtheme.h"
 #include <QTextDocument>
 #include <QTextCursor>
 

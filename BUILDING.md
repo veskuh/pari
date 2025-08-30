@@ -18,37 +18,29 @@ sudo apt-get install -y qt6-base-dev qt6-declarative-dev qml-qt6 qmlscene-qt6 qm
 
 ## Build
 
-### macOS
+### macOS and Linux
 Use the following commands to build the project:
 
 ```bash
 mkdir build
 cd build
-~/Qt/6.8.0/macos/bin/qmake ../pari.pro
-make
-```
-
-### Linux
-Use the following commands to build the project:
-
-```bash
-mkdir build
-cd build
-qmake6 ../pari.pro
+cmake ..
 make
 ```
 
 ## Run
 
+After a successful build, the executables will be in the `build` directory.
+
 ### macOS
-After a successful build, run the application with:
+Run the application with:
 
 ```bash
-./pari.app/Contents/MacOS/pari
+./build/src/pari.app/Contents/MacOS/pari
 ```
 
 ### Linux
-After a successful build, run the application with:
+Run the application with:
 
 ```bash
 ./build/src/pari
