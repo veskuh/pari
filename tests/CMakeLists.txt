@@ -24,6 +24,8 @@ add_executable(tst_all
     test_toolmanager.h
     test_gitlogmodel.cpp
     test_gitlogmodel.h
+    test_lspclient.cpp
+    test_lspclient.h
     ../src/settings.cpp
     ../src/settings.h
     ../src/filesystem.cpp
@@ -50,6 +52,8 @@ add_executable(tst_all
     ../src/toolmanager.h
     ../src/gitlogmodel.cpp
     ../src/gitlogmodel.h
+    ../src/lspclient.cpp
+    ../src/lspclient.h
 )
 
 target_include_directories(tst_all PRIVATE ../src)

@@ -13,6 +13,7 @@
 #include "buildmanager.h"
 #include "toolmanager.h"
 #include "gitlogmodel.h"
+#include "lspclient.h"
 
 int main(int argc, char *argv[])
 {
@@ -48,6 +49,11 @@ int main(int argc, char *argv[])
 
     ToolManager *toolManager = new ToolManager(&app);
     engine.rootContext()->setContextProperty("toolManager", toolManager);
+
+    LspClient *lspClient = new LspClient(&app);
+    engine.rootContext()->setContextProperty("lspClient", lspClient);
+
+    QObject::connect(fileSystem, &FileSystem::projectOpened, lspClient, &LspClient::startServer);
 
     const QUrl url("qrc:/qml/PariAppWindow.qml");
 
