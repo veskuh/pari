@@ -17,6 +17,17 @@ LspClient::~LspClient()
 
 void LspClient::startServer(const QString &projectPath)
 {
+    if (m_process->state() != QProcess::NotRunning && m_projectPath == projectPath) {
+        return; // Server already running for this project
+    }
+
+    if (m_process->state() != QProcess::NotRunning) {
+        m_process->kill();
+        m_process->waitForFinished();
+    }
+
+    m_projectPath = projectPath;
+
     QStringList args;
     args << "--compile-commands-dir=" + projectPath + "/build";
     m_process->start("clangd", args);
@@ -29,7 +40,13 @@ void LspClient::startServer(const QString &projectPath)
     initializeParams["processId"] = QCoreApplication::applicationPid();
     initializeParams["rootUri"] = QUrl::fromLocalFile(projectPath).toString();
     QJsonObject capabilities;
-    // Add capabilities here if needed
+    QJsonObject textDocument;
+    QJsonObject completion;
+    QJsonObject completionItem;
+    completionItem["snippetSupport"] = true;
+    completion["completionItem"] = completionItem;
+    textDocument["completion"] = completion;
+    capabilities["textDocument"] = textDocument;
     initializeParams["capabilities"] = capabilities;
 
     QJsonObject message;
@@ -87,6 +104,16 @@ void LspClient::requestCompletion(const QString &documentPath, int line, int cha
     message["params"] = params;
 
     sendMessage(message);
+}
+
+bool LspClient::isServerRunning() const
+{
+    return m_process->state() != QProcess::NotRunning;
+}
+
+QString LspClient::projectPath() const
+{
+    return m_projectPath;
 }
 
 void LspClient::onReadyRead()

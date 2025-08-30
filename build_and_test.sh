@@ -5,7 +5,6 @@ mkdir -p /app/build
 cd /app/build
 cmake ..
 make
-cd /app/build/tests
-./tst_all
+QT_QPA_PLATFORM=offscreen ./tests/tst_all
 cd /app
-/app/build/src/pari --selfcheck
+QT_QPA_PLATFORM=offscreen /app/build/src/pari --selfcheck

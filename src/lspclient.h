@@ -17,6 +17,9 @@ public:
     Q_INVOKABLE void documentChanged(const QString &documentPath, const QString &content);
     Q_INVOKABLE void requestCompletion(const QString &documentPath, int line, int character);
 
+    bool isServerRunning() const;
+    QString projectPath() const;
+
 signals:
     void completionItems(const QList<QString> &items);
 
@@ -30,6 +33,7 @@ private:
 
     QProcess *m_process;
     int m_requestId;
+    QString m_projectPath;
 };
 
 #endif // LSPCLIENT_H

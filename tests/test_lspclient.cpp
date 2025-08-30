@@ -5,12 +5,23 @@
 void TestLspClient::testStartServer()
 {
     LspClient client;
-    // This is a basic test that only checks if the server starts.
-    // A more comprehensive test would mock the process and check the messages.
     client.startServer(QDir::currentPath());
-    // We can't easily check the output here without more complex setup,
-    // but we can at least ensure that the application doesn't crash.
-    QVERIFY(true);
+    QTest::qWait(100); // Wait for the process to start
+    QVERIFY(client.isServerRunning());
+}
+
+void TestLspClient::testProjectSwitching()
+{
+    LspClient client;
+    client.startServer("/tmp/project1");
+    QTest::qWait(100);
+    QVERIFY(client.isServerRunning());
+    QCOMPARE(client.projectPath(), "/tmp/project1");
+
+    client.startServer("/tmp/project2");
+    QTest::qWait(100);
+    QVERIFY(client.isServerRunning());
+    QCOMPARE(client.projectPath(), "/tmp/project2");
 }
 
 #include "test_lspclient.moc"

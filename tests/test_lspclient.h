@@ -9,6 +9,7 @@ class TestLspClient : public QObject
 
 private slots:
     void testStartServer();
+    void testProjectSwitching();
 };
 
 #endif // TEST_LSPCLIENT_H
