@@ -13,11 +13,14 @@ void TestLspClient::testStartServer()
 void TestLspClient::testProjectSwitching()
 {
     LspClient client;
+    QDir dir;
+    dir.mkpath("/tmp/project1");
     client.startServer("/tmp/project1");
     QTest::qWait(100);
     QVERIFY(client.isServerRunning());
     QCOMPARE(client.projectPath(), "/tmp/project1");
 
+    dir.mkpath("/tmp/project2");
     client.startServer("/tmp/project2");
     QTest::qWait(100);
     QVERIFY(client.isServerRunning());
