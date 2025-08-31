@@ -27,7 +27,13 @@ ColumnLayout {
         aiOutputPane.text = ""; // Clear previous output
         diffView.text = ""; // Clear previous diff
         var prompt = aiMessagePane.text;
-        llm.sendPrompt("You are AI code assistant. Follow the instructions given for the code in the end of message. Be short in your response, no chatting or politness, just code or comment. " + prompt + "\n```\n" + codeEditor.text + "\n```");
+        if (codeEditor.selection != "" ) {
+            llm.sendPrompt("You are AI code assistant. \
+Follow the instructions by user. You will get a full file content and user selection at the code in the end of message.\
+ Be short in your response, no chatting or politness, just code or comment. User: " + prompt + "File: \n```\n" + codeEditor.text + "\n```"+ "Selection: \n```\n" + codeEditor.selection + "\n```");
+        } else {
+            llm.sendPrompt("You are AI code assistant. Follow the instructions given for the code in the end of message. Be short in your response, no chatting or politness, just code or comment. " + prompt + "\n```\n" + codeEditor.text + "\n```");
+        }
     }
 
     TabBar {

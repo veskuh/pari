@@ -5,6 +5,7 @@ import net.veskuh.pari 1.0
 
 ColumnLayout {
     property alias text: codeEditor.text
+    property alias selection: codeEditor.selectedText
     property alias textDocument: codeEditor.textDocument
     property int cursorPosition: 0
 
