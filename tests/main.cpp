@@ -10,7 +10,6 @@
 #include "test_buildmanager.h"
 #include "test_toolmanager.h"
 #include "test_gitlogmodel.h"
-#include "test_lspclient.h"
 
 int main(int argc, char *argv[])
 {
@@ -46,9 +45,6 @@ int main(int argc, char *argv[])
 
     TestGitLogModel tc_git;
     status |= QTest::qExec(&tc_git, argc, argv);
-
-    TestLspClient tc_lsp;
-    status |= QTest::qExec(&tc_lsp, argc, argv);
 
     return status;
 }

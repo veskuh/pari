@@ -92,21 +92,23 @@ ColumnLayout {
             tabStopDistance: 4 * textMetrics.advanceWidth
             onTextChanged: {
                 aiOutputPane.updateDiff(codeEditor.text)
-                if (fileSystem.currentFile && isCppFile(fileSystem.currentFile)) {
-                    lspClient.documentChanged(fileSystem.currentFile, codeEditor.text)
+                if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
+                    lspClient.documentChanged(fileSystem.currentFilePath, codeEditor.text)
                     var text = codeEditor.getText(0, codeEditor.cursorPosition)
                     if (text.endsWith(".") || text.endsWith("->")) {
-                        var line = codeEditor.positionAt(codeEditor.cursorPosition).y
-                        var character = codeEditor.positionAt(codeEditor.cursorPosition).x
-                        lspClient.requestCompletion(fileSystem.currentFile, line, character)
+                        var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition)
+                        var lines = textToCursor.split(/\r?\n/)
+                        var line = lines.length - 1
+                        var character = lines[lines.length - 1].length
+                        lspClient.requestCompletion(fileSystem.currentFilePath, line, character)
                     }
                 }
             }
             property int savedCursorPosition: 0
 
             Component.onCompleted: {
-                if (fileSystem.currentFile && isCppFile(fileSystem.currentFile)) {
-                    lspClient.documentOpened(fileSystem.currentFile, codeEditor.text)
+                if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
+                    lspClient.documentOpened(fileSystem.currentFilePath, codeEditor.text)
                 }
             }
 

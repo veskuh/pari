@@ -17,20 +17,12 @@ LspClient::~LspClient()
 
 void LspClient::startServer(const QString &projectPath)
 {
-    if (m_process->state() != QProcess::NotRunning && m_projectPath == projectPath) {
-        return; // Server already running for this project
-    }
-
     if (m_process->state() != QProcess::NotRunning) {
         m_process->kill();
-        m_process->waitForFinished();
     }
-
-    m_projectPath = projectPath;
-
+    m_process->setWorkingDirectory(projectPath);
     QStringList args;
     args << "--compile-commands-dir=" + projectPath + "/build";
-    m_process->setWorkingDirectory(projectPath);
     m_process->start("clangd", args);
     if (!m_process->waitForStarted()) {
         qWarning() << "Failed to start clangd:" << m_process->errorString();
@@ -41,13 +33,6 @@ void LspClient::startServer(const QString &projectPath)
     initializeParams["processId"] = QCoreApplication::applicationPid();
     initializeParams["rootUri"] = QUrl::fromLocalFile(projectPath).toString();
     QJsonObject capabilities;
-    QJsonObject textDocument;
-    QJsonObject completion;
-    QJsonObject completionItem;
-    completionItem["snippetSupport"] = true;
-    completion["completionItem"] = completionItem;
-    textDocument["completion"] = completion;
-    capabilities["textDocument"] = textDocument;
     initializeParams["capabilities"] = capabilities;
 
     QJsonObject message;
@@ -80,9 +65,26 @@ void LspClient::documentOpened(const QString &documentPath, const QString &conte
 
 void LspClient::documentChanged(const QString &documentPath, const QString &content)
 {
-    // For now, we are re-opening the document on every change.
-    // A more advanced implementation would send incremental changes.
-    documentOpened(documentPath, content);
+    QJsonObject textDocument;
+    textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
+    textDocument["version"] = 2; // Version number should be incremented
+
+    QJsonObject contentChanges;
+    contentChanges["text"] = content;
+
+    QJsonArray contentChangesArray;
+    contentChangesArray.append(contentChanges);
+
+    QJsonObject params;
+    params["textDocument"] = textDocument;
+    params["contentChanges"] = contentChangesArray;
+
+    QJsonObject message;
+    message["jsonrpc"] = "2.0";
+    message["method"] = "textDocument/didChange";
+    message["params"] = params;
+
+    sendMessage(message);
 }
 
 void LspClient::requestCompletion(const QString &documentPath, int line, int character)
@@ -107,16 +109,6 @@ void LspClient::requestCompletion(const QString &documentPath, int line, int cha
     sendMessage(message);
 }
 
-bool LspClient::isServerRunning() const
-{
-    return m_process->state() != QProcess::NotRunning;
-}
-
-QString LspClient::projectPath() const
-{
-    return m_projectPath;
-}
-
 void LspClient::onReadyRead()
 {
     QByteArray data = m_process->readAll();
@@ -139,8 +131,6 @@ void LspClient::sendMessage(const QJsonObject &message)
 
 void LspClient::handleMessage(const QByteArray &message)
 {
-    // This is a simplified parser. A real implementation would need to handle
-    // chunked messages and headers properly.
     QString messageStr(message);
     QStringList parts = messageStr.split("\r\n\r\n");
     if (parts.size() < 2) {
