@@ -43,6 +43,7 @@ signals:
     void currentFilePathChanged();
     void fileSaved(const QString &filePath);
     void isGitRepositoryChanged();
+    void projectOpened(const QString &path);
 
 private:
     QFileSystemModel* m_model;

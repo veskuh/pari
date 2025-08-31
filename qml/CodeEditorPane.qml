@@ -24,6 +24,10 @@ ColumnLayout {
         findOverlay.open();
     }
 
+    function isCppFile(filePath) {
+        return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh")
+    }
+
     function showBuildPanel() {
         flickable.contentY = 0;
         outputArea.text = "";
@@ -86,7 +90,21 @@ ColumnLayout {
             font.family: appSettings.fontFamily
             font.pointSize: appSettings.fontSize
             tabStopDistance: 4 * textMetrics.advanceWidth
-            onTextChanged: aiOutputPane.updateDiff(codeEditor.text)
+            onTextChanged: {
+                aiOutputPane.updateDiff(codeEditor.text)
+                if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
+                    lspClient.documentChanged(fileSystem.currentFilePath, codeEditor.text)
+                    var text = codeEditor.getText(0, codeEditor.cursorPosition)
+                    if (text.endsWith(".") || text.endsWith("->")) {
+                        var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition)
+                        var lines = textToCursor.split(/\r?\n/)
+                        var line = lines.length - 1
+                        var character = lines[lines.length - 1].length
+                        console.log("Requesting completion at", line, character)
+                        lspClient.requestCompletion(fileSystem.currentFilePath, line, character)
+                    }
+                }
+            }
             property int savedCursorPosition: 0
 
             TextMetrics {
@@ -155,6 +173,45 @@ ColumnLayout {
         function onFinished() {
             outputArea.text += "Ready.";
             console.log("Ready");
+        }
+    }
+
+    Connections {
+        target: lspClient
+        function onCompletionItems(items) {
+            completionModel.clear()
+            for (var i = 0; i < items.length; ++i) {
+                completionModel.append({ "text": items[i] })
+            }
+            completionPopup.open()
+        }
+    }
+
+    ListModel {
+        id: completionModel
+    }
+
+    Popup {
+        id: completionPopup
+        width: 200
+        height: 300
+        y: codeEditor.cursorRectangle.y + codeEditor.cursorRectangle.height
+        x: codeEditor.cursorRectangle.x
+
+        ListView {
+            anchors.fill: parent
+            model: completionModel
+            delegate: ItemDelegate {
+                text: model.text
+                width: parent.width
+                onClicked: {
+                    var cursorPos = codeEditor.cursorPosition
+                    var text = codeEditor.text
+                    var textToInsert = model.text
+                    codeEditor.text = text.substring(0, cursorPos) + textToInsert + text.substring(cursorPos)
+                    completionPopup.close()
+                }
+            }
         }
     }
 }

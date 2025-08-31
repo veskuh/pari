@@ -30,6 +30,8 @@ qt_add_executable(pari
     toolmanager.h
     gitlogmodel.cpp
     gitlogmodel.h
+    lspclient.cpp
+    lspclient.h
     ../qml/qml.qrc
     ../assets/assets.qrc
 )

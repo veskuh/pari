@@ -342,6 +342,10 @@ ApplicationWindow {
         }
     }
 
+    function isCppFile(filePath) {
+        return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh")
+    }
+
     Connections {
         target: fileSystem
         function onRootPathChanged() {
@@ -352,6 +356,9 @@ ApplicationWindow {
         function onFileContentReady(filePath, content) {
             codeEditor.text = content;
             syntaxHighlighterProvider.attachHighlighter(codeEditor.textDocument, filePath);
+            if (isCppFile(filePath)) {
+                lspClient.documentOpened(filePath, content);
+            }
         }
         function onFileSaved(filePath) {
             customStatusBar.text = qsTr("File saved: %1").arg(filePath);

@@ -106,6 +106,8 @@ void FileSystem::setRootPath(const QString &path)
             m_isGitRepository = isGit;
             emit isGitRepositoryChanged();
         }
+
+        emit projectOpened(path);
     }
 }
 
