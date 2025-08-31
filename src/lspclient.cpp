@@ -4,28 +4,36 @@
 #include <QDebug>
 #include <QCoreApplication>
 
-LspClient::LspClient(QObject *parent) : QObject(parent), m_process(new QProcess(this)), m_requestId(0)
+LspClient::LspClient(QObject *parent) : QObject(parent), m_process(nullptr), m_requestId(0)
 {
-    connect(m_process, &QProcess::readyRead, this, &LspClient::onReadyRead);
-    connect(m_process, &QProcess::readyReadStandardError, this, &LspClient::onReadyReadStandardError);
-    connect(m_process, &QProcess::errorOccurred, this, &LspClient::onProcessError);
 }
 
 LspClient::~LspClient()
 {
-    m_process->kill();
+    if (m_process) {
+        m_process->kill();
+        m_process->waitForFinished();
+        m_process->deleteLater();
+    }
 }
 
 void LspClient::startServer(const QString &projectPath)
 {
-    if (m_process->state() != QProcess::NotRunning) {
+    if (m_process) {
         m_process->kill();
+        m_process->waitForFinished();
+        m_process->deleteLater();
     }
+
+    m_process = new QProcess(this);
+    connect(m_process, &QProcess::readyRead, this, &LspClient::onReadyRead);
+    connect(m_process, &QProcess::readyReadStandardError, this, &LspClient::onReadyReadStandardError);
+    connect(m_process, &QProcess::errorOccurred, this, &LspClient::onProcessError);
+
     m_process->setWorkingDirectory(projectPath);
     QStringList args;
     args << "--compile-commands-dir=" + projectPath + "/build";
     args << "--log=verbose";
-    args << "--trace";
     m_process->start("clangd", args);
     if (!m_process->waitForStarted()) {
         qWarning() << "Failed to start clangd:" << m_process->errorString();
@@ -36,6 +44,13 @@ void LspClient::startServer(const QString &projectPath)
     initializeParams["processId"] = QCoreApplication::applicationPid();
     initializeParams["rootUri"] = QUrl::fromLocalFile(projectPath).toString();
     QJsonObject capabilities;
+    QJsonObject textDocument;
+    QJsonObject completion;
+    QJsonObject completionItem;
+    completionItem["snippetSupport"] = true;
+    completion["completionItem"] = completionItem;
+    textDocument["completion"] = completion;
+    capabilities["textDocument"] = textDocument;
     initializeParams["capabilities"] = capabilities;
 
     QJsonObject message;
@@ -114,25 +129,29 @@ void LspClient::requestCompletion(const QString &documentPath, int line, int cha
 
 void LspClient::onReadyRead()
 {
+    if (!m_process) return;
     QByteArray data = m_process->readAll();
     handleMessage(data);
 }
 
 void LspClient::onReadyReadStandardError()
 {
+    if (!m_process) return;
     qDebug() << "clangd stderr:" << m_process->readAllStandardError();
 }
 
 void LspClient::onProcessError(QProcess::ProcessError error)
 {
+    if (!m_process) return;
     qWarning() << "clangd process error:" << error << m_process->errorString();
 }
 
 void LspClient::sendMessage(const QJsonObject &message)
 {
+    if (!m_process) return;
     QJsonDocument doc(message);
     QByteArray bytes = doc.toJson(QJsonDocument::Compact);
-    qDebug() << "-->" << bytes;
+    qDebug() << "-->" << doc.toJson(QJsonDocument::Indented);
     QString header = QString("Content-Length: %1\r\n\r\n").arg(bytes.length());
     m_process->write(header.toUtf8());
     m_process->write(bytes);
@@ -148,7 +167,7 @@ void LspClient::handleMessage(const QByteArray &message)
     QJsonDocument doc = QJsonDocument::fromJson(parts[1].toUtf8());
     QJsonObject obj = doc.object();
 
-    qDebug() << "<--" << parts[1];
+    qDebug() << "<--" << doc.toJson(QJsonDocument::Indented);
 
     if (obj.contains("result")) {
         QJsonObject result = obj["result"].toObject();

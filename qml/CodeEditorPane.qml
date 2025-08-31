@@ -107,12 +107,6 @@ ColumnLayout {
             }
             property int savedCursorPosition: 0
 
-            Component.onCompleted: {
-                if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
-                    lspClient.documentOpened(fileSystem.currentFilePath, codeEditor.text)
-                }
-            }
-
             TextMetrics {
                 id: textMetrics
                 font: codeEditor.font
