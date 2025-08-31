@@ -207,7 +207,7 @@ ColumnLayout {
                 onClicked: {
                     var cursorPos = codeEditor.cursorPosition
                     var text = codeEditor.text
-                    var textToInsert = model.text
+                    var textToInsert = model.text.trim()
                     codeEditor.text = text.substring(0, cursorPos) + textToInsert + text.substring(cursorPos)
                     completionPopup.close()
                 }
