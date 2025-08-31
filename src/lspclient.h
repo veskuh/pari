@@ -16,9 +16,11 @@ public:
     Q_INVOKABLE void documentOpened(const QString &documentPath, const QString &content);
     Q_INVOKABLE void documentChanged(const QString &documentPath, const QString &content);
     Q_INVOKABLE void requestCompletion(const QString &documentPath, int line, int character);
+    Q_INVOKABLE void format(const QString &documentPath);
 
 signals:
     void completionItems(const QList<QString> &items);
+    void formattingResult(const QString &result);
 
 private slots:
     void onReadyRead();

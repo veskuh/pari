@@ -61,6 +61,28 @@ void LspClient::startServer(const QString &projectPath)
     sendMessage(message);
 }
 
+void LspClient::format(const QString &documentPath)
+{
+    QJsonObject textDocument;
+    textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
+
+    QJsonObject options;
+    options["tabSize"] = 4;
+    options["insertSpaces"] = true;
+
+    QJsonObject params;
+    params["textDocument"] = textDocument;
+    params["options"] = options;
+
+    QJsonObject message;
+    message["jsonrpc"] = "2.0";
+    message["id"] = m_requestId++;
+    message["method"] = "textDocument/formatting";
+    message["params"] = params;
+
+    sendMessage(message);
+}
+
 void LspClient::documentOpened(const QString &documentPath, const QString &content)
 {
     QJsonObject textDocument;
@@ -170,14 +192,23 @@ void LspClient::handleMessage(const QByteArray &message)
     qDebug() << "<--" << doc.toJson(QJsonDocument::Indented);
 
     if (obj.contains("result")) {
-        QJsonObject result = obj["result"].toObject();
-        if (result.contains("items")) {
-            QJsonArray items = result["items"].toArray();
-            QList<QString> completionItemsList;
-            for (const QJsonValue &item : items) {
-                completionItemsList.append(item.toObject()["label"].toString());
+        QJsonValue resultValue = obj.value("result");
+        if (resultValue.isObject()) {
+            QJsonObject result = resultValue.toObject();
+            if (result.contains("items")) {
+                QJsonArray items = result["items"].toArray();
+                QList<QString> completionItemsList;
+                for (const QJsonValue &item : items) {
+                    completionItemsList.append(item.toObject()["label"].toString());
+                }
+                emit completionItems(completionItemsList);
             }
-            emit completionItems(completionItemsList);
+        } else if (resultValue.isArray()) {
+            QJsonArray edits = resultValue.toArray();
+            if (!edits.isEmpty()) {
+                const QJsonObject &firstEdit = edits[0].toObject();
+                emit formattingResult(firstEdit.value("newText").toString());
+            }
         }
     }
 }
