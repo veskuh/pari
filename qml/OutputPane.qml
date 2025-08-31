@@ -150,7 +150,7 @@ ColumnLayout {
         Layout.rightMargin: 10
         Layout.leftMargin: 10
         wrapMode: Text.WordWrap
-        enabled: sendButton.enabled
+
         placeholderText: "Type a prompt or select a command..."
         onTextChanged: {
             if (text !== promptComboBox.prompt) {
