@@ -183,7 +183,9 @@ ColumnLayout {
             for (var i = 0; i < items.length; ++i) {
                 completionModel.append({ "text": items[i] })
             }
-            completionPopup.open()
+            if (items.length > 0) {
+                completionPopup.open()
+            }
         }
     }
 
@@ -208,8 +210,12 @@ ColumnLayout {
                     var cursorPos = codeEditor.cursorPosition
                     var text = codeEditor.text
                     var textToInsert = model.text.trim()
+                    if (textToInsert.endsWith(" const")) {
+                        textToInsert = textToInsert.slice(0, -6)
+                    }
                     codeEditor.text = text.substring(0, cursorPos) + textToInsert + text.substring(cursorPos)
                     completionPopup.close()
+                    codeEditor.cursorPosition = cursorPos + textToInsert.length
                 }
             }
         }
