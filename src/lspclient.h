@@ -22,6 +22,7 @@ signals:
 
 private slots:
     void onReadyRead();
+    void onReadyReadStandardError();
     void onProcessError(QProcess::ProcessError error);
 
 private:

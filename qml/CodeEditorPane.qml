@@ -100,6 +100,7 @@ ColumnLayout {
                         var lines = textToCursor.split(/\r?\n/)
                         var line = lines.length - 1
                         var character = lines[lines.length - 1].length
+                        console.log("Requesting completion at", line, character)
                         lspClient.requestCompletion(fileSystem.currentFilePath, line, character)
                     }
                 }

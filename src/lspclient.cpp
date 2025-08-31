@@ -7,6 +7,7 @@
 LspClient::LspClient(QObject *parent) : QObject(parent), m_process(new QProcess(this)), m_requestId(0)
 {
     connect(m_process, &QProcess::readyRead, this, &LspClient::onReadyRead);
+    connect(m_process, &QProcess::readyReadStandardError, this, &LspClient::onReadyReadStandardError);
     connect(m_process, &QProcess::errorOccurred, this, &LspClient::onProcessError);
 }
 
@@ -23,6 +24,8 @@ void LspClient::startServer(const QString &projectPath)
     m_process->setWorkingDirectory(projectPath);
     QStringList args;
     args << "--compile-commands-dir=" + projectPath + "/build";
+    args << "--log=verbose";
+    args << "--trace";
     m_process->start("clangd", args);
     if (!m_process->waitForStarted()) {
         qWarning() << "Failed to start clangd:" << m_process->errorString();
@@ -115,6 +118,11 @@ void LspClient::onReadyRead()
     handleMessage(data);
 }
 
+void LspClient::onReadyReadStandardError()
+{
+    qDebug() << "clangd stderr:" << m_process->readAllStandardError();
+}
+
 void LspClient::onProcessError(QProcess::ProcessError error)
 {
     qWarning() << "clangd process error:" << error << m_process->errorString();
@@ -124,6 +132,7 @@ void LspClient::sendMessage(const QJsonObject &message)
 {
     QJsonDocument doc(message);
     QByteArray bytes = doc.toJson(QJsonDocument::Compact);
+    qDebug() << "-->" << bytes;
     QString header = QString("Content-Length: %1\r\n\r\n").arg(bytes.length());
     m_process->write(header.toUtf8());
     m_process->write(bytes);
@@ -138,6 +147,8 @@ void LspClient::handleMessage(const QByteArray &message)
     }
     QJsonDocument doc = QJsonDocument::fromJson(parts[1].toUtf8());
     QJsonObject obj = doc.object();
+
+    qDebug() << "<--" << parts[1];
 
     if (obj.contains("result")) {
         QJsonObject result = obj["result"].toObject();
