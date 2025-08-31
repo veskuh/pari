@@ -31,6 +31,7 @@ private:
 
     QProcess *m_process;
     int m_requestId;
+    int m_documentId;
 };
 
 #endif // LSPCLIENT_H

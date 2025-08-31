@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QCoreApplication>
 
-LspClient::LspClient(QObject *parent) : QObject(parent), m_process(nullptr), m_requestId(0)
+LspClient::LspClient(QObject *parent) : QObject(parent), m_process(nullptr), m_requestId(0), m_documentId(0)
 {
 }
 
@@ -33,7 +33,6 @@ void LspClient::startServer(const QString &projectPath)
     m_process->setWorkingDirectory(projectPath);
     QStringList args;
     args << "--compile-commands-dir=" + projectPath + "/build";
-    args << "--log=verbose";
     m_process->start("clangd", args);
     if (!m_process->waitForStarted()) {
         qWarning() << "Failed to start clangd:" << m_process->errorString();
@@ -67,7 +66,8 @@ void LspClient::documentOpened(const QString &documentPath, const QString &conte
     QJsonObject textDocument;
     textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
     textDocument["languageId"] = "cpp";
-    textDocument["version"] = 1;
+    m_documentId = 1;
+    textDocument["version"] = m_documentId++;
     textDocument["text"] = content;
 
     QJsonObject params;
@@ -85,7 +85,7 @@ void LspClient::documentChanged(const QString &documentPath, const QString &cont
 {
     QJsonObject textDocument;
     textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
-    textDocument["version"] = 2; // Version number should be incremented
+    textDocument["version"] = m_documentId++; 
 
     QJsonObject contentChanges;
     contentChanges["text"] = content;
