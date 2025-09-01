@@ -16,9 +16,11 @@ public:
     Q_INVOKABLE void documentOpened(const QString &documentPath, const QString &content);
     Q_INVOKABLE void documentChanged(const QString &documentPath, const QString &content);
     Q_INVOKABLE void requestCompletion(const QString &documentPath, int line, int character);
+    Q_INVOKABLE void format(const QString &documentPath, const QString &content);
 
 signals:
     void completionItems(const QList<QString> &items);
+    void formattingResult(const QString &result);
 
 private slots:
     void onReadyRead();
@@ -28,10 +30,12 @@ private slots:
 private:
     void sendMessage(const QJsonObject &message);
     void handleMessage(const QByteArray &message);
+    qint64 positionToIndex(const QJsonObject &position, const QString &document);
 
     QProcess *m_process;
     int m_requestId;
     int m_documentId;
+    QString m_formattingDocumentContent;
 };
 
 #endif // LSPCLIENT_H

@@ -25,6 +25,16 @@ ColumnLayout {
         findOverlay.open();
     }
 
+    function format() {
+        if (fileSystem.currentFilePath) {
+            if (fileSystem.currentFilePath.endsWith(".qml")) {
+                toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text)
+            } else if (isCppFile(fileSystem.currentFilePath)) {
+                lspClient.format(fileSystem.currentFilePath, codeEditor.text)
+            }
+        }
+    }
+
     function isCppFile(filePath) {
         return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh")
     }
@@ -187,6 +197,10 @@ ColumnLayout {
             if (items.length > 0) {
                 completionPopup.open()
             }
+        }
+        function onFormattingResult(result) {
+            codeEditor.text = result
+            restoreCursorPosition()
         }
     }
 

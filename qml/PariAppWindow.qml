@@ -97,11 +97,11 @@ ApplicationWindow {
     Action {
         id: indentAction
         text: qsTr("Indent")
-        enabled: fileSystem.currentFilePath.endsWith(".qml")
+        enabled: fileSystem.currentFilePath.endsWith(".qml") || isCppFile(fileSystem.currentFilePath)
         shortcut: "Ctrl+i"
         onTriggered: {
             codeEditor.saveCursorPosition();
-            toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text);
+            codeEditor.format()
         }
     }
 
