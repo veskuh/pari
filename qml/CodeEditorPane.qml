@@ -30,7 +30,7 @@ ColumnLayout {
             if (fileSystem.currentFilePath.endsWith(".qml")) {
                 toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text)
             } else if (isCppFile(fileSystem.currentFilePath)) {
-                lspClient.format(fileSystem.currentFilePath)
+                lspClient.format(fileSystem.currentFilePath, codeEditor.text)
             }
         }
     }

@@ -1,6 +1,7 @@
 #include "lspclient.h"
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QJsonValue>
 #include <QDebug>
 #include <QCoreApplication>
 
@@ -61,8 +62,9 @@ void LspClient::startServer(const QString &projectPath)
     sendMessage(message);
 }
 
-void LspClient::format(const QString &documentPath)
+void LspClient::format(const QString &documentPath, const QString &content)
 {
+    m_formattingDocumentContent = content;
     QJsonObject textDocument;
     textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
 
@@ -149,6 +151,18 @@ void LspClient::requestCompletion(const QString &documentPath, int line, int cha
     sendMessage(message);
 }
 
+qint64 LspClient::positionToIndex(const QJsonObject &position, const QString &document)
+{
+    qint64 line = position["line"].toInt();
+    qint64 character = position["character"].toInt();
+    qint64 index = 0;
+    for (qint64 i = 0; i < line; ++i) {
+        index = document.indexOf('\n', index) + 1;
+        if (index == 0) return -1; // Line not found
+    }
+    return index + character;
+}
+
 void LspClient::onReadyRead()
 {
     if (!m_process) return;
@@ -204,11 +218,21 @@ void LspClient::handleMessage(const QByteArray &message)
                 emit completionItems(completionItemsList);
             }
         } else if (resultValue.isArray()) {
-            QJsonArray edits = resultValue.toArray();
-            if (!edits.isEmpty()) {
-                const QJsonObject &firstEdit = edits[0].toObject();
-                emit formattingResult(firstEdit.value("newText").toString());
+            QString newText = m_formattingDocumentContent;
+            const QJsonArray edits = resultValue.toArray();
+            for (int i = edits.size() - 1; i >= 0; --i) {
+                const QJsonObject edit = edits[i].toObject();
+                const QJsonObject range = edit["range"].toObject();
+                const qint64 start = positionToIndex(range["start"].toObject(), newText);
+                const qint64 end = positionToIndex(range["end"].toObject(), newText);
+                if (start < 0 || end < 0 || start > end) {
+                    qWarning() << "Invalid range in formatting response";
+                    continue;
+                }
+                newText.remove(start, end - start);
+                newText.insert(start, edit["newText"].toString());
             }
+            emit formattingResult(newText);
         }
     }
 }
