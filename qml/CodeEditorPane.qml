@@ -28,15 +28,15 @@ ColumnLayout {
     function format() {
         if (fileSystem.currentFilePath) {
             if (fileSystem.currentFilePath.endsWith(".qml")) {
-                toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text)
+                toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text);
             } else if (isCppFile(fileSystem.currentFilePath)) {
-                lspClient.format(fileSystem.currentFilePath, codeEditor.text)
+                lspClient.format(fileSystem.currentFilePath, codeEditor.text);
             }
         }
     }
 
     function isCppFile(filePath) {
-        return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh")
+        return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh");
     }
 
     function showBuildPanel() {
@@ -101,27 +101,68 @@ ColumnLayout {
             font.family: appSettings.fontFamily
             font.pointSize: appSettings.fontSize
             tabStopDistance: 4 * textMetrics.advanceWidth
+            function handleAutoIndent() {
+                if (isIndenting || !codeEditor.activeFocus) {
+                    return;
+                }
+
+                var currentPos = codeEditor.cursorPosition;
+                var text = codeEditor.getText(0, currentPos);
+                var lines = text.split('\n');
+                if (lines.length < 2) {
+                    return;
+                }
+
+                var line = lines[lines.length - 1];
+                if (line !== "") {
+                    return;
+                }
+
+                var previousLine = lines[lines.length - 2];
+                var indentation = previousLine.match(/^\s*/)[0];
+                if (previousLine.trim().endsWith('{')) {
+                    indentation += "    ";
+                }
+                if (line.trim().startsWith('}')) {
+                    indentation = indentation.substring(0, Math.max(0, indentation.length - 4));
+                }
+                isIndenting = true;
+                codeEditor.insert(currentPos, indentation);
+                isIndenting = false;
+            }
+
             onTextChanged: {
-                aiOutputPane.updateDiff(codeEditor.text)
+                // We are only intrested in new letters being typed, that is cursor going forward
+                if (codeEditor.cursorPosition !== previousPos) {
+                    previousPos = codeEditor.cursorPosition;
+                    return;
+                }
+                previousPos = codeEditor.cursorPosition;
+
+                aiOutputPane.updateDiff(codeEditor.text);
                 if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
-                    lspClient.documentChanged(fileSystem.currentFilePath, codeEditor.text)
-                    var text = codeEditor.getText(0, codeEditor.cursorPosition)
+                    lspClient.documentChanged(fileSystem.currentFilePath, codeEditor.text);
+                    var text = codeEditor.getText(0, codeEditor.cursorPosition);
                     if (text.endsWith(".") || text.endsWith("->")) {
-                        var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition)
-                        var lines = textToCursor.split(/\r?\n/)
-                        var line = lines.length - 1
-                        var character = lines[lines.length - 1].length
-                        console.log("Requesting completion at", line, character)
-                        lspClient.requestCompletion(fileSystem.currentFilePath, line, character)
+                        var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition);
+                        var lines = textToCursor.split(/\r?\n/);
+                        var line = lines.length - 1;
+                        var character = lines[lines.length - 1].length;
+                        console.log("Requesting completion at", line, character);
+                        lspClient.requestCompletion(fileSystem.currentFilePath, line, character);
                     }
                 }
+                handleAutoIndent();
             }
             property int savedCursorPosition: 0
+            property int previousPos: 0
 
             TextMetrics {
                 id: textMetrics
                 font: codeEditor.font
             }
+
+            property bool isIndenting: false
         }
     }
 
@@ -190,17 +231,19 @@ ColumnLayout {
     Connections {
         target: lspClient
         function onCompletionItems(items) {
-            completionModel.clear()
+            completionModel.clear();
             for (var i = 0; i < items.length; ++i) {
-                completionModel.append({ "text": items[i] })
+                completionModel.append({
+                    "text": items[i]
+                });
             }
             if (items.length > 0) {
-                completionPopup.open()
+                completionPopup.open();
             }
         }
         function onFormattingResult(result) {
-            codeEditor.text = result
-            restoreCursorPosition()
+            codeEditor.text = result;
+            restoreCursorPosition();
         }
     }
 
@@ -222,15 +265,15 @@ ColumnLayout {
                 text: model.text
                 width: parent.width
                 onClicked: {
-                    var cursorPos = codeEditor.cursorPosition
-                    var text = codeEditor.text
-                    var textToInsert = model.text.trim()
+                    var cursorPos = codeEditor.cursorPosition;
+                    var text = codeEditor.text;
+                    var textToInsert = model.text.trim();
                     if (textToInsert.endsWith(" const")) {
-                        textToInsert = textToInsert.slice(0, -6)
+                        textToInsert = textToInsert.slice(0, -6);
                     }
-                    codeEditor.text = text.substring(0, cursorPos) + textToInsert + text.substring(cursorPos)
-                    completionPopup.close()
-                    codeEditor.cursorPosition = cursorPos + textToInsert.length
+                    codeEditor.text = text.substring(0, cursorPos) + textToInsert + text.substring(cursorPos);
+                    completionPopup.close();
+                    codeEditor.cursorPosition = cursorPos + textToInsert.length;
                 }
             }
         }

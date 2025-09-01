@@ -187,7 +187,7 @@ void LspClient::sendMessage(const QJsonObject &message)
     if (!m_process) return;
     QJsonDocument doc(message);
     QByteArray bytes = doc.toJson(QJsonDocument::Compact);
-    qDebug() << "-->" << doc.toJson(QJsonDocument::Indented);
+    // qDebug() << "-->" << doc.toJson(QJsonDocument::Indented);
     QString header = QString("Content-Length: %1\r\n\r\n").arg(bytes.length());
     m_process->write(header.toUtf8());
     m_process->write(bytes);
@@ -203,7 +203,7 @@ void LspClient::handleMessage(const QByteArray &message)
     QJsonDocument doc = QJsonDocument::fromJson(parts[1].toUtf8());
     QJsonObject obj = doc.object();
 
-    qDebug() << "<--" << doc.toJson(QJsonDocument::Indented);
+    //qDebug() << "<--" << doc.toJson(QJsonDocument::Indented);
 
     if (obj.contains("result")) {
         QJsonValue resultValue = obj.value("result");
