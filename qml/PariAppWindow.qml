@@ -299,7 +299,7 @@ ApplicationWindow {
         // Pane 1: File System (20% width)
         ColumnLayout {
             // Use attached properties to define the pane's size within the SplitView
-            SplitView.preferredWidth: appWindow.width * 0.20
+            SplitView.preferredWidth: appWindow.width * 0.15
             SplitView.minimumWidth: 200 // Prevent the pane from becoming too small
 
             Label {
@@ -330,14 +330,14 @@ ApplicationWindow {
         // Pane 2: Code Editor (40% width)
         CodeEditorPane {
             id: codeEditor
-            SplitView.preferredWidth: appWindow.width * 0.40
+            SplitView.preferredWidth: appWindow.width * 0.55
             SplitView.minimumWidth: 250
         }
 
         // Pane 3: AI Section (40% width) - Refactored with Tabs
         OutputPane {
             id: aiOutputPane
-            SplitView.preferredWidth: appWindow.width * 0.40
+            SplitView.preferredWidth: appWindow.width * 0.30
             SplitView.minimumWidth: 250
         }
     }
