@@ -21,22 +21,23 @@
 #include "lsploghandler.h"
 
 static LspLogHandler *lspLogHandler = nullptr;
-static QMessageLogger *logger = nullptr;
-
-#include <cstring>
+static QtMessageHandler previousMessageHandler = nullptr;
 
 void lspMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    if (strcmp(context.category, "pari.lsp") == 0) {
+    if (QLatin1String(context.category) == QLatin1String("pari.lsp")) {
         if (type == QtDebugMsg) {
             if (lspLogHandler) {
                 lspLogHandler->addMessage(msg);
             }
-        } else {
-            (*qt_message_output)(type, context, msg);
+            // Suppress debug message from console by not calling the previous handler.
+            return;
         }
-    } else {
-        (*qt_message_output)(type, context, msg);
+    }
+
+    // Pass all other messages to the previous handler.
+    if (previousMessageHandler) {
+        previousMessageHandler(type, context, msg);
     }
 }
 
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
     bool isDebug = parser.isSet(debugOption);
     if (isDebug) {
         lspLogHandler = new LspLogHandler(&app);
-        qInstallMessageHandler(lspMessageOutput);
+        previousMessageHandler = qInstallMessageHandler(lspMessageOutput);
     } else {
         QLoggingCategory::setFilterRules("pari.lsp.debug=false");
     }
@@ -123,5 +124,11 @@ int main(int argc, char *argv[])
     }
 
     engine.load(url);
-    return app.exec();
+    int ret = app.exec();
+
+    if (previousMessageHandler) {
+        qInstallMessageHandler(previousMessageHandler);
+    }
+
+    return ret;
 }
