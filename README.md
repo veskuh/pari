@@ -36,10 +36,9 @@ The unit tests are built using the Qt Test framework and can be found in the `te
 
 ```bash
 mkdir build
-cd build
-qmake6 ../pari.pro
-make
-./tests/tst_settings
+cmake -S . -B build
+cmake --build build
+./build/tests/tst_settings
 ```
 
 ### Smoke Test
@@ -47,7 +46,7 @@ make
 The application includes a smoke test that verifies if the main QML interface can be loaded successfully. This is triggered by the `--selfcheck` command-line flag.
 
 ```bash
-./src/pari --selfcheck
+./build/src/pari --selfcheck
 ```
 
 **Note:** Running these tests locally requires a proper Qt development environment. The test scripts are primarily designed for use in automated testing environments, such as the GitHub Actions CI workflow, where the environment is pre-configured with all necessary dependencies. If you are running the tests locally, you may need to install Qt development packages first. For example, on a recent Debian/Ubuntu-based system, you can install the necessary packages with:
