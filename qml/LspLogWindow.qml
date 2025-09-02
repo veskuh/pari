@@ -3,26 +3,55 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 Window {
-    id: root
+    id: lspLogWindow
     width: 800
     height: 600
-    title: "LSP Log"
+    title: qsTr("LSP Log")
     visible: false
+    color: palette.window
 
-    TextArea {
-        id: logView
+    SystemPalette {
+        id: palette
+    }
+
+    ColumnLayout {
         anchors.fill: parent
-        readOnly: true
-        font.family: "monospace"
-        font.pointSize: 10
-        text: lspLogHandler ? lspLogHandler.logMessages.join("\\n") : "LSP Log Handler not available."
+        anchors.margins: 10
 
-        Connections {
-            target: lspLogHandler
-            enabled: lspLogHandler !== null
-            function onLogMessagesChanged() {
-                logView.text = lspLogHandler.logMessages.join("\\n")
+        Label {
+            text: qsTr("LSP Message Log")
+            font.bold: true
+            Layout.alignment: Qt.AlignHCenter
+            color: palette.windowText
+        }
+
+        ScrollView {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            clip: true
+
+            TextArea {
+                id: logView
+                readOnly: true
+                wrapMode: Text.NoWrap
+                font.family: "monospace"
+                font.pointSize: 10
+                text: lspLogHandler ? lspLogHandler.logMessages.join("\\n") : "LSP Log Handler not available."
+
+                Connections {
+                    target: lspLogHandler
+                    enabled: lspLogHandler !== null
+                    function onLogMessagesChanged() {
+                        logView.text = lspLogHandler.logMessages.join("\\n")
+                    }
+                }
             }
+        }
+
+        Button {
+            text: qsTr("Close")
+            Layout.alignment: Qt.AlignRight
+            onClicked: lspLogWindow.close()
         }
     }
 }

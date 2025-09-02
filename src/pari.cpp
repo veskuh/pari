@@ -62,6 +62,8 @@ int main(int argc, char *argv[])
     if (isDebug) {
         lspLogHandler = new LspLogHandler(&app);
         qInstallMessageHandler(lspMessageOutput);
+    } else {
+        QLoggingCategory::setFilterRules("pari.lsp.debug=false");
     }
 
     qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
