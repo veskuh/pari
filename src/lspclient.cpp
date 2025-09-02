@@ -4,6 +4,9 @@
 #include <QJsonValue>
 #include <QDebug>
 #include <QCoreApplication>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(LSP, "pari.lsp")
 
 LspClient::LspClient(QObject *parent) : QObject(parent), m_process(nullptr), m_requestId(0), m_documentId(0)
 {
@@ -28,7 +31,7 @@ void LspClient::startServer(const QString &projectPath)
     args << "--compile-commands-dir=" + projectPath + "/build";
     m_process->start("clangd", args);
     if (!m_process->waitForStarted()) {
-        qWarning() << "Failed to start clangd:" << m_process->errorString();
+        qCWarning(LSP) << "Failed to start clangd:" << m_process->errorString();
         return;
     }
 
@@ -165,13 +168,13 @@ void LspClient::onReadyRead()
 void LspClient::onReadyReadStandardError()
 {
     if (!m_process) return;
-    qDebug() << "clangd stderr:" << m_process->readAllStandardError();
+    qCDebug(LSP) << "clangd stderr:" << m_process->readAllStandardError();
 }
 
 void LspClient::onProcessError(QProcess::ProcessError error)
 {
     if (!m_process) return;
-    qWarning() << "clangd process error:" << error << m_process->errorString();
+    qCWarning(LSP) << "clangd process error:" << error << m_process->errorString();
 }
 
 void LspClient::sendMessage(const QJsonObject &message)
@@ -179,7 +182,7 @@ void LspClient::sendMessage(const QJsonObject &message)
     if (!m_process) return;
     QJsonDocument doc(message);
     QByteArray bytes = doc.toJson(QJsonDocument::Compact);
-    // qDebug() << "-->" << doc.toJson(QJsonDocument::Indented);
+    qCDebug(LSP) << "-->" << doc.toJson(QJsonDocument::Indented);
     QString header = QString("Content-Length: %1\r\n\r\n").arg(bytes.length());
     m_process->write(header.toUtf8());
     m_process->write(bytes);
@@ -195,7 +198,7 @@ void LspClient::handleMessage(const QByteArray &message)
     QJsonDocument doc = QJsonDocument::fromJson(parts[1].toUtf8());
     QJsonObject obj = doc.object();
 
-    //qDebug() << "<--" << doc.toJson(QJsonDocument::Indented);
+    qCDebug(LSP) << "<--" << doc.toJson(QJsonDocument::Indented);
 
     if (obj.contains("result")) {
         QJsonValue resultValue = obj.value("result");
@@ -218,7 +221,7 @@ void LspClient::handleMessage(const QByteArray &message)
                 const qint64 start = positionToIndex(range["start"].toObject(), newText);
                 const qint64 end = positionToIndex(range["end"].toObject(), newText);
                 if (start < 0 || end < 0 || start > end) {
-                    qWarning() << "Invalid range in formatting response";
+                    qCWarning(LSP) << "Invalid range in formatting response";
                     continue;
                 }
                 newText.remove(start, end - start);

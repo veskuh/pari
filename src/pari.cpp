@@ -3,6 +3,10 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QPalette>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
+#include <QLoggingCategory>
+
 #include "filesystem.h"
 #include "llm.h"
 #include "settings.h"
@@ -14,6 +18,27 @@
 #include "toolmanager.h"
 #include "gitlogmodel.h"
 #include "lspclient.h"
+#include "lsploghandler.h"
+
+static LspLogHandler *lspLogHandler = nullptr;
+static QMessageLogger *logger = nullptr;
+
+#include <cstring>
+
+void lspMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    if (strcmp(context.category, "pari.lsp") == 0) {
+        if (type == QtDebugMsg) {
+            if (lspLogHandler) {
+                lspLogHandler->addMessage(msg);
+            }
+        } else {
+            (*qt_message_output)(type, context, msg);
+        }
+    } else {
+        (*qt_message_output)(type, context, msg);
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -24,11 +49,29 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("veskuh.net");
     app.setApplicationName("Pari");
 
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Pari");
+    parser.addHelpOption();
+    QCommandLineOption debugOption("debug", "Enable debug mode.");
+    parser.addOption(debugOption);
+    QCommandLineOption selfcheckOption("selfcheck", "Run QML self-check.");
+    parser.addOption(selfcheckOption);
+    parser.process(app);
+
+    bool isDebug = parser.isSet(debugOption);
+    if (isDebug) {
+        lspLogHandler = new LspLogHandler(&app);
+        qInstallMessageHandler(lspMessageOutput);
+    }
+
     qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
     qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
     qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");
 
     QQmlApplicationEngine engine;
+
+    engine.rootContext()->setContextProperty("lspLogHandler", lspLogHandler);
+    engine.rootContext()->setContextProperty("debugMode", isDebug);
 
     Settings *appSettings = new Settings(&app);
     appSettings->setSystemTheme(QApplication::palette().color(QPalette::Window).lightness() < 128);

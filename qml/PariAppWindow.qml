@@ -204,6 +204,14 @@ ApplicationWindow {
             }
         }
         Menu {
+            title: qsTr("Debug")
+            visible: debugMode
+            MenuItem {
+                text: "LSP Log"
+                onTriggered: lspLogWindow.show()
+            }
+        }
+        Menu {
             title: qsTr("Git")
             MenuItem {
                 text: "git diff"
@@ -415,6 +423,10 @@ ApplicationWindow {
     ChatLogWindow {
         id: chatLogWindow
         chatLlm: llm
+    }
+
+    LspLogWindow {
+        id: lspLogWindow
     }
 
     BuildConfigurationDialog {
