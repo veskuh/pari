@@ -33,16 +33,16 @@ Window {
             TextArea {
                 id: logView
                 readOnly: true
-                wrapMode: Text.NoWrap
+                wrapMode: Text.WordWrap
                 font.family: "monospace"
                 font.pointSize: 10
-                text: lspLogHandler ? lspLogHandler.logMessages.join("\\n") : "LSP Log Handler not available."
+                text: lspLogHandler ? lspLogHandler.logMessages.join("\\n\\n") : "LSP Log Handler not available."
 
                 Connections {
                     target: lspLogHandler
                     enabled: lspLogHandler !== null
                     function onLogMessagesChanged() {
-                        logView.text = lspLogHandler.logMessages.join("\\n")
+                        logView.text = lspLogHandler.logMessages.join("\\n\\n")
                     }
                 }
             }

@@ -204,7 +204,7 @@ ApplicationWindow {
             }
         }
         Menu {
-            title: qsTr("Debug")
+            title: "Debug"
             visible: debugMode
             MenuItem {
                 text: "LSP Log"
