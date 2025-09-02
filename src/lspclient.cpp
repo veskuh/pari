@@ -11,20 +11,12 @@ LspClient::LspClient(QObject *parent) : QObject(parent), m_process(nullptr), m_r
 
 LspClient::~LspClient()
 {
-    if (m_process) {
-        m_process->kill();
-        m_process->waitForFinished();
-        m_process->deleteLater();
-    }
+    stopServer();
 }
 
 void LspClient::startServer(const QString &projectPath)
 {
-    if (m_process) {
-        m_process->kill();
-        m_process->waitForFinished();
-        m_process->deleteLater();
-    }
+    stopServer();
 
     m_process = new QProcess(this);
     connect(m_process, &QProcess::readyRead, this, &LspClient::onReadyRead);
@@ -235,4 +227,38 @@ void LspClient::handleMessage(const QByteArray &message)
             emit formattingResult(newText);
         }
     }
+}
+
+void LspClient::stopServer()
+{
+    if (!m_process || m_process->state() != QProcess::Running) {
+        if (m_process) {
+            m_process->deleteLater();
+            m_process = nullptr;
+        }
+        return;
+    }
+
+    QJsonObject shutdownMessage;
+    shutdownMessage["jsonrpc"] = "2.0";
+    shutdownMessage["id"] = m_requestId++;
+    shutdownMessage["method"] = "shutdown";
+    sendMessage(shutdownMessage);
+
+    if (m_process->waitForBytesWritten(5000)) {
+         m_process->waitForReadyRead(1000); // Wait for shutdown response
+    }
+
+    QJsonObject exitMessage;
+    exitMessage["jsonrpc"] = "2.0";
+    exitMessage["method"] = "exit";
+    sendMessage(exitMessage);
+
+    if (!m_process->waitForFinished(2000)) {
+        m_process->kill();
+        m_process->waitForFinished(-1);
+    }
+
+    m_process->deleteLater();
+    m_process = nullptr;
 }
