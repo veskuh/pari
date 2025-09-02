@@ -132,12 +132,12 @@ ColumnLayout {
             }
 
             onTextChanged: {
-                // We are only intrested in new letters being typed, that is cursor going forward
-                if (codeEditor.cursorPosition !== previousPos) {
-                    previousPos = codeEditor.cursorPosition;
+                // We are only intrested in new letters being typed
+                if (codeEditor.length !== (previousLength+1)) {
+                    previousLength = codeEditor.length;
                     return;
                 }
-                previousPos = codeEditor.cursorPosition;
+                previousLength = codeEditor.length;
 
                 aiOutputPane.updateDiff(codeEditor.text);
                 if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
@@ -155,7 +155,7 @@ ColumnLayout {
                 handleAutoIndent();
             }
             property int savedCursorPosition: 0
-            property int previousPos: 0
+            property int previousLength: 0
 
             TextMetrics {
                 id: textMetrics
