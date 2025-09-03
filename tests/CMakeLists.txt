@@ -24,35 +24,35 @@ add_executable(tst_all
     test_toolmanager.h
     test_gitlogmodel.cpp
     test_gitlogmodel.h
-    ../src/settings.cpp
-    ../src/settings.h
-    ../src/filesystem.cpp
-    ../src/filesystem.h
-    ../src/markdownformatter.cpp
-    ../src/markdownformatter.h
-    ../src/llm.cpp
-    ../src/llm.h
-    ../src/cppsyntaxhighlighter.cpp
-    ../src/cppsyntaxhighlighter.h
-    ../src/qmlsyntaxhighlighter.cpp
-    ../src/qmlsyntaxhighlighter.h
-    ../src/shellsyntaxhighlighter.cpp
-    ../src/shellsyntaxhighlighter.h
-    ../src/diffutils.cpp
-    ../src/diffutils.h
-    ../src/syntaxtheme.cpp
-    ../src/syntaxtheme.h
-    ../src/markdownsyntaxhighlighter.cpp
-    ../src/markdownsyntaxhighlighter.h
-    ../src/buildmanager.cpp
-    ../src/buildmanager.h
-    ../src/toolmanager.cpp
-    ../src/toolmanager.h
-    ../src/gitlogmodel.cpp
-    ../src/gitlogmodel.h
+    ../src/core/settings.cpp
+    ../src/core/settings.h
+    ../src/core/filesystem.cpp
+    ../src/core/filesystem.h
+    ../src/formatting/markdownformatter.cpp
+    ../src/formatting/markdownformatter.h
+    ../src/integrations/llm.cpp
+    ../src/integrations/llm.h
+    ../src/formatting/cppsyntaxhighlighter.cpp
+    ../src/formatting/cppsyntaxhighlighter.h
+    ../src/formatting/qmlsyntaxhighlighter.cpp
+    ../src/formatting/qmlsyntaxhighlighter.h
+    ../src/formatting/shellsyntaxhighlighter.cpp
+    ../src/formatting/shellsyntaxhighlighter.h
+    ../src/formatting/diffutils.cpp
+    ../src/formatting/diffutils.h
+    ../src/formatting/syntaxtheme.cpp
+    ../src/formatting/syntaxtheme.h
+    ../src/formatting/markdownsyntaxhighlighter.cpp
+    ../src/formatting/markdownsyntaxhighlighter.h
+    ../src/core/buildmanager.cpp
+    ../src/core/buildmanager.h
+    ../src/core/toolmanager.cpp
+    ../src/core/toolmanager.h
+    ../src/integrations/gitlogmodel.cpp
+    ../src/integrations/gitlogmodel.h
 )
 
-target_include_directories(tst_all PRIVATE ../src)
+target_include_directories(tst_all PRIVATE ../src ../src/core ../src/editor ../src/formatting ../src/integrations)
 
 target_link_libraries(tst_all PRIVATE
     Qt6::Test
