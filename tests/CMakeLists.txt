@@ -38,16 +38,16 @@ add_executable(tst_all
     ../src/formatting/qmlsyntaxhighlighter.h
     ../src/formatting/shellsyntaxhighlighter.cpp
     ../src/formatting/shellsyntaxhighlighter.h
-    ../src/formatting/diffutils.cpp
-    ../src/formatting/diffutils.h
+    ../src/core/diffutils.cpp
+    ../src/core/diffutils.h
     ../src/formatting/syntaxtheme.cpp
     ../src/formatting/syntaxtheme.h
     ../src/formatting/markdownsyntaxhighlighter.cpp
     ../src/formatting/markdownsyntaxhighlighter.h
-    ../src/core/buildmanager.cpp
-    ../src/core/buildmanager.h
-    ../src/core/toolmanager.cpp
-    ../src/core/toolmanager.h
+    ../src/integrations/buildmanager.cpp
+    ../src/integrations/buildmanager.h
+    ../src/integrations/toolmanager.cpp
+    ../src/integrations/toolmanager.h
     ../src/integrations/gitlogmodel.cpp
     ../src/integrations/gitlogmodel.h
 )

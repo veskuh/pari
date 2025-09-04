@@ -2,7 +2,7 @@ find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Te
 qt_standard_project_setup(REQUIRES 6.5)
 
 qt_add_executable(pari
-    integrations/pari.cpp
+    core/pari.cpp
     integrations/llm.cpp
     integrations/llm.h
     core/filesystem.cpp
@@ -19,18 +19,18 @@ qt_add_executable(pari
     formatting/qmlsyntaxhighlighter.h
     formatting/shellsyntaxhighlighter.cpp
     formatting/shellsyntaxhighlighter.h
-    formatting/diffutils.cpp
-    formatting/diffutils.h
+    core/diffutils.cpp
+    core/diffutils.h
     editor/textdocumentsearcher.cpp
     editor/textdocumentsearcher.h
     formatting/syntaxtheme.cpp
     formatting/syntaxtheme.h
     formatting/markdownsyntaxhighlighter.cpp
     formatting/markdownsyntaxhighlighter.h
-    core/buildmanager.cpp
-    core/buildmanager.h
-    core/toolmanager.cpp
-    core/toolmanager.h
+    integrations/buildmanager.cpp
+    integrations/buildmanager.h
+    integrations/toolmanager.cpp
+    integrations/toolmanager.h
     integrations/gitlogmodel.cpp
     integrations/gitlogmodel.h
     integrations/lspclient.cpp
