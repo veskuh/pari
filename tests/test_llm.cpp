@@ -12,13 +12,13 @@ void TestLlm::init()
 void TestLlm::cleanup()
 {
     // Clean up settings after each test
-    QSettings settings("veskuh.net", "Pari");
+    QSettings settings("veskuh.net", "PariTests");
     settings.clear();
 }
 
 void TestLlm::testSendPromptAddsToLog()
 {
-    Settings settings;
+    Settings settings("PariTests");
     Llm llm(&settings);
     QSignalSpy spy(&llm, &Llm::chatLogChanged);
 
@@ -42,7 +42,7 @@ void TestLlm::testErrorResponseAddsToLog()
 
 void TestLlm::testSettingsChangeAddsToLog()
 {
-    Settings settings;
+    Settings settings("PariTests");
     Llm llm(&settings);
     QSignalSpy spy(&llm, &Llm::chatLogChanged);
 

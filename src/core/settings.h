@@ -25,6 +25,7 @@ class Settings : public QObject
 
 public:
     explicit Settings(QObject *parent = nullptr);
+    explicit Settings(const QString &appName, QObject *parent = nullptr);
 
     QString ollamaUrl() const;
     void setOllamaUrl(const QString &url);

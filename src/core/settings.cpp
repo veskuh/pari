@@ -15,6 +15,17 @@ Settings::Settings(QObject *parent)
     m_systemThemeIsDark = querySystemTheme();
 }
 
+Settings::Settings(const QString &appName, QObject *parent)
+    : QObject{parent}
+    , m_lightTheme(new SyntaxTheme(this))
+    , m_darkTheme(new SyntaxTheme(this))
+    , m_qsettings("veskuh.net", appName)
+{
+    loadSettings();
+    // Initialize m_systemThemeIsDark based on current system theme
+    m_systemThemeIsDark = querySystemTheme();
+}
+
 bool Settings::querySystemTheme() const
 {
     return m_systemThemeIsDark;

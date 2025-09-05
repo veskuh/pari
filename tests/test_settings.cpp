@@ -7,20 +7,20 @@
 void TestSettings::init()
 {
     // Ensure we have a clean slate before each test
-    QSettings settings("veskuh.net", "Pari");
+    QSettings settings("veskuh.net", "PariTests");
     settings.clear();
 }
 
 void TestSettings::cleanup()
 {
     // Clean up after each test
-    QSettings settings("veskuh.net", "Pari");
+    QSettings settings("veskuh.net", "PariTests");
     settings.clear();
 }
 
 void TestSettings::testDefaults()
 {
-    Settings settings;
+    Settings settings("PariTests");
     QCOMPARE(settings.ollamaUrl(), "http://localhost:11434");
     QCOMPARE(settings.ollamaModel(), "gemma3:12b");
     QCOMPARE(settings.fontFamily(), "monospace");
@@ -29,7 +29,7 @@ void TestSettings::testDefaults()
 
 void TestSettings::testSettersAndGetters()
 {
-    Settings settings;
+    Settings settings("PariTests");
     settings.setOllamaUrl("http://new-url:1234");
     QCOMPARE(settings.ollamaUrl(), "http://new-url:1234");
 
@@ -47,20 +47,20 @@ void TestSettings::testPersistence()
 {
     // Create a Settings object, change a value, and let it be destructed.
     {
-        Settings settings;
+        Settings settings("PariTests");
         settings.setFontSize(99);
     }
 
     // Create a new Settings object and check if it loads the persisted value.
     {
-        Settings settings;
+        Settings settings("PariTests");
         QCOMPARE(settings.fontSize(), 99);
     }
 }
 
 void TestSettings::testSignals()
 {
-    Settings settings;
+    Settings settings("PariTests");
     QSignalSpy urlSpy(&settings, &Settings::ollamaUrlChanged);
     QSignalSpy modelSpy(&settings, &Settings::ollamaModelChanged);
     QSignalSpy fontSpy(&settings, &Settings::fontFamilyChanged);
@@ -85,7 +85,7 @@ void TestSettings::testSignals()
 
 void TestSettings::testAvailableModels()
 {
-    Settings settings;
+    Settings settings("PariTests");
     QSignalSpy spy(&settings, &Settings::availableModelsChanged);
 
     QStringList models = {"model1", "model2"};
@@ -101,7 +101,7 @@ void TestSettings::testAvailableModels()
 
 void TestSettings::testRecentFolders()
 {
-    Settings settings;
+    Settings settings("PariTests");
     QSignalSpy spy(&settings, &Settings::recentFoldersChanged);
 
     settings.addRecentFolder("/foo/bar");
@@ -135,7 +135,7 @@ void TestSettings::testRecentFolders()
 
 void TestSettings::testBuildCommands()
 {
-    Settings settings;
+    Settings settings("PariTests");
     const QString projectPath = "/test/project";
     const QString buildCommand = "make";
     const QString runCommand = "./my_app";
@@ -156,7 +156,7 @@ void TestSettings::testBuildCommands()
 
     // 4. Test persistence
     {
-        Settings settings2;
+        Settings settings2("PariTests");
         QCOMPARE(settings2.getBuildCommand(projectPath), buildCommand);
         QCOMPARE(settings2.getRunCommand(projectPath), runCommand);
         QCOMPARE(settings2.getCleanCommand(projectPath), cleanCommand);

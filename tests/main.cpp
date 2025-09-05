@@ -14,6 +14,7 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
+    app.setApplicationName("PariTests");
     int status = 0;
 
     TestSettings tc_settings;
