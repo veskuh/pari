@@ -46,7 +46,7 @@ ColumnLayout {
     }
 
     Label {
-        text: fileSystem.currentFilePath? fileSystem.currentFilePath : qsTr("📝 Code Editor")  
+        text: fileSystem.currentFilePath ? fileSystem.currentFilePath : qsTr("📝 Code Editor")
         font.bold: true
         Layout.alignment: Qt.AlignHCenter
         Layout.topMargin: 5
@@ -133,7 +133,7 @@ ColumnLayout {
 
             onTextChanged: {
                 // We are only intrested in new letters being typed
-                if (codeEditor.length !== (previousLength+1)) {
+                if (codeEditor.length !== (previousLength + 1)) {
                     previousLength = codeEditor.length;
                     return;
                 }
@@ -220,7 +220,7 @@ ColumnLayout {
             outputArea.text += output;
         }
         function onErrorReady(error) {
-            outputArea.text += "❗"+  error;
+            outputArea.text += "❗" + error;
         }
         function onFinished() {
             outputArea.text += "✅ Ready.";
@@ -238,7 +238,9 @@ ColumnLayout {
                 });
             }
             if (items.length > 0) {
+                completionListView.currentIndex = 0;
                 completionPopup.open();
+                completionListView.forceActiveFocus();
             }
         }
         function onFormattingResult(result) {
@@ -257,13 +259,19 @@ ColumnLayout {
         height: 300
         y: codeEditor.cursorRectangle.y + codeEditor.cursorRectangle.height
         x: codeEditor.cursorRectangle.x
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+        focus: true
+        modal: true
 
         ListView {
+            id: completionListView
             anchors.fill: parent
             model: completionModel
             delegate: ItemDelegate {
                 text: model.text
-                width: parent.width
+                width: completionPopup.width
+                highlighted: ListView.isCurrentItem
+
                 onClicked: {
                     var cursorPos = codeEditor.cursorPosition;
                     var text = codeEditor.text;
@@ -274,6 +282,28 @@ ColumnLayout {
                     codeEditor.text = text.substring(0, cursorPos) + textToInsert + text.substring(cursorPos);
                     completionPopup.close();
                     codeEditor.cursorPosition = cursorPos + textToInsert.length;
+                }
+            }
+
+            Keys.onPressed: (event) => {
+                if (event.key === Qt.Key_Up) {
+                    completionListView.currentIndex = Math.max(0, completionListView.currentIndex - 1);
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Down) {
+                    completionListView.currentIndex = Math.min(completionModel.count - 1, completionListView.currentIndex + 1);
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Tab) {
+                    var item = completionModel.get(completionListView.currentIndex);
+                    var cursorPos = codeEditor.cursorPosition;
+                    var text = codeEditor.text;
+                    var textToInsert = item.text.trim();
+                    if (textToInsert.endsWith(" const")) {
+                        textToInsert = textToInsert.slice(0, -6);
+                    }
+                    codeEditor.text = text.substring(0, cursorPos) + textToInsert + text.substring(cursorPos);
+                    completionPopup.close();
+                    codeEditor.cursorPosition = cursorPos + textToInsert.length;
+                    event.accepted = true;
                 }
             }
         }

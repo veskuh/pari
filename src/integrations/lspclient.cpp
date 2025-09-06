@@ -26,6 +26,7 @@ void LspClient::startServer(const QString &projectPath)
     m_process->setWorkingDirectory(projectPath);
     QStringList args;
     args << "--compile-commands-dir=" + projectPath + "/build";
+    args << "--log=error";
     m_process->start("clangd", args);
     if (!m_process->waitForStarted()) {
         qWarning() << "Failed to start clangd:" << m_process->errorString();
