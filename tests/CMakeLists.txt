@@ -24,6 +24,8 @@ add_executable(tst_all
     test_toolmanager.h
     test_gitlogmodel.cpp
     test_gitlogmodel.h
+    test_gitmanager.cpp
+    test_gitmanager.h
     ../src/core/settings.cpp
     ../src/core/settings.h
     ../src/core/filesystem.cpp
@@ -50,6 +52,8 @@ add_executable(tst_all
     ../src/integrations/toolmanager.h
     ../src/integrations/gitlogmodel.cpp
     ../src/integrations/gitlogmodel.h
+    ../src/integrations/gitmanager.cpp
+    ../src/integrations/gitmanager.h
 )
 
 target_include_directories(tst_all PRIVATE ../src ../src/core ../src/editor ../src/formatting ../src/integrations)

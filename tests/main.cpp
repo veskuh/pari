@@ -10,6 +10,7 @@
 #include "test_buildmanager.h"
 #include "test_toolmanager.h"
 #include "test_gitlogmodel.h"
+#include "test_gitmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -46,6 +47,9 @@ int main(int argc, char *argv[])
 
     TestGitLogModel tc_git;
     status |= QTest::qExec(&tc_git, argc, argv);
+
+    TestGitManager tc_git_manager;
+    status |= QTest::qExec(&tc_git_manager, argc, argv);
 
     return status;
 }

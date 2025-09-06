@@ -288,6 +288,7 @@ ApplicationWindow {
     footer: CustomStatusBar {
         id: customStatusBar
         modelName: "💡" + appSettings.ollamaModel
+        branchName: gitManager.currentBranch!=="" ?  "🌿 " + gitManager.currentBranch : ""
     }
 
     // --- REFACTORED MAIN CONTENT AREA ---
