@@ -27,7 +27,7 @@ Rectangle {
         TextField {
             id: searchInput
             Layout.fillWidth: true
-            placeholderText: "Search..."
+            placeholderText: "🔍Search..."
             onAccepted: findOverlay.findNext()
             color: findOverlay.textColor
         }

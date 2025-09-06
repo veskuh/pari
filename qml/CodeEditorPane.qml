@@ -46,7 +46,7 @@ ColumnLayout {
     }
 
     Label {
-        text: qsTr("Code Editor")
+        text: fileSystem.currentFilePath? fileSystem.currentFilePath : qsTr("📝 Code Editor")  
         font.bold: true
         Layout.alignment: Qt.AlignHCenter
         Layout.topMargin: 5
@@ -96,7 +96,7 @@ ColumnLayout {
 
         TextArea {
             id: codeEditor
-            placeholderText: "Open a file or start typing..."
+            placeholderText: "✏️ Open a file or start typing..."
             wrapMode: Text.WordWrap
             font.family: appSettings.fontFamily
             font.pointSize: appSettings.fontSize
@@ -220,10 +220,10 @@ ColumnLayout {
             outputArea.text += output;
         }
         function onErrorReady(error) {
-            outputArea.text += error;
+            outputArea.text += "❗"+  error;
         }
         function onFinished() {
-            outputArea.text += "Ready.";
+            outputArea.text += "✅ Ready.";
             console.log("Ready");
         }
     }

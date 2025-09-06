@@ -66,7 +66,7 @@ Follow the instructions by user. You will get a full file content and user selec
                 TextArea {
                     id: aiOutputPane
                     readOnly: true
-                    placeholderText: "AI assistant output will appear here..."
+                    placeholderText: "✨AI assistant output will appear here..."
                     wrapMode: Text.WordWrap
                     textFormat: Text.MarkdownText
                 }
@@ -91,7 +91,7 @@ Follow the instructions by user. You will get a full file content and user selec
                     anchors.fill: parent
                     anchors.margins: 10
                     Label {
-                        text: "Thinking..."
+                        text: "🤔 Thinking..."
                         font.bold: true
                         color: "white"
                     }

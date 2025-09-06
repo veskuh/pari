@@ -19,7 +19,7 @@ Window {
             anchors.margins: 10
 
             Label {
-                text: "Branch: " + branchName
+                text: "🌿 Branch: " + branchName
                 font.bold: true
                 visible: gitLogModel === null
             }
@@ -105,7 +105,7 @@ Window {
                                     // Date
                                     Label {
                                         id: date
-                                        text: model.date
+                                        text: "📅 " + model.date
                                         font.pixelSize: 13
                                         color: "#7f8c8d" // A muted gray for secondary info
                                         ToolTip.visible: dateMouseArea.containsMouse
@@ -134,7 +134,7 @@ Window {
                                 // Commit Message Header
                                 Label {
                                     id: commit
-                                    text: model.authorName
+                                    text: "👤" + model.authorName
                                     width: implicitWidth
                                     font.pixelSize: 13
                                     color: "#7f8c8d" // A muted gray for secondary info
@@ -212,7 +212,7 @@ Window {
 
                                     // Commit SHA
                                     Label {
-                                        text: "SHA: " + model.sha
+                                        text: "🔗 SHA: " + model.sha
                                         font.family: "monospace"
                                         color: "#95a5a6"
                                     }

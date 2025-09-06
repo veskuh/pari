@@ -19,7 +19,7 @@ ApplicationWindow {
     minimumHeight: 480
 
     visible: true
-    title: qsTr("Pari")
+    title: qsTr("Pari") + " - " + fileSystem.rootPath
 
     Settings {
         property alias x: appWindow.x
@@ -287,7 +287,7 @@ ApplicationWindow {
 
     footer: CustomStatusBar {
         id: customStatusBar
-        modelName: appSettings.ollamaModel
+        modelName: "💡" + appSettings.ollamaModel
     }
 
     // --- REFACTORED MAIN CONTENT AREA ---
@@ -303,7 +303,7 @@ ApplicationWindow {
             SplitView.minimumWidth: 200 // Prevent the pane from becoming too small
 
             Label {
-                text: qsTr("File System")
+                text: "💻 " + fileSystem.rootName
                 font.bold: true
                 Layout.leftMargin: 10
                 Layout.topMargin: 5
@@ -361,7 +361,7 @@ ApplicationWindow {
             }
         }
         function onFileSaved(filePath) {
-            customStatusBar.text = qsTr("File saved: %1").arg(filePath);
+            customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
         }
     }
 
@@ -369,14 +369,14 @@ ApplicationWindow {
         target: llm
         function onResponseReady(response) {
             aiOutputPane.text = response;
-            customStatusBar.text = qsTr("AI response received.");
+            customStatusBar.text = qsTr("💬 AI response received.");
             aiOutputPane.updateDiff(codeEditor.text);
         }
         function onBusyChanged() {
             if (llm.busy) {
-                customStatusBar.text = qsTr("Processing AI request...");
+                customStatusBar.text = qsTr("✨ Processing AI request...");
             } else {
-                customStatusBar.text = qsTr("Ready");
+                customStatusBar.text = qsTr("✅ Ready");
             }
         }
     }

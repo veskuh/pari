@@ -29,6 +29,12 @@ QString FileSystem::rootPath() const
     return m_rootPath;
 }
 
+QString FileSystem::rootName() const { 
+    QDir dir(m_rootPath); 
+    return dir.dirName(); 
+}
+
+
 QModelIndex FileSystem::currentRootIndex() const
 {
     return m_currentRootIndex;
@@ -97,6 +103,7 @@ void FileSystem::setRootPath(const QString &path)
         m_rootPath = path;
         m_currentRootIndex = m_model->setRootPath(m_rootPath);
         emit rootPathChanged();
+        emit rootNameChanged();
         emit currentRootIndexChanged();
         setLastOpenedPath(path); // Save the last opened path
 
