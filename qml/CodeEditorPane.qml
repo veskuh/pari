@@ -8,6 +8,7 @@ ColumnLayout {
     property alias selection: codeEditor.selectedText
     property alias textDocument: codeEditor.textDocument
     property int cursorPosition: 0
+    property real scrollY: 0
     property bool dirty: false
 
     TextDocumentSearcher {
@@ -22,11 +23,20 @@ ColumnLayout {
         codeEditor.cursorPosition = cursorPosition;
     }
 
+    function saveScrollPosition() {
+        scrollY = codeEditorFlickable.contentY;
+    }
+
+    function restoreScrollPosition() {
+        codeEditorFlickable.contentY = scrollY;
+    }
+
     function find() {
         findOverlay.open();
     }
 
     function format() {
+        saveScrollPosition();
         if (fileSystem.currentFilePath) {
             if (fileSystem.currentFilePath.endsWith(".qml")) {
                 toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text);
@@ -97,80 +107,88 @@ ColumnLayout {
         Layout.fillHeight: true
         clip: true // Ensures content doesn't draw outside the ScrollView
 
-        TextArea {
-            id: codeEditor
-            placeholderText: "✏️ Open a file or start typing..."
-            wrapMode: Text.WordWrap
-            font.family: appSettings.fontFamily
-            font.pointSize: appSettings.fontSize
-            tabStopDistance: 4 * textMetrics.advanceWidth
-            function handleAutoIndent() {
-                if (isIndenting || !codeEditor.activeFocus) {
-                    return;
-                }
-
-                var currentPos = codeEditor.cursorPosition;
-                var text = codeEditor.getText(0, currentPos);
-                var lines = text.split('\n');
-                if (lines.length < 2) {
-                    return;
-                }
-
-                var line = lines[lines.length - 1];
-                if (line !== "") {
-                    return;
-                }
-
-                var previousLine = lines[lines.length - 2];
-                var indentation = previousLine.match(/^\s*/)[0];
-                if (previousLine.trim().endsWith('{')) {
-                    indentation += "    ";
-                }
-                if (line.trim().startsWith('}')) {
-                    indentation = indentation.substring(0, Math.max(0, indentation.length - 4));
-                }
-                isIndenting = true;
-                codeEditor.insert(currentPos, indentation);
-                isIndenting = false;
-            }
-
-            onTextChanged: {
-                if (codeEditor.length !== previousLength) {
-                    // Not just a formatting change
-                    dirty = true;
-                }
-
-                // We are only intrested in new letters being typed
-                if (codeEditor.length !== (previousLength + 1)) {
-                    previousLength = codeEditor.length;
-                    return;
-                }
-                previousLength = codeEditor.length;
-
-                aiOutputPane.updateDiff(codeEditor.text);
-                if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
-                    lspClient.documentChanged(fileSystem.currentFilePath, codeEditor.text);
-                    var text = codeEditor.getText(0, codeEditor.cursorPosition);
-                    if (text.endsWith(".") || text.endsWith("->")) {
-                        var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition);
-                        var lines = textToCursor.split(/\r?\n/);
-                        var line = lines.length - 1;
-                        var character = lines[lines.length - 1].length;
-                        console.log("Requesting completion at", line, character);
-                        lspClient.requestCompletion(fileSystem.currentFilePath, line, character);
+        Flickable {
+            id: codeEditorFlickable
+            clip: true
+            contentWidth: codeEditor.width
+            contentHeight: codeEditor.contentHeight
+            TextArea {
+                id: codeEditor
+                width: codeEditorFlickable.width
+                height: contentHeight
+                placeholderText: "✏️ Open a file or start typing..."
+                wrapMode: Text.WordWrap
+                font.family: appSettings.fontFamily
+                font.pointSize: appSettings.fontSize
+                tabStopDistance: 4 * textMetrics.advanceWidth
+                function handleAutoIndent() {
+                    if (isIndenting || !codeEditor.activeFocus) {
+                        return;
                     }
+
+                    var currentPos = codeEditor.cursorPosition;
+                    var text = codeEditor.getText(0, currentPos);
+                    var lines = text.split('\n');
+                    if (lines.length < 2) {
+                        return;
+                    }
+
+                    var line = lines[lines.length - 1];
+                    if (line !== "") {
+                        return;
+                    }
+
+                    var previousLine = lines[lines.length - 2];
+                    var indentation = previousLine.match(/^\s*/)[0];
+                    if (previousLine.trim().endsWith('{')) {
+                        indentation += "    ";
+                    }
+                    if (line.trim().startsWith('}')) {
+                        indentation = indentation.substring(0, Math.max(0, indentation.length - 4));
+                    }
+                    isIndenting = true;
+                    codeEditor.insert(currentPos, indentation);
+                    isIndenting = false;
                 }
-                handleAutoIndent();
-            }
-            property int savedCursorPosition: 0
-            property int previousLength: 0
 
-            TextMetrics {
-                id: textMetrics
-                font: codeEditor.font
-            }
+                onTextChanged: {
+                    if (codeEditor.length !== previousLength) {
+                        // Not just a formatting change
+                        dirty = true;
+                    }
 
-            property bool isIndenting: false
+                    // We are only intrested in new letters being typed
+                    if (codeEditor.length !== (previousLength + 1)) {
+                        previousLength = codeEditor.length;
+                        return;
+                    }
+                    previousLength = codeEditor.length;
+
+                    aiOutputPane.updateDiff(codeEditor.text);
+                    if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
+                        lspClient.documentChanged(fileSystem.currentFilePath, codeEditor.text);
+                        var text = codeEditor.getText(0, codeEditor.cursorPosition);
+                        if (text.endsWith(".") || text.endsWith("->")) {
+                            var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition);
+                            var lines = textToCursor.split(/\r?\n/);
+                            var line = lines.length - 1;
+                            var character = lines[lines.length - 1].length;
+                            console.log("Requesting completion at", line, character);
+                            lspClient.requestCompletion(fileSystem.currentFilePath, line, character);
+                        }
+                    }
+                    handleAutoIndent();
+                }
+                property int savedCursorPosition: 0
+                property int previousLength: 0
+
+                TextMetrics {
+                    id: textMetrics
+                    font: codeEditor.font
+                }
+
+                property bool isIndenting: false
+            }
         }
     }
 
@@ -238,13 +256,13 @@ ColumnLayout {
 
     Connections {
         target: lspClient
-     
+
         function onFormattingResult(result) {
             codeEditor.text = result;
             restoreCursorPosition();
+            restoreScrollPosition();
         }
     }
-
 
     CompletionPopup {
         id: completionPopup
