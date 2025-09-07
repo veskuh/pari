@@ -77,7 +77,7 @@ Item {
             if (isDirectory) {
                 fileSystemView.toggleExpanded(index);
             } else {
-                fileSystem.loadFileContent(model.filePath);
+                editorManager.openFile(model.filePath);
                 fileSystemView.selectedPath = model.filePath;
             }
         }

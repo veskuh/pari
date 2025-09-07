@@ -15,10 +15,14 @@
 #include "gitlogmodel.h"
 #include "lspclient.h"
 #include "gitmanager.h"
+#include "../editor/editormanager.h"
 
 int main(int argc, char *argv[])
 {
     qRegisterMetaType<SyntaxTheme>();
+
+    qmlRegisterType<EditorManager>("net.veskuh.pari", 1, 0, "EditorManager");
+    qmlRegisterType<Document>("net.veskuh.pari", 1, 0, "Document");
 
     QGuiApplication app(argc, argv);
     app.setOrganizationName("veskuh.net");
@@ -38,6 +42,9 @@ int main(int argc, char *argv[])
 
     FileSystem *fileSystem = new FileSystem(&app);
     engine.rootContext()->setContextProperty("fileSystem", fileSystem);
+
+    EditorManager *editorManager = new EditorManager(&app);
+    engine.rootContext()->setContextProperty("editorManager", editorManager);
 
     Llm *llm = new Llm(appSettings, &app);
     engine.rootContext()->setContextProperty("llm", static_cast<QObject*>(llm));

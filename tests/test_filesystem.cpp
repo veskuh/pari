@@ -4,18 +4,6 @@
 #include <QTemporaryDir>
 #include <QFile>
 
-void TestFileSystem::testSaveFile()
+void TestFileSystem::initTestCase()
 {
-    FileSystem fileSystem;
-    QTemporaryDir tempDir;
-    QString filePath = tempDir.path() + "/test.txt";
-    QString content = "Hello, World!";
-
-    fileSystem.saveFile(filePath, content);
-
-    QFile file(filePath);
-    QVERIFY(file.exists());
-    QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
-    QCOMPARE(QString(file.readAll()), content);
-    file.close();
 }

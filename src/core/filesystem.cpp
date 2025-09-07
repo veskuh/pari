@@ -8,7 +8,6 @@ FileSystem::FileSystem(QObject *parent)
     : QObject{parent}
     , m_rootPath("")
     , m_currentRootIndex()
-    , m_currentFilePath("")
     , m_isGitRepository(false)
 {
     m_model = new QFileSystemModel(this);
@@ -52,46 +51,6 @@ void FileSystem::setLastOpenedPath(const QString &path)
         QSettings settings("Pari", "Pari");
         settings.setValue("lastOpenedPath", m_lastOpenedPath);
         emit lastOpenedPathChanged();
-    }
-}
-
-QString FileSystem::currentFilePath() const
-{
-    return m_currentFilePath;
-}
-
-void FileSystem::setCurrentFilePath(const QString &path)
-{
-    if (m_currentFilePath != path) {
-        m_currentFilePath = path;
-        emit currentFilePathChanged();
-    }
-}
-
-void FileSystem::loadFileContent(const QString &filePath)
-{
-    QFile file(filePath);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&file);
-        emit fileContentReady(filePath, in.readAll());
-        file.close();
-        setCurrentFilePath(filePath);
-    } else {
-        qWarning() << "FileSystem: Could not open file:" << filePath << ", Error:" << file.errorString();
-    }
-}
-
-void FileSystem::saveFile(const QString &filePath, const QString &content)
-{
-    QFile file(filePath);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&file);
-        out << content;
-        file.close();
-        setCurrentFilePath(filePath);
-        emit fileSaved(filePath);
-    } else {
-        qWarning() << "Could not save file:" << file.errorString();
     }
 }
 

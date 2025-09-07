@@ -37,11 +37,11 @@ ColumnLayout {
 
     function format() {
         saveScrollPosition();
-        if (fileSystem.currentFilePath) {
-            if (fileSystem.currentFilePath.endsWith(".qml")) {
-                toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text);
-            } else if (isCppFile(fileSystem.currentFilePath)) {
-                lspClient.format(fileSystem.currentFilePath, codeEditor.text);
+        if (model.filePath) {
+            if (model.filePath.endsWith(".qml")) {
+                toolManager.indentQmlFile(model.filePath, codeEditor.text);
+            } else if (isCppFile(model.filePath)) {
+                lspClient.format(model.filePath, codeEditor.text);
             }
         }
     }
@@ -62,7 +62,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
         Layout.topMargin: 5
         Layout.bottomMargin: 5
-        property string titleBase: fileSystem.currentFilePath ? fileSystem.currentFilePath : qsTr("📝 Code Editor")
+        property string titleBase: model.filePath ? model.filePath : qsTr("📝 Code Editor")
         property string editedAppendix: dirty ? " - ✏️ Edited" : ""
     }
 
@@ -165,8 +165,8 @@ ColumnLayout {
                     previousLength = codeEditor.length;
 
                     aiOutputPane.updateDiff(codeEditor.text);
-                    if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
-                        lspClient.documentChanged(fileSystem.currentFilePath, codeEditor.text);
+                    if (model.filePath && isCppFile(model.filePath)) {
+                        lspClient.documentChanged(model.filePath, codeEditor.text);
                         var text = codeEditor.getText(0, codeEditor.cursorPosition);
                         if (text.endsWith(".") || text.endsWith("->")) {
                             var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition);
@@ -174,7 +174,7 @@ ColumnLayout {
                             var line = lines.length - 1;
                             var character = lines[lines.length - 1].length;
                             console.log("Requesting completion at", line, character);
-                            lspClient.requestCompletion(fileSystem.currentFilePath, line, character);
+                            lspClient.requestCompletion(model.filePath, line, character);
                         }
                     }
                     handleAutoIndent();

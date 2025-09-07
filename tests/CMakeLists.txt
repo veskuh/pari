@@ -26,6 +26,10 @@ add_executable(tst_all
     test_gitlogmodel.h
     test_gitmanager.cpp
     test_gitmanager.h
+    test_editormanager.cpp
+    test_editormanager.h
+    ../src/editor/editormanager.cpp
+    ../src/editor/editormanager.h
     ../src/core/settings.cpp
     ../src/core/settings.h
     ../src/core/filesystem.cpp

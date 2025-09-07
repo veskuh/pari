@@ -8,7 +8,7 @@ class TestFileSystem : public QObject
     Q_OBJECT
 
 private slots:
-    void testSaveFile();
+    void initTestCase();
 };
 
 #endif // TEST_FILESYSTEM_H

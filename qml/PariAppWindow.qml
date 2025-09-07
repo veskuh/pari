@@ -40,9 +40,11 @@ ApplicationWindow {
         id: saveAction
         text: qsTr("Save")
         shortcut: StandardKey.Save
-        enabled: codeEditor.text.length > 0 && fileSystem.currentFilePath !== ""
+        enabled: editorManager.activeDocumentIndex !== -1
         onTriggered: {
-            fileSystem.saveFile(fileSystem.currentFilePath, codeEditor.text);
+            var activeDoc = editorManager.openDocuments[editorManager.activeDocumentIndex];
+            var activeEditor = tabView.currentItem.item;
+            editorManager.saveFile(editorManager.activeDocumentIndex, activeEditor.text);
         }
     }
 
@@ -50,7 +52,7 @@ ApplicationWindow {
         id: saveAsAction
         text: qsTr("Save As...")
         shortcut: StandardKey.SaveAs
-        enabled: codeEditor.text.length > 0
+        enabled: editorManager.activeDocumentIndex !== -1
         onTriggered: saveAsDialog.open()
     }
 
@@ -58,7 +60,11 @@ ApplicationWindow {
         id: findAction
         text: qsTr("Find")
         shortcut: StandardKey.Find
-        onTriggered: codeEditor.find()
+        onTriggered: {
+            if (tabView.currentItem) {
+                tabView.currentItem.item.find();
+            }
+        }
     }
 
     Action {
@@ -97,11 +103,13 @@ ApplicationWindow {
     Action {
         id: indentAction
         text: qsTr("Indent")
-        enabled: fileSystem.currentFilePath.endsWith(".qml") || isCppFile(fileSystem.currentFilePath)
+        enabled: editorManager.activeDocumentIndex !== -1
         shortcut: "Ctrl+i"
         onTriggered: {
-            codeEditor.saveCursorPosition();
-            codeEditor.format()
+            if (tabView.currentItem) {
+                tabView.currentItem.item.saveCursorPosition();
+                tabView.currentItem.item.format();
+            }
         }
     }
 
@@ -329,10 +337,25 @@ ApplicationWindow {
         }
 
         // Pane 2: Code Editor (40% width)
-        CodeEditorPane {
-            id: codeEditor
+        TabView {
+            id: tabView
             SplitView.preferredWidth: appWindow.width * 0.55
             SplitView.minimumWidth: 250
+            currentIndex: editorManager.activeDocumentIndex
+
+            Repeater {
+                model: editorManager.openDocuments
+                Tab {
+                    title: model.filePath.substring(model.filePath.lastIndexOf('/') + 1)
+                    CodeEditorPane {
+                        id: codeEditor
+                        text: model.content
+                        dirty: model.dirty
+                        onTextChanged: editorManager.documentContentChanged(index, text)
+                        onSave: editorManager.saveFile(index, text)
+                    }
+                }
+            }
         }
 
         // Pane 3: AI Section (40% width) - Refactored with Tabs
@@ -353,19 +376,6 @@ ApplicationWindow {
             fileSystemView.model = fileSystem.model;
             var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
             hasBuildConfiguration = buildCommand !== "";
-        }
-        function onFileContentReady(filePath, content) {
-            codeEditor.text = content;
-            syntaxHighlighterProvider.attachHighlighter(codeEditor.textDocument, filePath);
-            if (isCppFile(filePath)) {
-                lspClient.documentOpened(filePath, content);
-            }
-            codeEditor.dirty = false;
-
-        }
-        function onFileSaved(filePath) {
-            customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
-            codeEditor.dirty = false;
         }
     }
 
@@ -405,7 +415,18 @@ ApplicationWindow {
         currentFolder: fileSystem.lastOpenedPath
         onAccepted: {
             if (saveAsDialog.selectedFile) {
-                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), codeEditor.text);
+                var activeEditor = tabView.currentItem.item;
+                editorManager.saveFile(editorManager.activeDocumentIndex, activeEditor.text);
+            }
+        }
+    }
+
+    Connections {
+        target: editorManager
+        function onFileOpened(filePath, content) {
+            syntaxHighlighterProvider.attachHighlighter(tabView.currentItem.item.textDocument, filePath);
+            if (isCppFile(filePath)) {
+                lspClient.documentOpened(filePath, content);
             }
         }
     }
