@@ -231,31 +231,20 @@ ColumnLayout {
             outputArea.text += "❗" + error;
         }
         function onFinished() {
-            outputArea.text += "✅ Ready.";
+            outputArea.text += "\n✅ Ready.\n";
             console.log("Ready");
         }
     }
 
     Connections {
         target: lspClient
-        function onCompletionItems(items) {
-            completionModel.clear();
-            for (var i = 0; i < items.length; ++i) {
-                completionModel.append({
-                    "text": items[i]
-                });
-            }
-            completionPopup.update();
-        }
+     
         function onFormattingResult(result) {
             codeEditor.text = result;
             restoreCursorPosition();
         }
     }
 
-    ListModel {
-        id: completionModel
-    }
 
     CompletionPopup {
         id: completionPopup
