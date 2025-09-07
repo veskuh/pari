@@ -8,6 +8,7 @@ ColumnLayout {
     property alias selection: codeEditor.selectedText
     property alias textDocument: codeEditor.textDocument
     property int cursorPosition: 0
+    property bool dirty: false
 
     TextDocumentSearcher {
         id: textDocumentSearcher
@@ -46,11 +47,13 @@ ColumnLayout {
     }
 
     Label {
-        text: fileSystem.currentFilePath ? fileSystem.currentFilePath : qsTr("📝 Code Editor")
+        text: titleBase + editedAppendix
         font.bold: true
         Layout.alignment: Qt.AlignHCenter
         Layout.topMargin: 5
         Layout.bottomMargin: 5
+        property string titleBase: fileSystem.currentFilePath ? fileSystem.currentFilePath : qsTr("📝 Code Editor")
+        property string editedAppendix: dirty ? " - ✏️ Edited" : ""
     }
 
     FindOverlay {
@@ -132,6 +135,11 @@ ColumnLayout {
             }
 
             onTextChanged: {
+                if (codeEditor.length !== previousLength) {
+                    // Not just a formatting change
+                    dirty = true;
+                }
+
                 // We are only intrested in new letters being typed
                 if (codeEditor.length !== (previousLength + 1)) {
                     previousLength = codeEditor.length;

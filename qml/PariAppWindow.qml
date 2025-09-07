@@ -360,9 +360,12 @@ ApplicationWindow {
             if (isCppFile(filePath)) {
                 lspClient.documentOpened(filePath, content);
             }
+            codeEditor.dirty = false;
+
         }
         function onFileSaved(filePath) {
             customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
+            codeEditor.dirty = false;
         }
     }
 
