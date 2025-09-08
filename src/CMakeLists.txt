@@ -23,6 +23,10 @@ qt_add_executable(pari
     core/diffutils.h
     editor/textdocumentsearcher.cpp
     editor/textdocumentsearcher.h
+    editor/documentmanager.cpp
+    editor/documentmanager.h
+    editor/textdocument.cpp
+    editor/textdocument.h
     formatting/syntaxtheme.cpp
     formatting/syntaxtheme.h
     formatting/markdownsyntaxhighlighter.cpp

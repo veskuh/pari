@@ -5,6 +5,7 @@ import net.veskuh.pari 1.0
 
 ColumnLayout {
     id: aiPane // Keep the ID for isThinking property
+    property var currentEditor: null
     property bool isThinking: false
     property string thinkingText: ""
 
@@ -27,12 +28,12 @@ ColumnLayout {
         aiOutputPane.text = ""; // Clear previous output
         diffView.text = ""; // Clear previous diff
         var prompt = aiMessagePane.text;
-        if (codeEditor.selection != "" ) {
+        if (currentEditor && currentEditor.selection != "" ) {
             llm.sendPrompt("You are AI code assistant. \
 Follow the instructions by user. You will get a full file content and user selection at the code in the end of message.\
- Be short in your response, no chatting or politness, just code or comment. User: " + prompt + "File: \n```\n" + codeEditor.text + "\n```"+ "Selection: \n```\n" + codeEditor.selection + "\n```");
-        } else {
-            llm.sendPrompt("You are AI code assistant. Follow the instructions given for the code in the end of message. Be short in your response, no chatting or politness, just code or comment. " + prompt + "\n```\n" + codeEditor.text + "\n```");
+ Be short in your response, no chatting or politness, just code or comment. User: " + prompt + "File: \n```\n" + currentEditor.text + "\n```"+ "Selection: \n```\n" + currentEditor.selection + "\n```");
+        } else if (currentEditor) {
+            llm.sendPrompt("You are AI code assistant. Follow the instructions given for the code in the end of message. Be short in your response, no chatting or politness, just code or comment. " + prompt + "\n```\n" + currentEditor.text + "\n```");
         }
     }
 
@@ -196,7 +197,7 @@ Follow the instructions by user. You will get a full file content and user selec
         Button {
             id: sendButton
             text: "Send"
-            enabled: codeEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy
+            enabled: aiMessagePane.text !== "" && !llm.busy
             icon.source: "qrc:/assets/send.png"
             icon.height: 24
             icon.width: 24

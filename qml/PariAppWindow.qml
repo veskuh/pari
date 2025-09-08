@@ -40,9 +40,11 @@ ApplicationWindow {
         id: saveAction
         text: qsTr("Save")
         shortcut: StandardKey.Save
-        enabled: codeEditor.text.length > 0 && fileSystem.currentFilePath !== ""
+        enabled: stackLayout.currentIndex !== -1
         onTriggered: {
-            fileSystem.saveFile(fileSystem.currentFilePath, codeEditor.text);
+            var currentDoc = documentManager.documents[stackLayout.currentIndex];
+            var currentEditor = stackLayout.currentItem;
+            documentManager.saveFile(stackLayout.currentIndex, currentEditor.text);
         }
     }
 
@@ -50,7 +52,7 @@ ApplicationWindow {
         id: saveAsAction
         text: qsTr("Save As...")
         shortcut: StandardKey.SaveAs
-        enabled: codeEditor.text.length > 0
+        enabled: stackLayout.currentIndex !== -1
         onTriggered: saveAsDialog.open()
     }
 
@@ -58,7 +60,11 @@ ApplicationWindow {
         id: findAction
         text: qsTr("Find")
         shortcut: StandardKey.Find
-        onTriggered: codeEditor.find()
+        enabled: stackLayout.currentIndex !== -1
+        onTriggered: {
+            var currentEditor = stackLayout.currentItem;
+            currentEditor.find();
+        }
     }
 
     Action {
@@ -78,7 +84,8 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+b"
         onTriggered: {
-            codeEditor.showBuildPanel();
+            var currentEditor = stackLayout.currentItem;
+            currentEditor.showBuildPanel();
             buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -89,7 +96,8 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+r"
         onTriggered: {
-            codeEditor.showBuildPanel();
+            var currentEditor = stackLayout.currentItem;
+            currentEditor.showBuildPanel();
             buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -97,11 +105,12 @@ ApplicationWindow {
     Action {
         id: indentAction
         text: qsTr("Indent")
-        enabled: fileSystem.currentFilePath.endsWith(".qml") || isCppFile(fileSystem.currentFilePath)
+        enabled: stackLayout.currentIndex !== -1
         shortcut: "Ctrl+i"
         onTriggered: {
-            codeEditor.saveCursorPosition();
-            codeEditor.format()
+            var currentEditor = stackLayout.currentItem;
+            currentEditor.saveCursorPosition();
+            currentEditor.format()
         }
     }
 
@@ -328,11 +337,42 @@ ApplicationWindow {
             }
         }
 
-        // Pane 2: Code Editor (40% width)
-        CodeEditorPane {
-            id: codeEditor
+        // Pane 2: Code Editor (55% width)
+        ColumnLayout {
             SplitView.preferredWidth: appWindow.width * 0.55
             SplitView.minimumWidth: 250
+
+            TabBar {
+                id: tabBar
+                width: parent.width
+                currentIndex: documentManager.currentIndex
+                onCurrentIndexChanged: documentManager.setCurrentIndex(currentIndex)
+
+                Repeater {
+                    model: documentManager.documents
+                    TabButton {
+                        text: model.fileName
+                    }
+                }
+            }
+
+            StackLayout {
+                id: stackLayout
+                width: parent.width
+                height: parent.height - tabBar.height
+                currentIndex: documentManager.currentIndex
+
+                Repeater {
+                    model: documentManager.documents
+                    CodeEditorPane {
+                        text: model.text
+                        dirty: model.isDirty
+                        onDirtyChanged: {
+                            documentManager.markDirty(index)
+                        }
+                    }
+                }
+            }
         }
 
         // Pane 3: AI Section (40% width) - Refactored with Tabs
@@ -340,6 +380,7 @@ ApplicationWindow {
             id: aiOutputPane
             SplitView.preferredWidth: appWindow.width * 0.30
             SplitView.minimumWidth: 250
+            currentEditor: stackLayout.currentItem
         }
     }
 
@@ -354,18 +395,19 @@ ApplicationWindow {
             var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
             hasBuildConfiguration = buildCommand !== "";
         }
-        function onFileContentReady(filePath, content) {
-            codeEditor.text = content;
-            syntaxHighlighterProvider.attachHighlighter(codeEditor.textDocument, filePath);
+        function onFileSaved(filePath) {
+            customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
+        }
+    }
+
+    Connections {
+        target: documentManager
+        function onFileOpened(filePath, content) {
+            var currentEditor = stackLayout.currentItem;
+            syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, filePath);
             if (isCppFile(filePath)) {
                 lspClient.documentOpened(filePath, content);
             }
-            codeEditor.dirty = false;
-
-        }
-        function onFileSaved(filePath) {
-            customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
-            codeEditor.dirty = false;
         }
     }
 
@@ -374,7 +416,10 @@ ApplicationWindow {
         function onResponseReady(response) {
             aiOutputPane.text = response;
             customStatusBar.text = qsTr("💬 AI response received.");
-            aiOutputPane.updateDiff(codeEditor.text);
+            if (stackLayout.currentIndex !== -1) {
+                var currentEditor = stackLayout.currentItem;
+                aiOutputPane.updateDiff(currentEditor.text);
+            }
         }
         function onBusyChanged() {
             if (llm.busy) {
@@ -405,7 +450,8 @@ ApplicationWindow {
         currentFolder: fileSystem.lastOpenedPath
         onAccepted: {
             if (saveAsDialog.selectedFile) {
-                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), codeEditor.text);
+                var currentEditor = stackLayout.currentItem;
+                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), currentEditor.text);
             }
         }
     }
@@ -459,8 +505,9 @@ ApplicationWindow {
             showGitOutput(command, output, branchName);
         }
         function onQmlFileIndented(formattedContent) {
-            codeEditor.text = formattedContent;
-            codeEditor.restoreCursorPosition();
+            var currentEditor = stackLayout.currentItem;
+            currentEditor.text = formattedContent;
+            currentEditor.restoreCursorPosition();
         }
         function onGitLogReady(log) {
             gitLogModel.parseAndSetLog(log);
