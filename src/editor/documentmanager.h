@@ -20,7 +20,7 @@ public:
     int currentIndex() const;
 
 public slots:
-    void openFile(const QUrl &filePath);
+    void openFile(const QString &filePath, const QString &content);
     void closeFile(int index);
     bool saveFile(int index, const QString &content);
     void setCurrentIndex(int index);
@@ -29,7 +29,7 @@ public slots:
 signals:
     void documentsChanged();
     void currentIndexChanged();
-    void fileOpened(const QUrl &filePath, const QString &fileContent);
+    void fileOpened(const QUrl &filePath, const QString &content);
 
 private:
     QList<TextDocument*> m_documents;

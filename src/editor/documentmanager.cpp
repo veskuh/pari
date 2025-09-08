@@ -21,11 +21,11 @@ int DocumentManager::currentIndex() const
     return m_currentIndex;
 }
 
-void DocumentManager::openFile(const QUrl &filePath)
+void DocumentManager::openFile(const QString &filePath, const QString &content)
 {
     if (m_currentIndex != -1 && m_documents[m_currentIndex]->isDirty()) {
         TextDocument *doc = new TextDocument(this);
-        doc->setFilePath(filePath.toLocalFile());
+        doc->setFilePath(filePath);
         m_documents.append(doc);
         setCurrentIndex(m_documents.size() - 1);
     } else {
@@ -34,18 +34,12 @@ void DocumentManager::openFile(const QUrl &filePath)
             m_documents.append(doc);
             setCurrentIndex(0);
         }
-        m_documents[m_currentIndex]->setFilePath(filePath.toLocalFile());
+        m_documents[m_currentIndex]->setFilePath(filePath);
     }
 
-    QFile file(filePath.toLocalFile());
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&file);
-        const QString content = in.readAll();
-        file.close();
-        m_documents[m_currentIndex]->setText(content);
-        m_documents[m_currentIndex]->setDirty(false);
-        emit fileOpened(filePath, content);
-    }
+    m_documents[m_currentIndex]->setText(content);
+    m_documents[m_currentIndex]->setDirty(false);
+    emit fileOpened(QUrl::fromLocalFile(filePath), content);
     emit documentsChanged();
 }
 

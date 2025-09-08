@@ -21,12 +21,7 @@ void TestDocumentManager::testOpenFile()
     DocumentManager docManager;
     QSignalSpy spy(&docManager, &DocumentManager::documentsChanged);
 
-    QFile file(filePath);
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
-    file.write("test content");
-    file.close();
-
-    docManager.openFile(QUrl::fromLocalFile(filePath));
+    docManager.openFile(filePath, "test content");
 
     QCOMPARE(spy.count(), 1);
     QCOMPARE(docManager.documents().size(), 1);
@@ -37,8 +32,8 @@ void TestDocumentManager::testOpenFile()
 void TestDocumentManager::testOpenFile_dirty()
 {
     DocumentManager docManager;
-    docManager.openFile(QUrl::fromLocalFile("test_file1.txt"));
+    docManager.openFile("test_file1.txt", "test content 1");
     docManager.markDirty(0);
-    docManager.openFile(QUrl::fromLocalFile("test_file2.txt"));
+    docManager.openFile("test_file2.txt", "test content 2");
     QCOMPARE(docManager.documents().size(), 2);
 }

@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     DocumentManager *documentManager = new DocumentManager(&app);
     engine.rootContext()->setContextProperty("documentManager", documentManager);
 
-    QObject::connect(fileSystem, &FileSystem::fileContentReady, documentManager, &DocumentManager::openFile);
+    QObject::connect(fileSystem, &FileSystem::fileContentReady, documentManager, &DocumentManager::openFile, Qt::QueuedConnection);
 
     QObject::connect(fileSystem, &FileSystem::projectOpened, gitManager, [gitManager, fileSystem](){
         gitManager->setWorkingDirectory(fileSystem->rootPath());
