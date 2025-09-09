@@ -110,6 +110,7 @@ ColumnLayout {
         Flickable {
             id: codeEditorFlickable
             clip: true
+            contentWidth: width
             contentHeight: codeEditor.contentHeight
             TextArea {
                 id: codeEditor

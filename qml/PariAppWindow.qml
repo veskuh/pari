@@ -458,7 +458,7 @@ ApplicationWindow {
     Connections {
         target: documentManager
         function onFileOpened(filePath, content) {
-            Timer.createTriggered(0, function() {
+            Qt.callLater(function() {
                 var currentEditor = stackLayout.currentItem;
                 if (currentEditor) {
                     var localPath = filePath.toString().substring(7);
