@@ -197,7 +197,12 @@ Follow the instructions by user. You will get a full file content and user selec
         Button {
             id: sendButton
             text: "Send"
-            enabled: aiMessagePane.text !== "" && !llm.busy
+            enabled: {
+                if (currentEditor) {
+                    return currentEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy;
+                }
+                return false;
+            }
             icon.source: "qrc:/assets/send.png"
             icon.height: 24
             icon.width: 24

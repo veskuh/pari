@@ -370,6 +370,55 @@ ApplicationWindow {
                         onDirtyChanged: {
                             documentManager.markDirty(index)
                         }
+                        outputPanel: outputPanel
+                    }
+                }
+            }
+
+            Rectangle {
+                id: outputPanel
+                Layout.fillWidth: true
+                Layout.preferredHeight: 200
+                visible: false
+                color: appWindow.palette.window
+                border.color: appWindow.palette.windowText
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 5
+
+                    RowLayout {
+                        Label {
+                            text: "Build Output"
+                            font.bold: true
+                        }
+                        Button {
+                            text: "Close"
+                            onClicked: outputPanel.visible = false
+                            Layout.alignment: Qt.AlignRight
+                        }
+                    }
+
+                    ScrollView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Flickable {
+                            id: flickable
+                            clip: true
+                            width: parent.width
+                            TextArea {
+                                id: outputArea
+                                readOnly: true
+                                width: parent.width
+                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+                                onTextChanged: {
+                                    if (contentHeight > flickable.height) {
+                                        flickable.contentY = contentHeight - flickable.height;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -404,10 +453,25 @@ ApplicationWindow {
         target: documentManager
         function onFileOpened(filePath, content) {
             var currentEditor = stackLayout.currentItem;
-            syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, filePath);
-            if (isCppFile(filePath)) {
-                lspClient.documentOpened(filePath, content);
+            var localPath = filePath.toLocalFile();
+            syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, localPath);
+            if (isCppFile(localPath)) {
+                lspClient.documentOpened(localPath, content);
             }
+        }
+    }
+
+    Connections {
+        target: buildManager
+        function onOutputReady(output) {
+            outputArea.text += output;
+        }
+        function onErrorReady(error) {
+            outputArea.text += "❗" + error;
+        }
+        function onFinished() {
+            outputArea.text += "\n✅ Ready.\n";
+            console.log("Ready");
         }
     }
 

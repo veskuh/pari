@@ -50,10 +50,12 @@ ColumnLayout {
         return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh");
     }
 
+    property var outputPanel: null
+
     function showBuildPanel() {
-        flickable.contentY = 0;
-        outputArea.text = "";
-        outputPanel.visible = true;
+        if (outputPanel) {
+            outputPanel.visible = true;
+        }
     }
 
     Label {
@@ -152,7 +154,7 @@ ColumnLayout {
                 }
 
                 onTextChanged: {
-                    if (codeEditor.length !== previousLength) {
+                    if (codeEditor.activeFocus && codeEditor.length !== previousLength) {
                         // Not just a formatting change
                         dirty = true;
                     }
@@ -192,67 +194,7 @@ ColumnLayout {
         }
     }
 
-    Rectangle {
-        id: outputPanel
-        Layout.fillWidth: true
-        Layout.preferredHeight: 200
-        visible: false
-        color: appWindow.palette.window
-        border.color: appWindow.palette.windowText
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 5
-
-            RowLayout {
-                Label {
-                    text: "Build Output"
-                    font.bold: true
-                }
-                Button {
-                    text: "Close"
-                    onClicked: outputPanel.visible = false
-                    Layout.alignment: Qt.AlignRight
-                }
-            }
-
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Flickable {
-                    id: flickable
-                    clip: true
-                    width: parent.width
-                    TextArea {
-                        id: outputArea
-                        readOnly: true
-                        width: parent.width
-                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-
-                        onTextChanged: {
-                            if (contentHeight > flickable.height) {
-                                flickable.contentY = contentHeight - flickable.height;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    Connections {
-        target: buildManager
-        function onOutputReady(output) {
-            outputArea.text += output;
-        }
-        function onErrorReady(error) {
-            outputArea.text += "❗" + error;
-        }
-        function onFinished() {
-            outputArea.text += "\n✅ Ready.\n";
-            console.log("Ready");
-        }
-    }
 
     Connections {
         target: lspClient
