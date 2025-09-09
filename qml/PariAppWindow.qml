@@ -458,12 +458,16 @@ ApplicationWindow {
     Connections {
         target: documentManager
         function onFileOpened(filePath, content) {
-            var currentEditor = stackLayout.currentItem;
-            var localPath = filePath.toString().substring(7);
-            syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, localPath);
-            if (isCppFile(localPath)) {
-                lspClient.documentOpened(localPath, content);
-            }
+            Timer.createTriggered(0, function() {
+                var currentEditor = stackLayout.currentItem;
+                if (currentEditor) {
+                    var localPath = filePath.toString().substring(7);
+                    syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, localPath);
+                    if (isCppFile(localPath)) {
+                        lspClient.documentOpened(localPath, content);
+                    }
+                }
+            });
         }
     }
 
