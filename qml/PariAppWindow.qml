@@ -453,10 +453,9 @@ ApplicationWindow {
         target: documentManager
         function onFileOpened(filePath, content) {
             var currentEditor = stackLayout.currentItem;
-            var localPath = filePath.toLocalFile();
-            syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, localPath);
-            if (isCppFile(localPath)) {
-                lspClient.documentOpened(localPath, content);
+            syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, filePath);
+            if (isCppFile(filePath)) {
+                lspClient.documentOpened(filePath, content);
             }
         }
     }
