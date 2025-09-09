@@ -43,7 +43,7 @@ ApplicationWindow {
         enabled: stackLayout.currentIndex !== -1
         onTriggered: {
             var currentDoc = documentManager.documents[stackLayout.currentIndex];
-            var currentEditor = stackLayout.currentItem;
+            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
             documentManager.saveFile(stackLayout.currentIndex, currentEditor.text);
         }
     }
@@ -53,7 +53,10 @@ ApplicationWindow {
         text: qsTr("Save As...")
         shortcut: StandardKey.SaveAs
         enabled: stackLayout.currentIndex !== -1
-        onTriggered: saveAsDialog.open()
+        onTriggered: {
+            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
+            saveAsDialog.open();
+        }
     }
 
     Action {
@@ -62,7 +65,7 @@ ApplicationWindow {
         shortcut: StandardKey.Find
         enabled: stackLayout.currentIndex !== -1
         onTriggered: {
-            var currentEditor = stackLayout.currentItem;
+            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
             currentEditor.find();
         }
     }
@@ -84,7 +87,7 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+b"
         onTriggered: {
-            var currentEditor = stackLayout.currentItem;
+            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
             if (currentEditor) {
                 currentEditor.showBuildPanel();
             }
@@ -98,7 +101,7 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+r"
         onTriggered: {
-            var currentEditor = stackLayout.currentItem;
+            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
             if (currentEditor) {
                 currentEditor.showBuildPanel();
             }
@@ -112,7 +115,7 @@ ApplicationWindow {
         enabled: stackLayout.currentIndex !== -1
         shortcut: "Ctrl+i"
         onTriggered: {
-            var currentEditor = stackLayout.currentItem;
+            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
             currentEditor.saveCursorPosition();
             currentEditor.format()
         }
@@ -462,8 +465,8 @@ ApplicationWindow {
             console.log("onFileOpened: filePath:", filePath, "typeof filePath:", typeof filePath);
             console.log("onFileOpened: stackLayout.currentItem before callLater:", stackLayout.currentItem);
             Qt.callLater(function() {
-                console.log("onFileOpened: stackLayout.currentItem in callLater:", stackLayout.currentItem);
-                var currentEditor = stackLayout.currentItem;
+                var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
+                console.log("onFileOpened: stackLayout.currentItem in callLater:", currentEditor);
                 if (currentEditor) {
                     var localPath = filePath.toString().substring(7);
                     console.log("onFileOpened: localPath:", localPath);
@@ -496,7 +499,7 @@ ApplicationWindow {
             aiOutputPane.text = response;
             customStatusBar.text = qsTr("💬 AI response received.");
             if (stackLayout.currentIndex !== -1) {
-                var currentEditor = stackLayout.currentItem;
+                var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
                 aiOutputPane.updateDiff(currentEditor.text);
             }
         }
@@ -529,7 +532,7 @@ ApplicationWindow {
         currentFolder: fileSystem.lastOpenedPath
         onAccepted: {
             if (saveAsDialog.selectedFile) {
-                var currentEditor = stackLayout.currentItem;
+                var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
                 fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), currentEditor.text);
             }
         }
@@ -584,7 +587,7 @@ ApplicationWindow {
             showGitOutput(command, output, branchName);
         }
         function onQmlFileIndented(formattedContent) {
-            var currentEditor = stackLayout.currentItem;
+            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
             currentEditor.text = formattedContent;
             currentEditor.restoreCursorPosition();
         }
