@@ -85,7 +85,9 @@ ApplicationWindow {
         shortcut: "Ctrl+b"
         onTriggered: {
             var currentEditor = stackLayout.currentItem;
-            currentEditor.showBuildPanel();
+            if (currentEditor) {
+                currentEditor.showBuildPanel();
+            }
             buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -97,7 +99,9 @@ ApplicationWindow {
         shortcut: "Ctrl+r"
         onTriggered: {
             var currentEditor = stackLayout.currentItem;
-            currentEditor.showBuildPanel();
+            if (currentEditor) {
+                currentEditor.showBuildPanel();
+            }
             buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -370,7 +374,9 @@ ApplicationWindow {
                         onDirtyChanged: {
                             documentManager.markDirty(index)
                         }
-                        outputPanel: outputPanel
+                        onShowBuildPanelRequested: {
+                            outputPanel.visible = true;
+                        }
                     }
                 }
             }
@@ -453,9 +459,10 @@ ApplicationWindow {
         target: documentManager
         function onFileOpened(filePath, content) {
             var currentEditor = stackLayout.currentItem;
-            syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, filePath);
-            if (isCppFile(filePath)) {
-                lspClient.documentOpened(filePath, content);
+            var localPath = filePath.toLocalFile();
+            syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, localPath);
+            if (isCppFile(localPath)) {
+                lspClient.documentOpened(localPath, content);
             }
         }
     }

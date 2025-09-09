@@ -39,7 +39,7 @@ void DocumentManager::openFile(const QString &filePath, const QString &content)
 
     m_documents[m_currentIndex]->setText(content);
     m_documents[m_currentIndex]->setDirty(false);
-    emit fileOpened(filePath, content);
+    emit fileOpened(QUrl::fromLocalFile(filePath), content);
     emit documentsChanged();
 }
 

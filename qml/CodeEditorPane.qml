@@ -50,12 +50,10 @@ ColumnLayout {
         return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh");
     }
 
-    property var outputPanel: null
+    signal showBuildPanelRequested()
 
     function showBuildPanel() {
-        if (outputPanel) {
-            outputPanel.visible = true;
-        }
+        showBuildPanelRequested();
     }
 
     Label {
@@ -112,7 +110,7 @@ ColumnLayout {
         Flickable {
             id: codeEditorFlickable
             clip: true
-            contentWidth: codeEditor.width
+            contentWidth: width
             contentHeight: codeEditor.contentHeight
             TextArea {
                 id: codeEditor

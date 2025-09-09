@@ -29,7 +29,7 @@ public slots:
 signals:
     void documentsChanged();
     void currentIndexChanged();
-    void fileOpened(const QString &filePath, const QString &content);
+    void fileOpened(const QUrl &filePath, const QString &content);
 
 private:
     QList<TextDocument*> m_documents;
