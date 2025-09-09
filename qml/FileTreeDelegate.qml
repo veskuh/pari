@@ -36,7 +36,7 @@ Item {
 
     Image {
         source: {
-            if (model.filePath === null)
+            if (!model || !model.filePath || model.filePath === null)
                 "qrc:/assets/file.png";
             else if (model.filePath.endsWith(".cpp") || model.filePath.endsWith(".h"))
                 "qrc:/assets/cpp.png";
