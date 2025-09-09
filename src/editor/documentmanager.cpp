@@ -2,6 +2,7 @@
 #include "textdocument.h"
 #include <QFile>
 #include <QTextStream>
+#include <QDebug>
 
 DocumentManager::DocumentManager(QObject *parent) : QObject(parent), m_currentIndex(-1)
 {
@@ -23,6 +24,7 @@ int DocumentManager::currentIndex() const
 
 void DocumentManager::openFile(const QString &filePath, const QString &content)
 {
+    qDebug() << "DocumentManager::openFile" << filePath;
     if (m_currentIndex != -1 && m_documents[m_currentIndex]->isDirty()) {
         TextDocument *doc = new TextDocument(this);
         doc->setFilePath(filePath);

@@ -367,6 +367,7 @@ ApplicationWindow {
                 currentIndex: documentManager.currentIndex
 
                 Repeater {
+                    id: editorRepeater
                     model: documentManager.documents
                     CodeEditorPane {
                         text: model.text
@@ -435,7 +436,7 @@ ApplicationWindow {
             id: aiOutputPane
             SplitView.preferredWidth: appWindow.width * 0.30
             SplitView.minimumWidth: 250
-            currentEditor: stackLayout.currentItem
+            currentEditor: editorRepeater.itemAt(stackLayout.currentIndex)
         }
     }
 
@@ -458,10 +459,14 @@ ApplicationWindow {
     Connections {
         target: documentManager
         function onFileOpened(filePath, content) {
+            console.log("onFileOpened: filePath:", filePath, "typeof filePath:", typeof filePath);
+            console.log("onFileOpened: stackLayout.currentItem before callLater:", stackLayout.currentItem);
             Qt.callLater(function() {
+                console.log("onFileOpened: stackLayout.currentItem in callLater:", stackLayout.currentItem);
                 var currentEditor = stackLayout.currentItem;
                 if (currentEditor) {
                     var localPath = filePath.toString().substring(7);
+                    console.log("onFileOpened: localPath:", localPath);
                     syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, localPath);
                     if (isCppFile(localPath)) {
                         lspClient.documentOpened(localPath, content);
