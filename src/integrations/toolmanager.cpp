@@ -65,13 +65,17 @@ void ToolManager::onBranchProcessFinished(int exitCode, QProcess::ExitStatus exi
 
 void ToolManager::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    if (m_command.startsWith("git log")) {
+        emit gitLogReady(m_gitLogOutput);
+        m_gitLogOutput.clear();
+    }
     qDebug() << "Tool command" << m_command << "finished with exit code" << exitCode << "and exit status" << exitStatus;
 }
 
 void ToolManager::onReadyReadStandardOutput()
 {
     if (m_command.startsWith("git log")) {
-        emit gitLogReady(m_process->readAllStandardOutput());
+        m_gitLogOutput.append(m_process->readAllStandardOutput());
     } else {
         emit outputReady(m_command, formatDiffOutput(m_process->readAllStandardOutput()), m_branchName);
     }

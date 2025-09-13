@@ -548,28 +548,19 @@ ApplicationWindow {
         }
     }
 
-    function showGitOutput(command, output, branch) {
-        var component = Qt.createComponent("GitOutputWindow.qml");
-        if (component.status === Component.Ready) {
-            var properties = {
-                "command": command,
-                "branchName": branch
-            };
-            if (command.startsWith("git log")) {
-                properties.gitLogModel = gitLogModel;
-            } else {
-                properties.output = output;
-            }
+    GitOutputWindow {
+        id: gitOutputWindow
+    }
 
-            var window = component.createObject(appWindow, properties);
-            if (window) {
-                window.show();
-            } else {
-                console.error("Error creating git output window");
-            }
+    function showGitOutput(command, output, branch) {
+        gitOutputWindow.command = command;
+        gitOutputWindow.branchName = branch;
+        if (command.startsWith("git log")) {
+            gitOutputWindow.gitLogModel = gitLogModel;
         } else {
-            console.error("Error loading git output window component:", component.errorString());
+            gitOutputWindow.output = output;
         }
+        gitOutputWindow.show();
     }
 
     Connections {

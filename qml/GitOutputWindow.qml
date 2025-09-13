@@ -12,6 +12,10 @@ Window {
     property string branchName: ""
     property var gitLogModel: null
 
+    onClosing: {
+        gitLogModel = null;
+    }
+
     Pane {
         anchors.fill: parent
         ColumnLayout {

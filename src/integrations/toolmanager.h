@@ -37,6 +37,7 @@ private:
     QString m_branchName;
     QString m_originalQmlContent;
     QTemporaryFile *m_tempQmlFile;
+    QString m_gitLogOutput;
 };
 
 #endif // TOOLMANAGER_H
