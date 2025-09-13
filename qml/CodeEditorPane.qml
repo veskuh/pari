@@ -55,7 +55,7 @@ ColumnLayout {
     function showBuildPanel() {
         showBuildPanelRequested();
     }
-
+/*
     Label {
         text: titleBase + editedAppendix
         font.bold: true
@@ -65,7 +65,7 @@ ColumnLayout {
         property string titleBase: fileSystem.currentFilePath ? fileSystem.currentFilePath : qsTr("📝 Code Editor")
         property string editedAppendix: dirty ? " - ✏️ Edited" : ""
     }
-
+*/
     FindOverlay {
         id: findOverlay
         width: parent.width

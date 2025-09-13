@@ -14,6 +14,7 @@ ApplicationWindow {
     }
 
     property bool hasBuildConfiguration: false
+    property var currentEditor: null
 
     minimumWidth: 800
     minimumHeight: 480
@@ -43,8 +44,7 @@ ApplicationWindow {
         enabled: stackLayout.currentIndex !== -1
         onTriggered: {
             var currentDoc = documentManager.documents[stackLayout.currentIndex];
-            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-            documentManager.saveFile(stackLayout.currentIndex, currentEditor.text);
+            documentManager.saveFile(stackLayout.currentIndex, appWindow.currentEditor.text);
         }
     }
 
@@ -54,7 +54,6 @@ ApplicationWindow {
         shortcut: StandardKey.SaveAs
         enabled: stackLayout.currentIndex !== -1
         onTriggered: {
-            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
             saveAsDialog.open();
         }
     }
@@ -65,8 +64,7 @@ ApplicationWindow {
         shortcut: StandardKey.Find
         enabled: stackLayout.currentIndex !== -1
         onTriggered: {
-            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-            currentEditor.find();
+            appWindow.currentEditor.find();
         }
     }
 
@@ -87,9 +85,8 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+b"
         onTriggered: {
-            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-            if (currentEditor) {
-                currentEditor.showBuildPanel();
+            if (appWindow.currentEditor) {
+                appWindow.currentEditor.showBuildPanel();
             }
             buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
@@ -101,9 +98,8 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+r"
         onTriggered: {
-            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-            if (currentEditor) {
-                currentEditor.showBuildPanel();
+            if (appWindow.currentEditor) {
+                appWindow.currentEditor.showBuildPanel();
             }
             buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
@@ -115,9 +111,8 @@ ApplicationWindow {
         enabled: stackLayout.currentIndex !== -1
         shortcut: "Ctrl+i"
         onTriggered: {
-            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-            currentEditor.saveCursorPosition();
-            currentEditor.format()
+            appWindow.currentEditor.saveCursorPosition();
+            appWindow.currentEditor.format()
         }
     }
 
@@ -299,6 +294,19 @@ ApplicationWindow {
                 width: 64
             }
         }
+
+        PariTabBar {
+            id: tabBar
+
+            x: treeColumn.width
+            width: codeColumn.width - 10
+
+            onCurrentIndexChanged: {
+                documentManager.setCurrentIndex(currentIndex)
+                appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex)
+            }
+            model: documentManager.documents
+        }
     }
 
     footer: CustomStatusBar {
@@ -315,6 +323,7 @@ ApplicationWindow {
 
         // Pane 1: File System (20% width)
         ColumnLayout {
+            id: treeColumn
             // Use attached properties to define the pane's size within the SplitView
             SplitView.preferredWidth: appWindow.width * 0.15
             SplitView.minimumWidth: 200 // Prevent the pane from becoming too small
@@ -346,22 +355,9 @@ ApplicationWindow {
 
         // Pane 2: Code Editor (55% width)
         ColumnLayout {
+            id: codeColumn
             SplitView.preferredWidth: appWindow.width * 0.55
             SplitView.minimumWidth: 250
-
-            TabBar {
-                id: tabBar
-                width: parent.width
-                currentIndex: documentManager.currentIndex
-                onCurrentIndexChanged: documentManager.setCurrentIndex(currentIndex)
-
-                Repeater {
-                    model: documentManager.documents
-                    TabButton {
-                        text: model.fileName
-                    }
-                }
-            }
 
             StackLayout {
                 id: stackLayout
@@ -439,7 +435,7 @@ ApplicationWindow {
             id: aiOutputPane
             SplitView.preferredWidth: appWindow.width * 0.30
             SplitView.minimumWidth: 250
-            currentEditor: editorRepeater.itemAt(stackLayout.currentIndex)
+            currentEditor: appWindow.currentEditor
         }
     }
 
@@ -462,19 +458,16 @@ ApplicationWindow {
     Connections {
         target: documentManager
         function onFileOpened(filePath, content) {
-            console.log("onFileOpened: filePath:", filePath, "typeof filePath:", typeof filePath);
-            console.log("onFileOpened: stackLayout.currentItem before callLater:", stackLayout.currentItem);
             Qt.callLater(function() {
-                var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-                console.log("onFileOpened: stackLayout.currentItem in callLater:", currentEditor);
-                if (currentEditor) {
+                appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
+                if ( appWindow.currentEditor ) {
                     var localPath = filePath.toString().substring(7);
-                    console.log("onFileOpened: localPath:", localPath);
-                    syntaxHighlighterProvider.attachHighlighter(currentEditor.textDocument, localPath);
+                    syntaxHighlighterProvider.attachHighlighter(appWindow.currentEditor.textDocument, localPath);
                     if (isCppFile(localPath)) {
                         lspClient.documentOpened(localPath, content);
                     }
                 }
+                tabBar.currentIndex = stackLayout.currentIndex
             });
         }
     }
@@ -499,8 +492,7 @@ ApplicationWindow {
             aiOutputPane.text = response;
             customStatusBar.text = qsTr("💬 AI response received.");
             if (stackLayout.currentIndex !== -1) {
-                var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-                aiOutputPane.updateDiff(currentEditor.text);
+                aiOutputPane.updateDiff(appWindow.currentEditor.text);
             }
         }
         function onBusyChanged() {
@@ -532,8 +524,7 @@ ApplicationWindow {
         currentFolder: fileSystem.lastOpenedPath
         onAccepted: {
             if (saveAsDialog.selectedFile) {
-                var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), currentEditor.text);
+                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), appWindow.currentEditor.text);
             }
         }
     }
@@ -587,9 +578,8 @@ ApplicationWindow {
             showGitOutput(command, output, branchName);
         }
         function onQmlFileIndented(formattedContent) {
-            var currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-            currentEditor.text = formattedContent;
-            currentEditor.restoreCursorPosition();
+            appWindow.currentEditor.text = formattedContent;
+            appWindow.currentEditor.restoreCursorPosition();
         }
         function onGitLogReady(log) {
             gitLogModel.parseAndSetLog(log);

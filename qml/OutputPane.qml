@@ -6,7 +6,6 @@ import net.veskuh.pari 1.0
 ColumnLayout {
     id: aiPane // Keep the ID for isThinking property
     property var currentEditor: null
-    onCurrentEditorChanged: console.log("OutputPane: currentEditor changed:", currentEditor)
     property bool isThinking: false
     property string thinkingText: ""
 
@@ -199,13 +198,6 @@ Follow the instructions by user. You will get a full file content and user selec
             id: sendButton
             text: "Send"
             enabled: {
-                console.log("OutputPane: sendButton.enabled re-evaluated");
-                console.log("OutputPane: currentEditor:", currentEditor);
-                if (currentEditor) {
-                    console.log("OutputPane: currentEditor.text:", currentEditor.text);
-                }
-                console.log("OutputPane: aiMessagePane.text:", aiMessagePane.text);
-                console.log("OutputPane: llm.busy:", llm.busy);
                 return currentEditor && currentEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy;
             }
             icon.source: "qrc:/assets/send.png"
