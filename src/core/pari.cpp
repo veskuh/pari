@@ -15,6 +15,7 @@
 #include "gitlogmodel.h"
 #include "lspclient.h"
 #include "gitmanager.h"
+#include "documentmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
     qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");
     qmlRegisterType<GitManager>("net.veskuh.pari", 1, 0, "GitManager");
+    qmlRegisterType<DocumentManager>("net.veskuh.pari", 1, 0, "DocumentManager");
 
     QQmlApplicationEngine engine;
 
@@ -57,6 +59,11 @@ int main(int argc, char *argv[])
 
     GitManager *gitManager = new GitManager(&app);
     engine.rootContext()->setContextProperty("gitManager", gitManager);
+
+    DocumentManager *documentManager = new DocumentManager(&app);
+    engine.rootContext()->setContextProperty("documentManager", documentManager);
+
+    QObject::connect(fileSystem, &FileSystem::fileContentReady, documentManager, &DocumentManager::openFile, Qt::QueuedConnection);
 
     QObject::connect(fileSystem, &FileSystem::projectOpened, gitManager, [gitManager, fileSystem](){
         gitManager->setWorkingDirectory(fileSystem->rootPath());

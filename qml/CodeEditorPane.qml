@@ -50,12 +50,12 @@ ColumnLayout {
         return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh");
     }
 
-    function showBuildPanel() {
-        flickable.contentY = 0;
-        outputArea.text = "";
-        outputPanel.visible = true;
-    }
+    signal showBuildPanelRequested()
 
+    function showBuildPanel() {
+        showBuildPanelRequested();
+    }
+/*
     Label {
         text: titleBase + editedAppendix
         font.bold: true
@@ -65,7 +65,7 @@ ColumnLayout {
         property string titleBase: fileSystem.currentFilePath ? fileSystem.currentFilePath : qsTr("📝 Code Editor")
         property string editedAppendix: dirty ? " - ✏️ Edited" : ""
     }
-
+*/
     FindOverlay {
         id: findOverlay
         width: parent.width
@@ -110,11 +110,10 @@ ColumnLayout {
         Flickable {
             id: codeEditorFlickable
             clip: true
-            contentWidth: codeEditor.width
             contentHeight: codeEditor.contentHeight
             TextArea {
                 id: codeEditor
-                width: codeEditorFlickable.width
+                width: codeEditorScrollView.width
                 height: contentHeight
                 placeholderText: "✏️ Open a file or start typing..."
                 wrapMode: Text.WordWrap
@@ -152,7 +151,7 @@ ColumnLayout {
                 }
 
                 onTextChanged: {
-                    if (codeEditor.length !== previousLength) {
+                    if (codeEditor.activeFocus && codeEditor.length !== previousLength) {
                         // Not just a formatting change
                         dirty = true;
                     }
@@ -192,67 +191,7 @@ ColumnLayout {
         }
     }
 
-    Rectangle {
-        id: outputPanel
-        Layout.fillWidth: true
-        Layout.preferredHeight: 200
-        visible: false
-        color: appWindow.palette.window
-        border.color: appWindow.palette.windowText
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 5
-
-            RowLayout {
-                Label {
-                    text: "Build Output"
-                    font.bold: true
-                }
-                Button {
-                    text: "Close"
-                    onClicked: outputPanel.visible = false
-                    Layout.alignment: Qt.AlignRight
-                }
-            }
-
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Flickable {
-                    id: flickable
-                    clip: true
-                    width: parent.width
-                    TextArea {
-                        id: outputArea
-                        readOnly: true
-                        width: parent.width
-                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-
-                        onTextChanged: {
-                            if (contentHeight > flickable.height) {
-                                flickable.contentY = contentHeight - flickable.height;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    Connections {
-        target: buildManager
-        function onOutputReady(output) {
-            outputArea.text += output;
-        }
-        function onErrorReady(error) {
-            outputArea.text += "❗" + error;
-        }
-        function onFinished() {
-            outputArea.text += "\n✅ Ready.\n";
-            console.log("Ready");
-        }
-    }
 
     Connections {
         target: lspClient

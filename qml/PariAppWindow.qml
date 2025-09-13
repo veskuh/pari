@@ -14,6 +14,7 @@ ApplicationWindow {
     }
 
     property bool hasBuildConfiguration: false
+    property var currentEditor: null
 
     minimumWidth: 800
     minimumHeight: 480
@@ -40,9 +41,10 @@ ApplicationWindow {
         id: saveAction
         text: qsTr("Save")
         shortcut: StandardKey.Save
-        enabled: codeEditor.text.length > 0 && fileSystem.currentFilePath !== ""
+        enabled: stackLayout.currentIndex !== -1
         onTriggered: {
-            fileSystem.saveFile(fileSystem.currentFilePath, codeEditor.text);
+            var currentDoc = documentManager.documents[stackLayout.currentIndex];
+            documentManager.saveFile(stackLayout.currentIndex, appWindow.currentEditor.text);
         }
     }
 
@@ -50,15 +52,20 @@ ApplicationWindow {
         id: saveAsAction
         text: qsTr("Save As...")
         shortcut: StandardKey.SaveAs
-        enabled: codeEditor.text.length > 0
-        onTriggered: saveAsDialog.open()
+        enabled: stackLayout.currentIndex !== -1
+        onTriggered: {
+            saveAsDialog.open();
+        }
     }
 
     Action {
         id: findAction
         text: qsTr("Find")
         shortcut: StandardKey.Find
-        onTriggered: codeEditor.find()
+        enabled: stackLayout.currentIndex !== -1
+        onTriggered: {
+            appWindow.currentEditor.find();
+        }
     }
 
     Action {
@@ -78,7 +85,9 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+b"
         onTriggered: {
-            codeEditor.showBuildPanel();
+            if (appWindow.currentEditor) {
+                appWindow.currentEditor.showBuildPanel();
+            }
             buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -89,7 +98,9 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+r"
         onTriggered: {
-            codeEditor.showBuildPanel();
+            if (appWindow.currentEditor) {
+                appWindow.currentEditor.showBuildPanel();
+            }
             buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -97,11 +108,11 @@ ApplicationWindow {
     Action {
         id: indentAction
         text: qsTr("Indent")
-        enabled: fileSystem.currentFilePath.endsWith(".qml") || isCppFile(fileSystem.currentFilePath)
+        enabled: stackLayout.currentIndex !== -1
         shortcut: "Ctrl+i"
         onTriggered: {
-            codeEditor.saveCursorPosition();
-            codeEditor.format()
+            appWindow.currentEditor.saveCursorPosition();
+            appWindow.currentEditor.format()
         }
     }
 
@@ -283,6 +294,19 @@ ApplicationWindow {
                 width: 64
             }
         }
+
+        PariTabBar {
+            id: tabBar
+
+            x: treeColumn.width
+            width: codeColumn.width - 10
+
+            onCurrentIndexChanged: {
+                documentManager.setCurrentIndex(currentIndex)
+                appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex)
+            }
+            model: documentManager.documents
+        }
     }
 
     footer: CustomStatusBar {
@@ -299,6 +323,7 @@ ApplicationWindow {
 
         // Pane 1: File System (20% width)
         ColumnLayout {
+            id: treeColumn
             // Use attached properties to define the pane's size within the SplitView
             SplitView.preferredWidth: appWindow.width * 0.15
             SplitView.minimumWidth: 200 // Prevent the pane from becoming too small
@@ -328,11 +353,81 @@ ApplicationWindow {
             }
         }
 
-        // Pane 2: Code Editor (40% width)
-        CodeEditorPane {
-            id: codeEditor
+        // Pane 2: Code Editor (55% width)
+        ColumnLayout {
+            id: codeColumn
             SplitView.preferredWidth: appWindow.width * 0.55
             SplitView.minimumWidth: 250
+
+            StackLayout {
+                id: stackLayout
+                width: parent.width
+                height: parent.height - tabBar.height
+                currentIndex: documentManager.currentIndex
+
+                Repeater {
+                    id: editorRepeater
+                    model: documentManager.documents
+                    CodeEditorPane {
+                        text: model.text
+                        dirty: model.isDirty
+                        onDirtyChanged: {
+                            documentManager.markDirty(index)
+                        }
+                        onShowBuildPanelRequested: {
+                            outputPanel.visible = true;
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                id: outputPanel
+                Layout.fillWidth: true
+                Layout.preferredHeight: 200
+                visible: false
+                color: appWindow.palette.window
+                border.color: appWindow.palette.windowText
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 5
+
+                    RowLayout {
+                        Label {
+                            text: "Build Output"
+                            font.bold: true
+                        }
+                        Button {
+                            text: "Close"
+                            onClicked: outputPanel.visible = false
+                            Layout.alignment: Qt.AlignRight
+                        }
+                    }
+
+                    ScrollView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Flickable {
+                            id: flickable
+                            clip: true
+                            width: parent.width
+                            TextArea {
+                                id: outputArea
+                                readOnly: true
+                                width: parent.width
+                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+                                onTextChanged: {
+                                    if (contentHeight > flickable.height) {
+                                        flickable.contentY = contentHeight - flickable.height;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Pane 3: AI Section (40% width) - Refactored with Tabs
@@ -340,6 +435,7 @@ ApplicationWindow {
             id: aiOutputPane
             SplitView.preferredWidth: appWindow.width * 0.30
             SplitView.minimumWidth: 250
+            currentEditor: appWindow.currentEditor
         }
     }
 
@@ -354,18 +450,39 @@ ApplicationWindow {
             var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
             hasBuildConfiguration = buildCommand !== "";
         }
-        function onFileContentReady(filePath, content) {
-            codeEditor.text = content;
-            syntaxHighlighterProvider.attachHighlighter(codeEditor.textDocument, filePath);
-            if (isCppFile(filePath)) {
-                lspClient.documentOpened(filePath, content);
-            }
-            codeEditor.dirty = false;
-
-        }
         function onFileSaved(filePath) {
             customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
-            codeEditor.dirty = false;
+        }
+    }
+
+    Connections {
+        target: documentManager
+        function onFileOpened(filePath, content) {
+            Qt.callLater(function() {
+                appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
+                if ( appWindow.currentEditor ) {
+                    var localPath = filePath.toString().substring(7);
+                    syntaxHighlighterProvider.attachHighlighter(appWindow.currentEditor.textDocument, localPath);
+                    if (isCppFile(localPath)) {
+                        lspClient.documentOpened(localPath, content);
+                    }
+                }
+                tabBar.currentIndex = stackLayout.currentIndex
+            });
+        }
+    }
+
+    Connections {
+        target: buildManager
+        function onOutputReady(output) {
+            outputArea.text += output;
+        }
+        function onErrorReady(error) {
+            outputArea.text += "❗" + error;
+        }
+        function onFinished() {
+            outputArea.text += "\n✅ Ready.\n";
+            console.log("Ready");
         }
     }
 
@@ -374,7 +491,9 @@ ApplicationWindow {
         function onResponseReady(response) {
             aiOutputPane.text = response;
             customStatusBar.text = qsTr("💬 AI response received.");
-            aiOutputPane.updateDiff(codeEditor.text);
+            if (stackLayout.currentIndex !== -1) {
+                aiOutputPane.updateDiff(appWindow.currentEditor.text);
+            }
         }
         function onBusyChanged() {
             if (llm.busy) {
@@ -405,7 +524,7 @@ ApplicationWindow {
         currentFolder: fileSystem.lastOpenedPath
         onAccepted: {
             if (saveAsDialog.selectedFile) {
-                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), codeEditor.text);
+                fileSystem.saveFile(saveAsDialog.selectedFile.toString().replace("file://", ""), appWindow.currentEditor.text);
             }
         }
     }
@@ -459,8 +578,8 @@ ApplicationWindow {
             showGitOutput(command, output, branchName);
         }
         function onQmlFileIndented(formattedContent) {
-            codeEditor.text = formattedContent;
-            codeEditor.restoreCursorPosition();
+            appWindow.currentEditor.text = formattedContent;
+            appWindow.currentEditor.restoreCursorPosition();
         }
         function onGitLogReady(log) {
             gitLogModel.parseAndSetLog(log);

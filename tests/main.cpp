@@ -11,6 +11,7 @@
 #include "test_toolmanager.h"
 #include "test_gitlogmodel.h"
 #include "test_gitmanager.h"
+#include "test_documentmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -50,6 +51,9 @@ int main(int argc, char *argv[])
 
     TestGitManager tc_git_manager;
     status |= QTest::qExec(&tc_git_manager, argc, argv);
+
+    TestDocumentManager tc_doc_manager;
+    status |= QTest::qExec(&tc_doc_manager, argc, argv);
 
     return status;
 }
