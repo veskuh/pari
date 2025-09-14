@@ -115,7 +115,17 @@ ApplicationWindow {
             appWindow.currentEditor.format()
         }
     }
-
+    Action {
+        id: goToAction
+        text: gsTr("Go to line..")
+        enabled: stackLayout.currentIndex !== -1
+        shortcut: "Ctrl+l"
+        onTriggered: {
+            goToLineDialog.x = appWindow.x + appWindow.width / 2 - goToLineDialog.width / 2
+            goToLineDialog.y = appWindow.y + appWindow.height / 2 - goToLineDialog.height / 2
+            goToLineDialog.open()
+        }
+    }
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -180,6 +190,10 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr("Chat log")
                 onTriggered: chatLogWindow.show()
+            }
+            MenuItem {
+                text: qsTr("Go to line...")
+                action: goToAction
             }
         }
         Menu {
@@ -546,6 +560,16 @@ ApplicationWindow {
             appSettings.setBuildCommands(fileSystem.rootPath, buildCommand, runCommand, cleanCommand);
             hasBuildConfiguration = buildCommand !== "";
         }
+    }
+
+    GoToLineDialog {
+        id: goToLineDialog
+        onGoToLine: function(lineNumber) {
+            if (appWindow.currentEditor) {
+                appWindow.currentEditor.goToLine(lineNumber);
+            }
+        }
+        popupType: Popup.Native
     }
 
     GitOutputWindow {

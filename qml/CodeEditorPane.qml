@@ -55,6 +55,28 @@ ColumnLayout {
     function showBuildPanel() {
         showBuildPanelRequested();
     }
+
+    function goToLine(lineNumber) {
+        var line = Math.max(0, lineNumber - 1);
+        var text = codeEditor.text;
+        var lines = text.split('\n');
+        if (line >= lines.length) {
+            return;
+        }
+        var position = 0;
+        for (var i = 0; i < line; i++) {
+            position += lines[i].length + 1; // +1 for the newline character
+        }
+
+        codeEditor.cursorPosition = position;
+        codeEditor.forceActiveFocus();
+
+        // Scroll to the line
+        var lineRect = codeEditor.positionToRectangle(position);
+        var flickableHeight = codeEditorFlickable.height;
+        var contentY = lineRect.y - (flickableHeight / 2) + (lineRect.height / 2);
+        codeEditorFlickable.contentY = Math.max(0, Math.min(contentY, codeEditorFlickable.contentHeight - flickableHeight));
+    }
 /*
     Label {
         text: titleBase + editedAppendix
