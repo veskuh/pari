@@ -117,7 +117,7 @@ ApplicationWindow {
     }
     Action {
         id: goToAction
-        text: gsTr("Go to line..")
+        text: qsTr("Go to line..")
         enabled: stackLayout.currentIndex !== -1
         shortcut: "Ctrl+l"
         onTriggered: {
@@ -289,7 +289,7 @@ ApplicationWindow {
 
         Row {
             anchors.right: parent.right
-            visible: false // TBD
+            visible: true
 
             ToolButton {
                 text: qsTr("Diff")
@@ -298,7 +298,11 @@ ApplicationWindow {
                 icon.height: 32
                 display: AbstractButton.TextUnderIcon
                 width: 64
+                enabled: aiOutputPane.text !== ""
+                checkable: true
+                onCheckedChanged: aiOutputPane.diffVisible = checked
             }
+            /*
             ToolButton {
                 text: qsTr("Use")
                 icon.source: "qrc:/assets/accept.png"
@@ -306,7 +310,7 @@ ApplicationWindow {
                 icon.height: 32
                 display: AbstractButton.TextUnderIcon
                 width: 64
-            }
+            }*/
         }
 
         PariTabBar {

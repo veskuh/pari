@@ -9,6 +9,8 @@ ColumnLayout {
     property bool isThinking: false
     property string thinkingText: ""
 
+    property bool diffVisible: false
+
     property alias text: aiOutputPane.text
     property alias diff: diffView.text
 
@@ -37,23 +39,12 @@ Follow the instructions by user. You will get a full file content and user selec
         }
     }
 
-    TabBar {
-        id: rightSideTabBar
-        Layout.fillWidth: true
-        currentIndex: 0
-        TabButton {
-            text: qsTr("AI Output")
-        }
-        TabButton {
-            text: qsTr("Diff View")
-        }
-    }
 
     StackLayout {
         id: rightSideStackLayout
         Layout.fillWidth: true
         Layout.fillHeight: true
-        currentIndex: rightSideTabBar.currentIndex
+        currentIndex: aiPane.diffVisible ? 1 : 0
 
         // Pane for AI Output
         Item {
@@ -205,6 +196,7 @@ Follow the instructions by user. You will get a full file content and user selec
             icon.width: 24
 
             onClicked: {
+                aiPane.diffVisible = false;
                 aiPane.sendPrompt();
             }
             highlighted: true
