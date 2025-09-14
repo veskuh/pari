@@ -389,6 +389,7 @@ ApplicationWindow {
                     CodeEditorPane {
                         text: model.text
                         dirty: model.isDirty
+                        isActivePane: stackLayout.currentIndex === index
                         onDirtyChanged: {
                             documentManager.markDirty(index)
                         }

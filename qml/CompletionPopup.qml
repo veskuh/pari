@@ -14,26 +14,19 @@ Popup {
         typedCharacters = "";
     }
 
-    Connections {
-        target: lspClient
-        function onCompletionItems(items) {
-            completionModel.clear();
-            for (var i = 0; i < items.length; ++i) {
-                completionModel.append({
-                    "text": items[i]
-                });
-            }
-
-            if (items.length > 0) {
-                completionListView.currentIndex = 0;
-                completionPopup.open();
-                filteredDisplayModel.updateFilter(); // Call updateFilter explicitly when popup opens
-                completionListView.forceActiveFocus();
-            }
+    function showCompletions(items) {
+        completionModel.clear();
+        for (var i = 0; i < items.length; ++i) {
+            completionModel.append({
+                "text": items[i]
+            });
         }
-        function onFormattingResult(result) {
-            codeEditor.text = result;
-            restoreCursorPosition();
+
+        if (items.length > 0) {
+            completionListView.currentIndex = 0;
+            completionPopup.open();
+            filteredDisplayModel.updateFilter(); // Call updateFilter explicitly when popup opens
+            completionListView.forceActiveFocus();
         }
     }
 
@@ -56,7 +49,7 @@ Popup {
 
                     if (itemText.startsWith(completionPopup.typedCharacters.toLowerCase())) {
                         filteredDisplayModel.append({
-                            "text": itemText
+                            "text": sourceItems.get(i).text.trim()
                         });
                     }
                 }

@@ -10,6 +10,7 @@ ColumnLayout {
     property int cursorPosition: 0
     property real scrollY: 0
     property bool dirty: false
+    property bool isActivePane: false
 
     TextDocumentSearcher {
         id: textDocumentSearcher
@@ -222,6 +223,12 @@ ColumnLayout {
             codeEditor.text = result;
             restoreCursorPosition();
             restoreScrollPosition();
+        }
+
+        function onCompletionItems(items) {
+            if (isActivePane) {
+                completionPopup.showCompletions(items);
+            }
         }
     }
 
