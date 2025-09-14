@@ -126,6 +126,25 @@ ApplicationWindow {
             goToLineDialog.open()
         }
     }
+
+    Action {
+        id: showAiPaneAction
+        text: qsTr("Show AI Pane")
+        shortcut: "Ctrl+shift+0"
+        onTriggered: {
+            aiOutputPane.visible = !aiOutputPane.visible
+        }
+    }
+
+    Action {
+        id: showTreePaneAction
+        text: qsTr("Show Filesystem")
+        shortcut: "Ctrl+0"
+        onTriggered: {
+            treeColumn.visible = !treeColumn.visible
+        }
+    }
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -195,6 +214,22 @@ ApplicationWindow {
                 text: qsTr("Go to line...")
                 action: goToAction
             }
+            MenuSeparator {}
+            MenuItem {
+                text: qsTr("Show Files")
+                action: showTreePaneAction
+                checkable: true
+                checked: treeColumn.visible
+            }
+
+            MenuItem {
+                text: qsTr("Show AI")
+                action: showAiPaneAction
+                checkable: true
+                checked: aiOutputPane.visible
+            }
+
+
         }
         Menu {
             title: qsTr("Build")
