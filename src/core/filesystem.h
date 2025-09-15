@@ -36,6 +36,8 @@ public slots:
     void saveFile(const QString &filePath, const QString &content);
 
     Q_INVOKABLE bool isDirectory(const QString &filePath);
+    Q_INVOKABLE bool fileExistsInProject(const QString &filePath);
+    Q_INVOKABLE QString getAbsolutePath(const QString &filePath);
 
 signals:
     void fileContentReady(const QString &filePath, const QString &content);

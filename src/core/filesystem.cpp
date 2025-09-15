@@ -132,3 +132,18 @@ bool FileSystem::isGitRepository() const
 {
     return m_isGitRepository;
 }
+
+bool FileSystem::fileExistsInProject(const QString &filePath)
+{
+    QString absolutePath = getAbsolutePath(filePath);
+    QFile file(absolutePath);
+    return file.exists() && absolutePath.startsWith(m_rootPath);
+}
+
+QString FileSystem::getAbsolutePath(const QString &filePath)
+{
+    if (QDir::isAbsolutePath(filePath)) {
+        return filePath;
+    }
+    return QDir::cleanPath(m_rootPath + QDir::separator() + filePath);
+}

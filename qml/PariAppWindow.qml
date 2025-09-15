@@ -15,6 +15,7 @@ ApplicationWindow {
 
     property bool hasBuildConfiguration: false
     property var currentEditor: null
+    property int goToLineNumber: -1
 
     minimumWidth: 800
     minimumHeight: 480
@@ -466,15 +467,31 @@ ApplicationWindow {
                             id: flickable
                             clip: true
                             width: parent.width
-                            TextArea {
+                            Text {
                                 id: outputArea
-                                readOnly: true
                                 width: parent.width
                                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                textFormat: Text.MarkdownText
+                                onLinkActivated: function(link) {
+                                    var parts = link.split(":");
+                                    if (parts.length > 0) {
+                                        var filePath = parts[0];
+                                        var lineNumber = -1;
+                                        if (parts.length > 1) {
+                                            lineNumber = parseInt(parts[1], 10);
+                                        }
 
-                                onTextChanged: {
-                                    if (contentHeight > flickable.height) {
-                                        flickable.contentY = contentHeight - flickable.height;
+                                        if (fileSystem.fileExistsInProject(filePath)) {
+                                            var absolutePath = fileSystem.getAbsolutePath(filePath);
+                                            appWindow.goToLineNumber = lineNumber;
+                                            fileSystem.loadFileContent(absolutePath);
+                                        }
+                                    }
+                                }
+
+                                onContentHeightChanged: {
+                                    if (outputArea.contentHeight > flickable.height) {
+                                        flickable.contentY = outputArea.contentHeight - flickable.height;
                                     }
                                 }
                             }
@@ -495,6 +512,40 @@ ApplicationWindow {
 
     function isCppFile(filePath) {
         return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh")
+    }
+
+    function formatOutput(text) {
+        var lines = text.split('\n');
+        var formattedText = "";
+        var pathRegex = /([\w/.-]+)(?::(\d+))?(?::(\d+))?/g;
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            var result = "";
+            var lastIndex = 0;
+            var match;
+            pathRegex.lastIndex = 0; // Reset regex state
+            while ((match = pathRegex.exec(line)) !== null) {
+                if (fileSystem.fileExistsInProject(match[1])) {
+                    var filePath = match[1];
+                    var lineNumber = match[2] ? match[2] : -1;
+                    var link = filePath + ":" + lineNumber;
+                    result += line.substring(lastIndex, match.index);
+                    result += `[${match[0]}](${link})`;
+                    lastIndex = match.index + match[0].length;
+                }
+            }
+            if (lastIndex === 0) {
+                result = line;
+            } else {
+                result += line.substring(lastIndex);
+            }
+            formattedText += result;
+            if (i < lines.length - 1) {
+                formattedText += '\n';
+            }
+        }
+        return formattedText;
     }
 
     Connections {
@@ -520,6 +571,10 @@ ApplicationWindow {
                     if (isCppFile(localPath)) {
                         lspClient.documentOpened(localPath, content);
                     }
+                    if (appWindow.goToLineNumber > -1) {
+                        appWindow.currentEditor.goToLine(appWindow.goToLineNumber);
+                        appWindow.goToLineNumber = -1;
+                    }
                 }
                 tabBar.currentIndex = stackLayout.currentIndex
             });
@@ -529,10 +584,10 @@ ApplicationWindow {
     Connections {
         target: buildManager
         function onOutputReady(output) {
-            outputArea.text += output;
+            outputArea.text += formatOutput(output);
         }
         function onErrorReady(error) {
-            outputArea.text += "❗" + error;
+            outputArea.text += "❗" + formatOutput(error);
         }
         function onFinished() {
             outputArea.text += "\n✅ Ready.\n";
@@ -609,7 +664,6 @@ ApplicationWindow {
                 appWindow.currentEditor.goToLine(lineNumber);
             }
         }
-        popupType: Popup.Native
     }
 
     GitOutputWindow {
