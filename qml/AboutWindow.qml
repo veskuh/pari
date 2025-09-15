@@ -20,7 +20,7 @@ ApplicationWindow {
             sourceSize.height: 64
             Layout.alignment: Qt.AlignHCenter
         }
-
+ 
         Label {
             text: "Pari - Your Local AI Coding Companion"
             font.bold: true

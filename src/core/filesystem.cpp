@@ -137,11 +137,11 @@ bool FileSystem::fileExistsInProject(const QString &filePath)
 {
     QString absolutePath = getAbsolutePath(filePath);
     QFile file(absolutePath);
-    return file.exists() && absolutePath.startsWith(m_rootPath);
+    return file.exists() && QFileInfo(absolutePath).isFile() && absolutePath.startsWith(m_rootPath);
 }
 
 QString FileSystem::getAbsolutePath(const QString &filePath)
-{
+{   
     if (QDir::isAbsolutePath(filePath)) {
         return filePath;
     }

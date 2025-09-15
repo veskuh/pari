@@ -86,9 +86,7 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+b"
         onTriggered: {
-            if (appWindow.currentEditor) {
-                appWindow.currentEditor.showBuildPanel();
-            }
+            outputPanel.visible = true;
             buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -99,9 +97,7 @@ ApplicationWindow {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+r"
         onTriggered: {
-            if (appWindow.currentEditor) {
-                appWindow.currentEditor.showBuildPanel();
-            }
+            outputPanel.visible = true;
             buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
     }
@@ -429,9 +425,6 @@ ApplicationWindow {
                         onDirtyChanged: {
                             documentManager.markDirty(index)
                         }
-                        onShowBuildPanelRequested: {
-                            outputPanel.visible = true;
-                        }
                     }
                 }
             }
@@ -442,7 +435,6 @@ ApplicationWindow {
                 Layout.preferredHeight: 200
                 visible: false
                 color: appWindow.palette.window
-                border.color: appWindow.palette.windowText
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -466,9 +458,11 @@ ApplicationWindow {
                         Flickable {
                             id: flickable
                             clip: true
+                            contentHeight: outputArea.implicitHeight
                             width: parent.width
                             Text {
                                 id: outputArea
+                                color: palette.text
                                 width: parent.width
                                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 textFormat: Text.MarkdownText
@@ -584,13 +578,13 @@ ApplicationWindow {
     Connections {
         target: buildManager
         function onOutputReady(output) {
-            outputArea.text += formatOutput(output);
+            outputArea.text += "\n" + formatOutput(output);
         }
         function onErrorReady(error) {
-            outputArea.text += "❗" + formatOutput(error);
+            outputArea.text += "\n❗" +  formatOutput(error); // "❗" + 
         }
         function onFinished() {
-            outputArea.text += "\n✅ Ready.\n";
+            outputArea.text += "\n✅ Ready.\n"; //
             console.log("Ready");
         }
     }
