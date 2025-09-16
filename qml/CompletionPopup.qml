@@ -72,7 +72,8 @@ Popup {
             width: completionPopup.width - 10
             highlighted: ListView.isCurrentItem
 
-            text: '<b>' + completionPopup.typedCharacters + '</b>' + model.text.trim().substring(completionPopup.typedCharacters.length)
+            property string base: model && model.text ? model.text.trim() : ""
+            text: '<b>' + completionPopup.typedCharacters + '</b>' + base.substring(completionPopup.typedCharacters.length)
 
             onClicked: {
                 var textToInsert = model.text.trim();

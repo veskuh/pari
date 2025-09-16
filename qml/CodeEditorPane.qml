@@ -51,12 +51,6 @@ ColumnLayout {
         return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh");
     }
 
-    signal showBuildPanelRequested()
-
-    function showBuildPanel() {
-        showBuildPanelRequested();
-    }
-
     function goToLine(lineNumber) {
         var line = Math.max(0, lineNumber - 1);
         var text = codeEditor.text;
@@ -78,17 +72,7 @@ ColumnLayout {
         var contentY = lineRect.y - (flickableHeight / 2) + (lineRect.height / 2);
         codeEditorFlickable.contentY = Math.max(0, Math.min(contentY, codeEditorFlickable.contentHeight - flickableHeight));
     }
-/*
-    Label {
-        text: titleBase + editedAppendix
-        font.bold: true
-        Layout.alignment: Qt.AlignHCenter
-        Layout.topMargin: 5
-        Layout.bottomMargin: 5
-        property string titleBase: fileSystem.currentFilePath ? fileSystem.currentFilePath : qsTr("📝 Code Editor")
-        property string editedAppendix: dirty ? " - ✏️ Edited" : ""
-    }
-*/
+
     FindOverlay {
         id: findOverlay
         width: parent.width
