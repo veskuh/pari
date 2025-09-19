@@ -121,7 +121,7 @@ ColumnLayout {
             TextArea {
                 id: codeEditor
                 width: codeEditorScrollView.width
-                height: contentHeight
+                height: contentHeight > codeEditorScrollView.height ? contentHeight : codeEditorScrollView.height
                 placeholderText: "✏️ Open a file or start typing..."
                 wrapMode: Text.WordWrap
                 font.family: appSettings.fontFamily

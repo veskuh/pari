@@ -109,7 +109,7 @@ ApplicationWindow {
         shortcut: "Ctrl+i"
         onTriggered: {
             appWindow.currentEditor.saveCursorPosition();
-            appWindow.currentEditor.format()
+            appWindow.currentEditor.format();
         }
     }
     Action {
@@ -118,9 +118,9 @@ ApplicationWindow {
         enabled: stackLayout.currentIndex !== -1
         shortcut: "Ctrl+l"
         onTriggered: {
-            goToLineDialog.x = appWindow.x + appWindow.width / 2 - goToLineDialog.width / 2
-            goToLineDialog.y = appWindow.y + appWindow.height / 2 - goToLineDialog.height / 2
-            goToLineDialog.open()
+            goToLineDialog.x = appWindow.x + appWindow.width / 2 - goToLineDialog.width / 2;
+            goToLineDialog.y = appWindow.y + appWindow.height / 2 - goToLineDialog.height / 2;
+            goToLineDialog.open();
         }
     }
 
@@ -129,7 +129,7 @@ ApplicationWindow {
         text: qsTr("Show AI Pane")
         shortcut: "Ctrl+shift+0"
         onTriggered: {
-            aiOutputPane.visible = !aiOutputPane.visible
+            aiOutputPane.visible = !aiOutputPane.visible;
         }
     }
 
@@ -138,7 +138,7 @@ ApplicationWindow {
         text: qsTr("Show Filesystem")
         shortcut: "Ctrl+0"
         onTriggered: {
-            treeColumn.visible = !treeColumn.visible
+            treeColumn.visible = !treeColumn.visible;
         }
     }
 
@@ -225,8 +225,6 @@ ApplicationWindow {
                 checkable: true
                 checked: aiOutputPane.visible
             }
-
-
         }
         Menu {
             title: qsTr("Build")
@@ -352,8 +350,8 @@ ApplicationWindow {
             width: codeColumn.width - 10
 
             onCurrentIndexChanged: {
-                documentManager.setCurrentIndex(currentIndex)
-                appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex)
+                documentManager.setCurrentIndex(currentIndex);
+                appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
             }
             model: documentManager.documents
         }
@@ -362,7 +360,7 @@ ApplicationWindow {
     footer: CustomStatusBar {
         id: customStatusBar
         modelName: "💡" + appSettings.ollamaModel
-        branchName: gitManager.currentBranch!=="" ?  "🌿 " + gitManager.currentBranch : ""
+        branchName: gitManager.currentBranch !== "" ? "🌿 " + gitManager.currentBranch : ""
     }
 
     // --- REFACTORED MAIN CONTENT AREA ---
@@ -424,7 +422,7 @@ ApplicationWindow {
                         dirty: model.isDirty
                         isActivePane: stackLayout.currentIndex === index
                         onDirtyChanged: {
-                            documentManager.markDirty(index)
+                            documentManager.markDirty(index);
                         }
                     }
                 }
@@ -447,16 +445,23 @@ ApplicationWindow {
                             text: "Build Output"
                             font.bold: true
                         }
+                        Item {
+                            Layout.fillWidth: true
+                        }
                         RowLayout {
                             Layout.alignment: Qt.AlignRight
-                            ExpandButton {
-                                id: expandButton
-                                expanded: outputPanel.expanded
-                                onClicked: outputPanel.expanded = !outputPanel.expanded
+                             ToolButton {
+                                text: outputPanel.expanded? "➖" : "➕"
+                                onClicked: {
+                                    outputPanel.expanded = !outputPanel.expanded;
+                                }
                             }
-                            Button {
-                                text: "Close"
-                                onClicked: outputPanel.visible = false
+                            ToolButton {
+                                text: "✖️"
+                                onClicked: {
+                                    outputPanel.visible = false;
+                                    outputPanel.expanded = false;
+                                }
                             }
                         }
                     }
@@ -475,7 +480,7 @@ ApplicationWindow {
                                 width: parent.width
                                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 textFormat: Text.MarkdownText
-                                onLinkActivated: function(link) {
+                                onLinkActivated: function (link) {
                                     var parts = link.split(":");
                                     if (parts.length > 0) {
                                         var filePath = parts[0];
@@ -514,7 +519,7 @@ ApplicationWindow {
     }
 
     function isCppFile(filePath) {
-        return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh")
+        return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh");
     }
 
     function formatOutput(text) {
@@ -566,9 +571,10 @@ ApplicationWindow {
     Connections {
         target: documentManager
         function onFileOpened(filePath, content) {
-            Qt.callLater(function() {
+            outputPanel.expanded = false;
+            Qt.callLater(function () {
                 appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-                if ( appWindow.currentEditor ) {
+                if (appWindow.currentEditor) {
                     var localPath = filePath.toString().substring(7);
                     syntaxHighlighterProvider.attachHighlighter(appWindow.currentEditor.textDocument, localPath);
                     if (isCppFile(localPath)) {
@@ -579,7 +585,7 @@ ApplicationWindow {
                         appWindow.goToLineNumber = -1;
                     }
                 }
-                tabBar.currentIndex = stackLayout.currentIndex
+                tabBar.currentIndex = stackLayout.currentIndex;
             });
         }
     }
@@ -590,7 +596,7 @@ ApplicationWindow {
             outputArea.text += "\n" + formatOutput(output);
         }
         function onErrorReady(error) {
-            outputArea.text += "\n❗" +  formatOutput(error); // "❗" + 
+            outputArea.text += "\n❗" + formatOutput(error); // "❗" +
         }
         function onFinished() {
             outputArea.text += "\n✅ Ready.\n"; //
@@ -662,7 +668,7 @@ ApplicationWindow {
 
     GoToLineDialog {
         id: goToLineDialog
-        onGoToLine: function(lineNumber) {
+        onGoToLine: function (lineNumber) {
             if (appWindow.currentEditor) {
                 appWindow.currentEditor.goToLine(lineNumber);
             }
