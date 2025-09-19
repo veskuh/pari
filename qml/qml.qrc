@@ -15,5 +15,6 @@
         <file>CompletionPopup.qml</file>
         <file>PariTabBar.qml</file>
         <file>GoToLineDialog.qml</file>
+        <file>ExpandButton.qml</file>
     </qresource>
 </RCC>

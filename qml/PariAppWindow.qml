@@ -414,6 +414,7 @@ ApplicationWindow {
                 width: parent.width
                 height: parent.height - tabBar.height
                 currentIndex: documentManager.currentIndex
+                visible: !outputPanel.expanded
 
                 Repeater {
                     id: editorRepeater
@@ -431,8 +432,9 @@ ApplicationWindow {
 
             Rectangle {
                 id: outputPanel
+                property bool expanded: false
                 Layout.fillWidth: true
-                Layout.preferredHeight: 200
+                Layout.preferredHeight: expanded ? codeColumn.height - 40 : 200
                 visible: false
                 color: appWindow.palette.window
 
@@ -445,10 +447,17 @@ ApplicationWindow {
                             text: "Build Output"
                             font.bold: true
                         }
-                        Button {
-                            text: "Close"
-                            onClicked: outputPanel.visible = false
+                        RowLayout {
                             Layout.alignment: Qt.AlignRight
+                            ExpandButton {
+                                id: expandButton
+                                expanded: outputPanel.expanded
+                                onClicked: outputPanel.expanded = !outputPanel.expanded
+                            }
+                            Button {
+                                text: "Close"
+                                onClicked: outputPanel.visible = false
+                            }
                         }
                     }
 
