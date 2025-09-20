@@ -1,21 +1,18 @@
 #include "lspclient.h"
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonValue>
-#include <QDebug>
 #include <QCoreApplication>
+#include <QDebug>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonValue>
 
-LspClient::LspClient(QObject *parent) : QObject(parent), m_process(nullptr), m_requestId(0), m_documentId(0)
-{
+LspClient::LspClient(QObject *parent) : QObject(parent), m_process(nullptr), m_requestId(0), m_documentId(0) {
 }
 
-LspClient::~LspClient()
-{
+LspClient::~LspClient() {
     stopServer();
 }
 
-void LspClient::startServer(const QString &projectPath)
-{
+void LspClient::startServer(const QString &projectPath) {
     stopServer();
 
     m_process = new QProcess(this);
@@ -55,8 +52,7 @@ void LspClient::startServer(const QString &projectPath)
     sendMessage(message);
 }
 
-void LspClient::format(const QString &documentPath, const QString &content)
-{
+void LspClient::format(const QString &documentPath, const QString &content) {
     m_formattingDocumentContent = content;
     QJsonObject textDocument;
     textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
@@ -78,8 +74,7 @@ void LspClient::format(const QString &documentPath, const QString &content)
     sendMessage(message);
 }
 
-void LspClient::documentOpened(const QString &documentPath, const QString &content)
-{
+void LspClient::documentOpened(const QString &documentPath, const QString &content) {
     QJsonObject textDocument;
     textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
     textDocument["languageId"] = "cpp";
@@ -98,11 +93,10 @@ void LspClient::documentOpened(const QString &documentPath, const QString &conte
     sendMessage(message);
 }
 
-void LspClient::documentChanged(const QString &documentPath, const QString &content)
-{
+void LspClient::documentChanged(const QString &documentPath, const QString &content) {
     QJsonObject textDocument;
     textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
-    textDocument["version"] = m_documentId++; 
+    textDocument["version"] = m_documentId++;
 
     QJsonObject contentChanges;
     contentChanges["text"] = content;
@@ -122,8 +116,7 @@ void LspClient::documentChanged(const QString &documentPath, const QString &cont
     sendMessage(message);
 }
 
-void LspClient::requestCompletion(const QString &documentPath, int line, int character)
-{
+void LspClient::requestCompletion(const QString &documentPath, int line, int character) {
     QJsonObject textDocument;
     textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
 
@@ -144,40 +137,45 @@ void LspClient::requestCompletion(const QString &documentPath, int line, int cha
     sendMessage(message);
 }
 
-qint64 LspClient::positionToIndex(const QJsonObject &position, const QString &document)
-{
+qint64 LspClient::positionToIndex(const QJsonObject &position, const QString &document) {
     qint64 line = position["line"].toInt();
     qint64 character = position["character"].toInt();
     qint64 index = 0;
     for (qint64 i = 0; i < line; ++i) {
         index = document.indexOf('\n', index) + 1;
-        if (index == 0) return -1; // Line not found
+        if (index == 0)
+            return -1; // Line not found
     }
     return index + character;
 }
 
-void LspClient::onReadyRead()
-{
-    if (!m_process) return;
+void LspClient::onReadyRead() {
+    if (!m_process)
+        return;
     QByteArray data = m_process->readAll();
     handleMessage(data);
 }
 
-void LspClient::onReadyReadStandardError()
-{
-    if (!m_process) return;
-    qDebug() << "clangd stderr:" << m_process->readAllStandardError();
+void LspClient::onReadyReadStandardError() {
+    if (!m_process)
+        return;
+    QString error = m_process->readAllStandardError();
+    if (error.contains("Path specified by --compile-commands-dir does not exist.")) {
+        qDebug() << "No data for command complition";
+    } else {
+        qDebug() << "clangd stderr:" << m_process->readAllStandardError();
+    }
 }
 
-void LspClient::onProcessError(QProcess::ProcessError error)
-{
-    if (!m_process) return;
+void LspClient::onProcessError(QProcess::ProcessError error) {
+    if (!m_process)
+        return;
     qWarning() << "clangd process error:" << error << m_process->errorString();
 }
 
-void LspClient::sendMessage(const QJsonObject &message)
-{
-    if (!m_process) return;
+void LspClient::sendMessage(const QJsonObject &message) {
+    if (!m_process)
+        return;
     QJsonDocument doc(message);
     QByteArray bytes = doc.toJson(QJsonDocument::Compact);
     // qDebug() << "-->" << doc.toJson(QJsonDocument::Indented);
@@ -186,8 +184,7 @@ void LspClient::sendMessage(const QJsonObject &message)
     m_process->write(bytes);
 }
 
-void LspClient::handleMessage(const QByteArray &message)
-{
+void LspClient::handleMessage(const QByteArray &message) {
     QString messageStr(message);
     QStringList parts = messageStr.split("\r\n\r\n");
     if (parts.size() < 2) {
@@ -195,8 +192,6 @@ void LspClient::handleMessage(const QByteArray &message)
     }
     QJsonDocument doc = QJsonDocument::fromJson(parts[1].toUtf8());
     QJsonObject obj = doc.object();
-
-    //qDebug() << "<--" << doc.toJson(QJsonDocument::Indented);
 
     if (obj.contains("result")) {
         QJsonValue resultValue = obj.value("result");
@@ -230,8 +225,7 @@ void LspClient::handleMessage(const QByteArray &message)
     }
 }
 
-void LspClient::stopServer()
-{
+void LspClient::stopServer() {
     if (!m_process || m_process->state() != QProcess::Running) {
         if (m_process) {
             m_process->deleteLater();
@@ -247,7 +241,7 @@ void LspClient::stopServer()
     sendMessage(shutdownMessage);
 
     if (m_process->waitForBytesWritten(5000)) {
-         m_process->waitForReadyRead(1000); // Wait for shutdown response
+        m_process->waitForReadyRead(1000); // Wait for shutdown response
     }
 
     QJsonObject exitMessage;
