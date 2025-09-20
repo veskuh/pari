@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import QtQuick.Dialogs
+
 import net.veskuh.pari 1.0
 
 ApplicationWindow {
@@ -56,6 +57,23 @@ ApplicationWindow {
         enabled: stackLayout.currentIndex !== -1
         onTriggered: {
             saveAsDialog.open();
+        }
+    }
+
+    Action {
+        id: closeAction
+        text: qsTr("Close")
+        shortcut: StandardKey.Close
+        enabled: stackLayout.currentIndex !== -1
+        onTriggered: {
+            if (stackLayout.currentIndex !== -1) {
+                var currentDoc = documentManager.documents[stackLayout.currentIndex];
+                if (currentDoc.isDirty) {
+                    unsavedChangesDialog.open();
+                } else {
+                    closeCurrentFile();
+                }
+            }
         }
     }
 
@@ -171,6 +189,10 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr("Save As...")
                 action: saveAsAction
+            }
+            MenuItem {
+                text: qsTr("Close")
+                action: closeAction
             }
             MenuItem {
                 text: qsTr("Exit")
@@ -677,6 +699,33 @@ ApplicationWindow {
 
     GitOutputWindow {
         id: gitOutputWindow
+    }
+
+    MessageDialog {
+        id: unsavedChangesDialog
+        title: qsTr("Unsaved Changes")
+        text: qsTr("The current file has unsaved changes. Do you want to save them?")
+        buttons: MessageDialog.Save | MessageDialog.Discard | MessageDialog.Cancel
+        onAccepted: {
+            if (result === MessageDialog.Save) {
+                documentManager.saveFile(stackLayout.currentIndex, appWindow.currentEditor.text);
+                closeCurrentFile();
+            } else if (result === MessageDialog.Discard) {
+                closeCurrentFile();
+            }
+        }
+        onRejected: {
+            // Do nothing
+        }
+
+
+
+    }
+
+    function closeCurrentFile() {
+        if (stackLayout.currentIndex !== -1) {
+            documentManager.closeFile(stackLayout.currentIndex);
+        }
     }
 
     function showGitOutput(command, output, branch) {
