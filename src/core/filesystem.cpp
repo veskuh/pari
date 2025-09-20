@@ -147,3 +147,14 @@ QString FileSystem::getAbsolutePath(const QString &filePath)
     }
     return QDir::cleanPath(m_rootPath + QDir::separator() + filePath);
 }
+
+QVariantMap FileSystem::getFileInfo(const QString &filePath)
+{
+    QFileInfo fileInfo(filePath);
+    QVariantMap info;
+    info.insert("name", fileInfo.fileName());
+    info.insert("path", fileInfo.absoluteFilePath());
+    info.insert("size", fileInfo.size());
+    info.insert("modified", fileInfo.lastModified().toString());
+    return info;
+}

@@ -19,3 +19,21 @@ void TestFileSystem::testSaveFile()
     QCOMPARE(QString(file.readAll()), content);
     file.close();
 }
+
+void TestFileSystem::testGetFileInfo()
+{
+    FileSystem fileSystem;
+    QTemporaryDir tempDir;
+    QString filePath = tempDir.path() + "/test.txt";
+    QFile file(filePath);
+    QVERIFY(file.open(QIODevice::WriteOnly | QIODevice::Text));
+    QString content = "Hello, World!";
+    file.write(content.toUtf8());
+    file.close();
+
+    QVariantMap fileInfo = fileSystem.getFileInfo(filePath);
+
+    QCOMPARE(fileInfo["name"].toString(), "test.txt");
+    QCOMPARE(fileInfo["path"].toString(), filePath);
+    QCOMPARE(fileInfo["size"].toLongLong(), content.size());
+}

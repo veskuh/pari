@@ -588,6 +588,9 @@ ApplicationWindow {
         function onFileSaved(filePath) {
             customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
         }
+        function onFileContentReady(filePath, content) {
+            documentManager.openFile(filePath, content);
+        }
     }
 
     Connections {

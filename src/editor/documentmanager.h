@@ -21,6 +21,7 @@ public:
 
 public slots:
     void openFile(const QString &filePath, const QString &content);
+    void openFileInNewTab(const QString &filePath);
     void closeFile(int index);
     bool saveFile(int index, const QString &content);
     void setCurrentIndex(int index);

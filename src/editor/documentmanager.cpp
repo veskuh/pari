@@ -45,6 +45,25 @@ void DocumentManager::openFile(const QString &filePath, const QString &content)
     emit documentsChanged();
 }
 
+void DocumentManager::openFileInNewTab(const QString &filePath)
+{
+    QFile file(filePath);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+        TextDocument *doc = new TextDocument(this);
+        doc->setFilePath(filePath);
+        doc->setText(in.readAll());
+        doc->setDirty(false);
+        m_documents.append(doc);
+        setCurrentIndex(m_documents.size() - 1);
+        emit fileOpened(QUrl::fromLocalFile(filePath), doc->text());
+        emit documentsChanged();
+        file.close();
+    } else {
+        qWarning() << "DocumentManager: Could not open file:" << filePath << ", Error:" << file.errorString();
+    }
+}
+
 void DocumentManager::closeFile(int index)
 {
     if (index >= 0 && index < m_documents.size()) {

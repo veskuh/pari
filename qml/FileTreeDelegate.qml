@@ -9,6 +9,7 @@ Item {
     height: 28
     required property int depth
     required property bool expanded
+    property var appWindow
     property bool isDirectory: fileSystem.isDirectory(model.filePath)
     property bool highlight: model.filePath === fileSystemView.selectedPath
 
@@ -72,14 +73,50 @@ Item {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-        onClicked: {
-            if (isDirectory) {
-                fileSystemView.toggleExpanded(index);
-            } else {
-                fileSystem.loadFileContent(model.filePath);
-                fileSystemView.selectedPath = model.filePath;
+        onClicked: (mouse) => {
+            if (mouse.button === Qt.LeftButton) {
+                if (isDirectory) {
+                    fileSystemView.toggleExpanded(index);
+                } else {
+                    fileSystem.loadFileContent(model.filePath);
+                    fileSystemView.selectedPath = model.filePath;
+                }
+            }
+        }
+
+        onPressed: (mouse) => {
+            if (mouse.button === Qt.RightButton) {
+                contextMenu.popup();
+            }
+        }
+    }
+
+    Menu {
+        id: contextMenu
+
+        MenuItem {
+            text: qsTr("Open in new tab")
+            enabled: !isDirectory
+            onTriggered: {
+                documentManager.openFileInNewTab(model.filePath);
+            }
+        }
+        MenuItem {
+            text: qsTr("Info")
+            onTriggered: {
+                var fileInfo = fileSystem.getFileInfo(model.filePath);
+                var component = Qt.createComponent("FileInfoDialog.qml");
+                var dialog = component.createObject(root, {
+                    fileName: fileInfo.name,
+                    filePath: fileInfo.path,
+                    fileSize: fileInfo.size,
+                    fileModified: fileInfo.modified
+                });
+                dialog.show();
             }
         }
     }
 }
+
