@@ -20,8 +20,7 @@ public:
     int currentIndex() const;
 
 public slots:
-    void openFile(const QString &filePath, const QString &content);
-    void openFileInNewTab(const QString &filePath);
+    void openFile(const QString &filePath, bool newTab = false);
     void closeFile(int index);
     bool saveFile(int index, const QString &content);
     void setCurrentIndex(int index);

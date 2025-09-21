@@ -6,7 +6,7 @@
 #include <QFileInfo>
 
 SyntaxHighlighterProvider::SyntaxHighlighterProvider(QObject *parent)
-    : QObject{parent}, m_highlighter(nullptr), m_settings(nullptr), m_document(nullptr)
+    : QObject{parent}, m_settings(nullptr)
 {
 }
 
@@ -25,29 +25,7 @@ void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const
     if (!doc)
         return;
 
-    m_document = doc;
-    m_filePath = filePath;
-
-    updateHighlighterTheme();
-}
-
-void SyntaxHighlighterProvider::updateHighlighterTheme()
-{
-    if (!m_document || m_filePath.isEmpty() || !m_settings)
-        return;
-
-    QTextDocument *textDoc = m_document->textDocument();
-    if (!textDoc)
-        return;
-
-    // Clean up any existing highlighter
-    if (m_highlighter) {
-        m_highlighter->setDocument(nullptr);
-        delete m_highlighter;
-        m_highlighter = nullptr;
-    }
-
-    QFileInfo fileInfo(m_filePath);
+    QFileInfo fileInfo(filePath);
     QString extension = fileInfo.suffix();
     QStringList cppExtensions = {"cpp", "h", "cxx", "hxx", "cc", "hh"};
 
@@ -56,13 +34,20 @@ void SyntaxHighlighterProvider::updateHighlighterTheme()
     QStringList shellExtensions = {"sh", "bash", "zsh","pro","cmake","py","pl","ps1","rb","conf","ini","cfg","yaml","mk"};
     QStringList buildFiles = {"Makefile", "CMakeLists.txt"};
 
+    QSyntaxHighlighter* higlighter;
+
     if (cppExtensions.contains(extension)) {
-        m_highlighter = new CppSyntaxHighlighter(textDoc, currentTheme);
+        higlighter = new CppSyntaxHighlighter(doc->textDocument(), currentTheme);
     } else if (extension == "qml") {
-        m_highlighter = new QmlSyntaxHighlighter(textDoc, currentTheme);
+        higlighter = new QmlSyntaxHighlighter(doc->textDocument(), currentTheme);
     } else if (shellExtensions.contains(extension) || buildFiles.contains(fileInfo.fileName())) {
-        m_highlighter = new ShellSyntaxHighlighter(textDoc, currentTheme);
+        higlighter = new ShellSyntaxHighlighter(doc->textDocument(), currentTheme);
     } else if (extension == "md" || extension == "markdown") {
-        m_highlighter = new MarkdownSyntaxHighlighter(textDoc, currentTheme);
+        higlighter = new MarkdownSyntaxHighlighter(doc->textDocument(), currentTheme);
     }
+}
+
+void SyntaxHighlighterProvider::updateHighlighterTheme()
+{
+    // TODO
 }

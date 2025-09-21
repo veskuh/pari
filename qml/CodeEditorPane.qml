@@ -11,6 +11,7 @@ ColumnLayout {
     property real scrollY: 0
     property bool dirty: false
     property bool isActivePane: false
+    property string filePath: ""
 
     TextDocumentSearcher {
         id: textDocumentSearcher
@@ -38,11 +39,11 @@ ColumnLayout {
 
     function format() {
         saveScrollPosition();
-        if (fileSystem.currentFilePath) {
-            if (fileSystem.currentFilePath.endsWith(".qml")) {
-                toolManager.indentQmlFile(fileSystem.currentFilePath, codeEditor.text);
-            } else if (isCppFile(fileSystem.currentFilePath)) {
-                lspClient.format(fileSystem.currentFilePath, codeEditor.text);
+        if (filePath) {
+            if (filePath.endsWith(".qml")) {
+                toolManager.indentQmlFile(filePath, codeEditor.text);
+            } else if (isCppFile(filePath)) {
+                lspClient.format(filePath, codeEditor.text);
             }
         }
     }
@@ -171,8 +172,8 @@ ColumnLayout {
                     previousLength = codeEditor.length;
 
                     aiOutputPane.updateDiff(codeEditor.text);
-                    if (fileSystem.currentFilePath && isCppFile(fileSystem.currentFilePath)) {
-                        lspClient.documentChanged(fileSystem.currentFilePath, codeEditor.text);
+                    if (filePath && isCppFile(filePath)) {
+                        lspClient.documentChanged(filePath, codeEditor.text);
                         var text = codeEditor.getText(0, codeEditor.cursorPosition);
                         if (text.endsWith(".") || text.endsWith("->")) {
                             var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition);
@@ -180,7 +181,7 @@ ColumnLayout {
                             var line = lines.length - 1;
                             var character = lines[lines.length - 1].length;
                             console.log("Requesting completion at", line, character);
-                            lspClient.requestCompletion(fileSystem.currentFilePath, line, character);
+                            lspClient.requestCompletion(filePath, line, character);
                         }
                     }
                     handleAutoIndent();

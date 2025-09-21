@@ -80,7 +80,7 @@ Item {
                 if (isDirectory) {
                     fileSystemView.toggleExpanded(index);
                 } else {
-                    fileSystem.loadFileContent(model.filePath);
+                    documentManager.openFile(model.filePath, false);
                     fileSystemView.selectedPath = model.filePath;
                 }
             }
@@ -100,7 +100,7 @@ Item {
             text: qsTr("Open in new tab")
             enabled: !isDirectory
             onTriggered: {
-                documentManager.openFileInNewTab(model.filePath);
+                documentManager.openFile(model.filePath, true);
             }
         }
         MenuItem {

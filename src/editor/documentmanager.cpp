@@ -22,43 +22,37 @@ int DocumentManager::currentIndex() const
     return m_currentIndex;
 }
 
-void DocumentManager::openFile(const QString &filePath, const QString &content)
-{
-    qDebug() << "DocumentManager::openFile" << filePath;
-    if (m_currentIndex != -1 && m_documents[m_currentIndex]->isDirty()) {
-        TextDocument *doc = new TextDocument(this);
-        doc->setFilePath(filePath);
-        m_documents.append(doc);
-        setCurrentIndex(m_documents.size() - 1);
-    } else {
-        if (m_documents.isEmpty()) {
-            TextDocument *doc = new TextDocument(this);
-            m_documents.append(doc);
-            setCurrentIndex(0);
-        }
-        m_documents[m_currentIndex]->setFilePath(filePath);
-    }
-
-    m_documents[m_currentIndex]->setText(content);
-    m_documents[m_currentIndex]->setDirty(false);
-    emit fileOpened(QUrl::fromLocalFile(filePath), content);
-    emit documentsChanged();
-}
-
-void DocumentManager::openFileInNewTab(const QString &filePath)
+void DocumentManager::openFile(const QString &filePath, bool newTab)
 {
     QFile file(filePath);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);
+        QString content(in.readAll());
+        file.close();
+
+        for (int i = 0; i < m_documents.size(); ++i) {
+            if (m_documents[i]->filePath() == filePath) {
+                setCurrentIndex(i);
+                return;
+            }
+        }
+
         TextDocument *doc = new TextDocument(this);
         doc->setFilePath(filePath);
-        doc->setText(in.readAll());
+        doc->setText(content);
         doc->setDirty(false);
-        m_documents.append(doc);
-        setCurrentIndex(m_documents.size() - 1);
+
+        if (newTab || m_documents.isEmpty() || m_currentIndex == -1 || (m_currentIndex !=-1 && m_documents[m_currentIndex]->isDirty())) {
+            m_documents.append(doc);
+            setCurrentIndex(m_documents.size() - 1);
+        } else {
+            m_documents[m_currentIndex] = doc;
+            emit fileOpened(QUrl::fromLocalFile(filePath), content);
+            emit documentsChanged();
+        }
         emit fileOpened(QUrl::fromLocalFile(filePath), doc->text());
         emit documentsChanged();
-        file.close();
+
     } else {
         qWarning() << "DocumentManager: Could not open file:" << filePath << ", Error:" << file.errorString();
     }
@@ -69,6 +63,14 @@ void DocumentManager::closeFile(int index)
     if (index >= 0 && index < m_documents.size()) {
         TextDocument *doc = m_documents.takeAt(index);
         doc->deleteLater();
+
+        if (m_documents.isEmpty()) {
+            setCurrentIndex(-1);
+        } else {
+            if (m_currentIndex >= index) {
+                setCurrentIndex(m_currentIndex - 1);
+            }
+        }
         emit documentsChanged();
     }
 }

@@ -374,6 +374,15 @@ ApplicationWindow {
             onCurrentIndexChanged: {
                 documentManager.setCurrentIndex(currentIndex);
                 appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
+                if (appWindow.currentEditor) {
+                    var doc = documentManager.documents[currentIndex];
+                    if (doc) {
+                        syntaxHighlighterProvider.attachHighlighter(appWindow.currentEditor.textDocument, doc.filePath);
+                        if (isCppFile(doc.filePath)) {
+                            lspClient.documentOpened(doc.filePath, appWindow.currentEditor.text);
+                        }
+                    }
+                }
             }
             model: documentManager.documents
         }
@@ -445,6 +454,9 @@ ApplicationWindow {
                         isActivePane: stackLayout.currentIndex === index
                         onDirtyChanged: {
                             documentManager.markDirty(index);
+                        }
+                        Component.onCompleted: {
+                            syntaxHighlighterProvider.attachHighlighter(textDocument, model.filePath);
                         }
                     }
                 }
@@ -588,32 +600,14 @@ ApplicationWindow {
         function onFileSaved(filePath) {
             customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
         }
-        function onFileContentReady(filePath, content) {
-            documentManager.openFile(filePath, content);
-        }
+
     }
 
-    Connections {
-        target: documentManager
-        function onFileOpened(filePath, content) {
-            outputPanel.expanded = false;
-            Qt.callLater(function () {
-                appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-                if (appWindow.currentEditor) {
-                    var localPath = filePath.toString().substring(7);
-                    syntaxHighlighterProvider.attachHighlighter(appWindow.currentEditor.textDocument, localPath);
-                    if (isCppFile(localPath)) {
-                        lspClient.documentOpened(localPath, content);
-                    }
-                    if (appWindow.goToLineNumber > -1) {
-                        appWindow.currentEditor.goToLine(appWindow.goToLineNumber);
-                        appWindow.goToLineNumber = -1;
-                    }
-                }
-                tabBar.currentIndex = stackLayout.currentIndex;
-            });
-        }
-    }
+
+
+
+
+
 
     Connections {
         target: buildManager

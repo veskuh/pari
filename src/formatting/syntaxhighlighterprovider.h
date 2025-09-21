@@ -20,10 +20,7 @@ private slots:
     void updateHighlighterTheme();
 
 private:
-    QSyntaxHighlighter *m_highlighter;
     Settings *m_settings;
-    QQuickTextDocument *m_document;
-    QString m_filePath;
 };
 
 #endif // SYNTAXHIGHLIGHTERPROVIDER_H

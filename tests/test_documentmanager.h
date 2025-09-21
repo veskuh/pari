@@ -10,6 +10,8 @@ public:
     explicit TestDocumentManager(QObject *parent = nullptr);
 
 private slots:
+    void initTestCase();
+    void cleanupTestCase();
     void testOpenFile_data();
     void testOpenFile();
     void testOpenFile_dirty();
