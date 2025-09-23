@@ -449,9 +449,17 @@ ApplicationWindow {
                     id: editorRepeater
                     model: documentManager.documents
                     CodeEditorPane {
+                        id: editor
                         text: model.text
                         dirty: model.isDirty
                         isActivePane: stackLayout.currentIndex === index
+
+                        onIsActivePaneChanged: {
+                            if (isActivePane) {
+                                appWindow.currentEditor = editor
+                            }
+                        }
+
                         onDirtyChanged: {
                             documentManager.markDirty(index);
                         }
