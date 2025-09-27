@@ -10,6 +10,8 @@ Rectangle {
     property int currentIndex: 0
     property var model: ["Tab 1", "Tab 2", "Tab 3"]
     property int indicatorHeight: 3
+    property double activeHeaderX : currentIndex * activeHeaderWidth
+    property double activeHeaderWidth : 0.0
 
     // Signal emitted when a tab is clicked
     signal tabClicked(int index)
@@ -21,6 +23,8 @@ Rectangle {
     // Automatically use the system's window color for the background
     color: "transparent"
     height: parent.height
+
+
 
     // The sliding background "pill" for the active tab.
     // It sits behind the text (z: 0).
@@ -35,8 +39,8 @@ Rectangle {
 
         height: root.height * 0.85
         anchors.bottom: parent.bottom
-        width: tabLayout.children[root.currentIndex] ? (tabLayout.children[root.currentIndex].width - 10) : 0
-        x: tabLayout.children[root.currentIndex] ? (tabLayout.children[root.currentIndex].x + 5) : 0
+        width: root.activeHeaderWidth > 10 ? root.activeHeaderWidth - 10 : 0
+        x: root.activeHeaderX + 5
         z: 0
 
         gradient: Gradient {
@@ -73,6 +77,7 @@ Rectangle {
             model: root.model
 
             delegate: Item {
+                id: tabHeader
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
@@ -102,7 +107,7 @@ Rectangle {
 
                 Label {
                     id: label
-                    text: modelData.isDirty? modelData.fileName +  "- ✏️ Edited" : modelData.fileName
+                    text: modelData.isDirty? modelData.fileName +  "- ✏️ Edited" : modelData.fileName + " " + root.currentIndex
                     anchors.centerIn: parent
                     font.bold: root.currentIndex === index
                     // Active text uses the system highlight color, inactive uses standard text color
@@ -116,6 +121,12 @@ Rectangle {
                     onClicked: {
                         root.currentIndex = index;
                         root.tabClicked(index);
+                    }
+                }
+
+                onWidthChanged: {
+                    if (root.currentIndex === index) {
+                        root.activeHeaderWidth = width
                     }
                 }
             }
@@ -133,8 +144,8 @@ Rectangle {
 
 
         // Positioning logic
-        width: tabLayout.children[root.currentIndex] ? tabLayout.children[root.currentIndex].width : 0
-        x: tabLayout.children[root.currentIndex] ? tabLayout.children[root.currentIndex].x : 0
+        width: activeHeaderWidth
+        x: activeHeaderX
         z: 1
 
         // Animation behaviors

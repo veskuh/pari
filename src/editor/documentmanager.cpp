@@ -47,11 +47,9 @@ void DocumentManager::openFile(const QString &filePath, bool newTab)
             setCurrentIndex(m_documents.size() - 1);
         } else {
             m_documents[m_currentIndex] = doc;
-            emit fileOpened(QUrl::fromLocalFile(filePath), content);
-            emit documentsChanged();
         }
-        emit fileOpened(QUrl::fromLocalFile(filePath), doc->text());
         emit documentsChanged();
+        emit currentIndexChanged();
 
     } else {
         qWarning() << "DocumentManager: Could not open file:" << filePath << ", Error:" << file.errorString();

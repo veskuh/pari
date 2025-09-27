@@ -371,21 +371,14 @@ ApplicationWindow {
             x: treeColumn.width
             width: codeColumn.width - 10
 
-            onCurrentIndexChanged: {
-                documentManager.setCurrentIndex(currentIndex);
-                appWindow.currentEditor = editorRepeater.itemAt(stackLayout.currentIndex);
-                if (appWindow.currentEditor) {
-                    var doc = documentManager.documents[currentIndex];
-                    if (doc) {
-                        syntaxHighlighterProvider.attachHighlighter(appWindow.currentEditor.textDocument, doc.filePath);
-                        if (isCppFile(doc.filePath)) {
-                            lspClient.documentOpened(doc.filePath, appWindow.currentEditor.text);
-                        }
-                    }
-                }
-            }
+            onTabClicked: function(index) { appWindow.setEditorIndex(index) }
             model: documentManager.documents
         }
+    }
+
+    function setEditorIndex(index) {
+        tabBar.currentIndex = index
+        documentManager.setCurrentIndex(index);
     }
 
     footer: CustomStatusBar {
@@ -445,9 +438,15 @@ ApplicationWindow {
                 currentIndex: documentManager.currentIndex
                 visible: !outputPanel.expanded
 
+              /*  onCurrentIndexChanged: {
+                    tabBar.currentIndex = currentIndex
+                    var item = stackLayout.itemAt(currentIndex)
+                    appWindow.currentEditor = stackLayout.itemAt(currentIndex)
+                } */
                 Repeater {
                     id: editorRepeater
                     model: documentManager.documents
+
                     CodeEditorPane {
                         id: editor
                         text: model.text
@@ -456,7 +455,9 @@ ApplicationWindow {
 
                         onIsActivePaneChanged: {
                             if (isActivePane) {
-                                appWindow.currentEditor = editor
+                                tabBar.currentIndex = index
+                                appWindow.currentEditor = stackLayout.itemAt(stackLayout.currentIndex)
+
                             }
                         }
 
@@ -465,6 +466,9 @@ ApplicationWindow {
                         }
                         Component.onCompleted: {
                             syntaxHighlighterProvider.attachHighlighter(textDocument, model.filePath);
+                            if (isCppFile(model.filePath)) {
+                                lspClient.documentOpened(model.filePath, model.text);
+                            }
                         }
                     }
                 }

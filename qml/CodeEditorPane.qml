@@ -119,10 +119,41 @@ ColumnLayout {
             id: codeEditorFlickable
             clip: true
             contentHeight: codeEditor.contentHeight
-            TextArea {
-                id: codeEditor
+            Item {
                 width: codeEditorScrollView.width
-                height: contentHeight > codeEditorScrollView.height ? contentHeight : codeEditorScrollView.height
+
+                Item {
+
+                    width: 25
+                    height: codeEditor.height
+
+                    Repeater {
+                        id: lineNumberRepeater
+                        model: [] // Initially empty
+
+                        delegate: Text {
+                            // Position the line number. 'modelData' is the y-coordinate from the array.
+                            y: modelData
+                            x: 5 // A small horizontal padding from the left edge.
+
+                            // Display the line number (index is 0-based, so we add 1).
+                            text: index + 1
+
+                            color: codeEditor.cursorRectangle.y == y ? palette.highlightedText :  palette.placeholderText
+                            font.pixelSize: codeEditor.font.pixelSize
+                            font.family: codeEditor.font.family
+                            horizontalAlignment: Text.AlignRight
+                            width: 25 // Fixed width to ensure alignment
+                        }
+                    }
+
+                }
+
+                TextArea {
+                id: codeEditor
+                x: 30
+                width: codeEditorScrollView.width - 50
+                height: contentHeight > codeEditorScrollView.height ? (contentHeight+20) : codeEditorScrollView.height
                 placeholderText: "✏️ Open a file or start typing..."
                 wrapMode: Text.WordWrap
                 font.family: appSettings.fontFamily
@@ -186,6 +217,32 @@ ColumnLayout {
                     }
                     handleAutoIndent();
                 }
+
+                onContentHeightChanged: {
+                    // Array to store the y-coordinates.
+                    const coordinates = [];
+                    const textContent = codeEditor.text;
+                    let searchIndex = 0;
+                    let newlineIndex;
+
+                    // First line
+                    const rect = codeEditor.positionToRectangle(0);
+                    coordinates.push(rect.y)
+
+                    // Loop through the text to find all occurrences of the newline character '\n'.
+                    while ((newlineIndex = textContent.indexOf('\n', searchIndex)) !== -1) {
+                        // We want the y-coordinate of the character AFTER the newline
+                        const nextCharIndex = newlineIndex + 1;
+
+                        if (nextCharIndex < textContent.length) {
+                            const rect = codeEditor.positionToRectangle(nextCharIndex);
+                            coordinates.push(rect.y)
+                        }
+                        searchIndex = newlineIndex + 1;
+                    }
+                    lineNumberRepeater.model = coordinates
+                }
+
                 property int savedCursorPosition: 0
                 property int previousLength: 0
 
@@ -195,6 +252,7 @@ ColumnLayout {
                 }
 
                 property bool isIndenting: false
+            }
             }
         }
     }
