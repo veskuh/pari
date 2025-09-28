@@ -107,7 +107,7 @@ Rectangle {
 
                 Label {
                     id: label
-                    text: modelData.isDirty? modelData.fileName +  "- ✏️ Edited" : modelData.fileName + " " + root.currentIndex
+                    text: modelData.isDirty? modelData.fileName +  "- ✏️ Edited" : modelData.fileName
                     anchors.centerIn: parent
                     font.bold: root.currentIndex === index
                     // Active text uses the system highlight color, inactive uses standard text color
