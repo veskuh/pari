@@ -61,15 +61,17 @@ void DocumentManager::closeFile(int index)
     if (index >= 0 && index < m_documents.size()) {
         TextDocument *doc = m_documents.takeAt(index);
         doc->deleteLater();
+        emit documentsChanged();
 
         if (m_documents.isEmpty()) {
             setCurrentIndex(-1);
         } else {
             if (m_currentIndex >= index) {
                 setCurrentIndex(m_currentIndex - 1);
+            } else {
+                setCurrentIndex(0);
             }
         }
-        emit documentsChanged();
     }
 }
 
