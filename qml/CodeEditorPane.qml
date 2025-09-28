@@ -139,125 +139,123 @@ ColumnLayout {
                             // Display the line number (index is 0-based, so we add 1).
                             text: index + 1
 
-                            color: codeEditor.cursorRectangle.y == y ? palette.highlightedText :  palette.placeholderText
+                            color: codeEditor.cursorRectangle.y == y ? palette.highlightedText : palette.placeholderText
                             font.pixelSize: codeEditor.font.pixelSize
                             font.family: codeEditor.font.family
                             horizontalAlignment: Text.AlignRight
                             width: 25 // Fixed width to ensure alignment
                         }
                     }
-
                 }
 
                 TextArea {
-                id: codeEditor
-                x: 30
-                width: codeEditorScrollView.width - 50
-                height: contentHeight > codeEditorScrollView.height ? (contentHeight+20) : codeEditorScrollView.height
-                placeholderText: "✏️ Open a file or start typing..."
-                wrapMode: Text.WordWrap
-                font.family: appSettings.fontFamily
-                font.pointSize: appSettings.fontSize
-                tabStopDistance: 4 * textMetrics.advanceWidth
-                function handleAutoIndent() {
-                    if (isIndenting || !codeEditor.activeFocus) {
-                        return;
+                    id: codeEditor
+                    x: 30
+                    width: codeEditorScrollView.width - 50
+                    height: contentHeight > codeEditorScrollView.height ? (contentHeight + 20) : codeEditorScrollView.height
+                    placeholderText: "✏️ Open a file or start typing..."
+                    wrapMode: Text.WordWrap
+                    font.family: appSettings.fontFamily
+                    font.pointSize: appSettings.fontSize
+                    tabStopDistance: 4 * textMetrics.advanceWidth
+
+                    function handleAutoIndent() {
+                        if (isIndenting || !codeEditor.activeFocus) {
+                            return;
+                        }
+
+                        var currentPos = codeEditor.cursorPosition;
+                        var text = codeEditor.getText(0, currentPos);
+                        var lines = text.split('\n');
+                        if (lines.length < 2) {
+                            return;
+                        }
+
+                        var line = lines[lines.length - 1];
+                        if (line !== "") {
+                            return;
+                        }
+
+                        var previousLine = lines[lines.length - 2];
+                        var indentation = previousLine.match(/^\s*/)[0];
+                        if (previousLine.trim().endsWith('{')) {
+                            indentation += "    ";
+                        }
+                        if (line.trim().startsWith('}')) {
+                            indentation = indentation.substring(0, Math.max(0, indentation.length - 4));
+                        }
+                        isIndenting = true;
+                        codeEditor.insert(currentPos, indentation);
+                        isIndenting = false;
                     }
 
-                    var currentPos = codeEditor.cursorPosition;
-                    var text = codeEditor.getText(0, currentPos);
-                    var lines = text.split('\n');
-                    if (lines.length < 2) {
-                        return;
-                    }
+                    onTextChanged: {
+                        if (codeEditor.activeFocus && codeEditor.length !== previousLength) {
+                            // Not just a formatting change
+                            dirty = true;
+                        }
 
-                    var line = lines[lines.length - 1];
-                    if (line !== "") {
-                        return;
-                    }
-
-                    var previousLine = lines[lines.length - 2];
-                    var indentation = previousLine.match(/^\s*/)[0];
-                    if (previousLine.trim().endsWith('{')) {
-                        indentation += "    ";
-                    }
-                    if (line.trim().startsWith('}')) {
-                        indentation = indentation.substring(0, Math.max(0, indentation.length - 4));
-                    }
-                    isIndenting = true;
-                    codeEditor.insert(currentPos, indentation);
-                    isIndenting = false;
-                }
-
-                onTextChanged: {
-                    if (codeEditor.activeFocus && codeEditor.length !== previousLength) {
-                        // Not just a formatting change
-                        dirty = true;
-                    }
-
-                    // We are only intrested in new letters being typed
-                    if (codeEditor.length !== (previousLength + 1)) {
+                        // We are only intrested in new letters being typed
+                        if (codeEditor.length !== (previousLength + 1)) {
+                            previousLength = codeEditor.length;
+                            return;
+                        }
                         previousLength = codeEditor.length;
-                        return;
-                    }
-                    previousLength = codeEditor.length;
 
-                    aiOutputPane.updateDiff(codeEditor.text);
-                    if (filePath && isCppFile(filePath)) {
-                        lspClient.documentChanged(filePath, codeEditor.text);
-                        var text = codeEditor.getText(0, codeEditor.cursorPosition);
-                        if (text.endsWith(".") || text.endsWith("->")) {
-                            var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition);
-                            var lines = textToCursor.split(/\r?\n/);
-                            var line = lines.length - 1;
-                            var character = lines[lines.length - 1].length;
-                            console.log("Requesting completion at", line, character);
-                            lspClient.requestCompletion(filePath, line, character);
+                        aiOutputPane.updateDiff(codeEditor.text);
+                        if (filePath && isCppFile(filePath)) {
+                            lspClient.documentChanged(filePath, codeEditor.text);
+                            var text = codeEditor.getText(0, codeEditor.cursorPosition);
+                            if (text.endsWith(".") || text.endsWith("->")) {
+                                var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition);
+                                var lines = textToCursor.split(/\r?\n/);
+                                var line = lines.length - 1;
+                                var character = lines[lines.length - 1].length;
+                                console.log("Requesting completion at", line, character);
+                                lspClient.requestCompletion(filePath, line, character);
+                            }
                         }
+                        handleAutoIndent();
                     }
-                    handleAutoIndent();
-                }
 
-                onContentHeightChanged: {
-                    // Array to store the y-coordinates.
-                    const coordinates = [];
-                    const textContent = codeEditor.text;
-                    let searchIndex = 0;
-                    let newlineIndex;
+                    onContentHeightChanged: {
+                        // Array to store the y-coordinates.
+                        const coordinates = [];
+                        const textContent = codeEditor.text;
+                        let searchIndex = 0;
+                        let newlineIndex;
 
-                    // First line
-                    const rect = codeEditor.positionToRectangle(0);
-                    coordinates.push(rect.y)
+                        // First line
+                        const rect = codeEditor.positionToRectangle(0);
+                        coordinates.push(rect.y);
 
-                    // Loop through the text to find all occurrences of the newline character '\n'.
-                    while ((newlineIndex = textContent.indexOf('\n', searchIndex)) !== -1) {
-                        // We want the y-coordinate of the character AFTER the newline
-                        const nextCharIndex = newlineIndex + 1;
+                        // Loop through the text to find all occurrences of the newline character '\n'.
+                        while ((newlineIndex = textContent.indexOf('\n', searchIndex)) !== -1) {
+                            // We want the y-coordinate of the character AFTER the newline
+                            const nextCharIndex = newlineIndex + 1;
 
-                        if (nextCharIndex < textContent.length) {
-                            const rect = codeEditor.positionToRectangle(nextCharIndex);
-                            coordinates.push(rect.y)
+                            if (nextCharIndex < textContent.length) {
+                                const rect = codeEditor.positionToRectangle(nextCharIndex);
+                                coordinates.push(rect.y);
+                            }
+                            searchIndex = newlineIndex + 1;
                         }
-                        searchIndex = newlineIndex + 1;
+                        lineNumberRepeater.model = coordinates;
                     }
-                    lineNumberRepeater.model = coordinates
+
+                    property int savedCursorPosition: 0
+                    property int previousLength: 0
+
+                    TextMetrics {
+                        id: textMetrics
+                        font: codeEditor.font
+                    }
+
+                    property bool isIndenting: false
                 }
-
-                property int savedCursorPosition: 0
-                property int previousLength: 0
-
-                TextMetrics {
-                    id: textMetrics
-                    font: codeEditor.font
-                }
-
-                property bool isIndenting: false
-            }
             }
         }
     }
-
-
 
     Connections {
         target: lspClient
