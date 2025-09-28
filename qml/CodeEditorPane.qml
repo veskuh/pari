@@ -52,6 +52,13 @@ ColumnLayout {
         return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh");
     }
 
+    function goToPosition(position) {
+        var lineRect = codeEditor.positionToRectangle(position);
+        var flickableHeight = codeEditorFlickable.height;
+        var contentY = lineRect.y - (flickableHeight / 2) + (lineRect.height / 2);
+        codeEditorFlickable.contentY = Math.max(0, Math.min(contentY, codeEditorFlickable.contentHeight - flickableHeight));
+    }
+
     function goToLine(lineNumber) {
         var line = Math.max(0, lineNumber - 1);
         var text = codeEditor.text;
@@ -66,12 +73,7 @@ ColumnLayout {
 
         codeEditor.cursorPosition = position;
         codeEditor.forceActiveFocus();
-
-        // Scroll to the line
-        var lineRect = codeEditor.positionToRectangle(position);
-        var flickableHeight = codeEditorFlickable.height;
-        var contentY = lineRect.y - (flickableHeight / 2) + (lineRect.height / 2);
-        codeEditorFlickable.contentY = Math.max(0, Math.min(contentY, codeEditorFlickable.contentHeight - flickableHeight));
+        goToPosition(position)
     }
 
     FindOverlay {
@@ -82,10 +84,12 @@ ColumnLayout {
         textColor: appWindow.palette.text
         textBackgroundColor: appWindow.palette.base
         onFindNext: {
-            var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 0);
+            var newPos = codeEditor.text.indexOf(findOverlay.searchText, codeEditor.cursorPosition)
+
             if (newPos !== -1) {
-                codeEditor.cursorPosition = newPos;
-                codeEditor.select(newPos - searchText.length, newPos);
+                codeEditor.cursorPosition = newPos + searchText.length;
+                codeEditor.select(newPos, newPos + searchText.length);
+                goToPosition(newPos)
             }
             var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
             findOverlay.updateResults(occurrences);
@@ -93,14 +97,16 @@ ColumnLayout {
 
         onFindPrevious: {
             var oldPos = codeEditor.cursorPosition;
-            var newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition, 1);
+            var newPos = codeEditor.text.lastIndexOf(findOverlay.searchText, codeEditor.cursorPosition - (searchText.length+1))
+
             if (codeEditor.cursorPosition === newPos) {
-                newPos = textDocumentSearcher.find(codeEditor.textDocument, findOverlay.searchText, codeEditor.cursorPosition - findOverlay.searchText.length, 1);
+                newPos = codeEditor.text.lastIndexOf(findOverlay.searchText, codeEditor.cursorPosition - (searchText.length+1))
             }
 
             if (newPos !== -1) {
-                codeEditor.cursorPosition = newPos;
-                codeEditor.select(newPos - searchText.length, newPos);
+                codeEditor.cursorPosition = newPos + searchText.length;
+                codeEditor.select(newPos, newPos + searchText.length);
+                goToPosition(newPos)
             }
             var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
             findOverlay.updateResults(occurrences);

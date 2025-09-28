@@ -438,11 +438,6 @@ ApplicationWindow {
                 currentIndex: documentManager.currentIndex
                 visible: !outputPanel.expanded
 
-              /*  onCurrentIndexChanged: {
-                    tabBar.currentIndex = currentIndex
-                    var item = stackLayout.itemAt(currentIndex)
-                    appWindow.currentEditor = stackLayout.itemAt(currentIndex)
-                } */
                 Repeater {
                     id: editorRepeater
                     model: documentManager.documents
