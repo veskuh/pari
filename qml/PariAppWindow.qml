@@ -451,6 +451,7 @@ ApplicationWindow {
                         id: editor
                         text: model.text
                         dirty: model.isDirty
+                        filePath: model.filePath
                         isActivePane: stackLayout.currentIndex === index
 
                         onIsActivePaneChanged: {
