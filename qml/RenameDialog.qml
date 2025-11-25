@@ -33,6 +33,7 @@ Dialog {
             Layout.alignment: Qt.AlignRight
             Button {
                 text: "OK"
+                enabled: newNameField.acceptableInput && newNameField.text.length > 0
                 onClicked: {
                     renameDialog.accept()
                 }
