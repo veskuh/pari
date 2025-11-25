@@ -608,7 +608,9 @@ ApplicationWindow {
         function onFileSaved(filePath) {
             customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
         }
-
+        function onFileRenamed(oldPath, newPath) {
+            documentManager.updatePath(oldPath, newPath);
+        }
     }
 
 

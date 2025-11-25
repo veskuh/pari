@@ -10,6 +10,7 @@ class TestFileSystem : public QObject
 private slots:
     void testSaveFile();
     void testGetFileInfo();
+    void testRenameFile();
 };
 
 #endif // TEST_FILESYSTEM_H

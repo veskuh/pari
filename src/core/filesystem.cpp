@@ -4,6 +4,16 @@
 #include <QDebug>
 #include <QSettings>
 
+bool FileSystem::renameFile(const QString &oldPath, const QString &newPath)
+{
+    QFile file(oldPath);
+    if (file.rename(newPath)) {
+        emit fileRenamed(oldPath, newPath);
+        return true;
+    }
+    return false;
+}
+
 FileSystem::FileSystem(QObject *parent)
     : QObject{parent}
     , m_rootPath("")

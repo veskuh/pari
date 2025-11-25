@@ -105,3 +105,14 @@ void DocumentManager::markDirty(int index)
         m_documents[index]->setDirty(true);
     }
 }
+
+void DocumentManager::updatePath(const QString &oldPath, const QString &newPath)
+{
+    for (TextDocument *doc : m_documents) {
+        if (doc->filePath() == oldPath) {
+            doc->setFilePath(newPath);
+            emit documentsChanged();
+            return;
+        }
+    }
+}

@@ -25,6 +25,7 @@ public slots:
     bool saveFile(int index, const QString &content);
     void setCurrentIndex(int index);
     void markDirty(int index);
+    void updatePath(const QString &oldPath, const QString &newPath);
 
 signals:
     void documentsChanged();

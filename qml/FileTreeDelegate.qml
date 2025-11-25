@@ -117,6 +117,16 @@ Item {
                 dialog.show();
             }
         }
+        MenuItem {
+            text: qsTr("Rename")
+            onTriggered: {
+                var component = Qt.createComponent("RenameDialog.qml");
+                var dialog = component.createObject(root, {
+                    oldPath: model.filePath
+                });
+                dialog.show();
+            }
+        }
     }
 }
 
