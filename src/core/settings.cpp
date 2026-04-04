@@ -203,7 +203,10 @@ bool Settings::systemThemeIsDark() const
 
 void Settings::setSystemTheme(bool isDark)
 {
-    m_systemThemeIsDark = isDark;
+    if (m_systemThemeIsDark != isDark) {
+        m_systemThemeIsDark = isDark;
+        emit systemThemeIsDarkChanged();
+    }
 }
 
 SyntaxTheme* Settings::lightTheme() const

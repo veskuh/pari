@@ -2,13 +2,14 @@
 #define TEST_GITMANAGER_H
 
 #include <QObject>
-#include <QTest>
 
 class TestGitManager : public QObject
 {
     Q_OBJECT
 
 private slots:
+    void initTestCase();
+    void cleanupTestCase();
     void testBranchName();
 };
 

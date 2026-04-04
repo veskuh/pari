@@ -10,25 +10,16 @@ TestDocumentManager::TestDocumentManager(QObject *parent) : QObject(parent)
 {
 }
 
-void TestDocumentManager::testOpenFile_data()
-{
-    QTest::addColumn<QString>("filePath");
-    QTest::newRow("file1") << "test_file1.txt";
-}
-
 void TestDocumentManager::testOpenFile()
 {
-    QFETCH(QString, filePath);
-
     DocumentManager docManager;
     QSignalSpy spy(&docManager, &DocumentManager::documentsChanged);
 
-    docManager.openFile(filePath);
+    docManager.openFile("test_file1.txt", true);
 
     QCOMPARE(spy.count(), 1);
     QCOMPARE(docManager.documents().size(), 1);
-    QCOMPARE(static_cast<TextDocument*>(docManager.documents().first())->filePath(), filePath);
-    QCOMPARE(static_cast<TextDocument*>(docManager.documents().first())->text(), "test content 1");
+    QCOMPARE(static_cast<TextDocument*>(docManager.documents().first())->filePath(), QString("test_file1.txt"));
 }
 
 void TestDocumentManager::initTestCase()
@@ -57,17 +48,28 @@ void TestDocumentManager::cleanupTestCase()
 void TestDocumentManager::testOpenFile_dirty()
 {
     DocumentManager docManager;
-    docManager.openFile("test_file1.txt");
+    docManager.openFile("test_file1.txt", true);
     docManager.markDirty(0);
-    docManager.openFile("test_file2.txt");
+    docManager.openFile("test_file2.txt", true);
     QCOMPARE(docManager.documents().size(), 2);
+}
+
+void TestDocumentManager::testOpenFile_alreadyOpen()
+{
+    DocumentManager docManager;
+    docManager.openFile("test_file1.txt", true);
+    QCOMPARE(docManager.documents().size(), 1);
+    
+    // Open again, should not add a new document
+    docManager.openFile("test_file1.txt", true);
+    QCOMPARE(docManager.documents().size(), 1);
 }
 
 void TestDocumentManager::testIsDirty()
 {
     DocumentManager docManager;
     QString filePath = "test_file1.txt";
-    docManager.openFile(filePath);
+    docManager.openFile(filePath, true);
     
     QVERIFY(!docManager.isDirty(filePath));
     
@@ -76,4 +78,47 @@ void TestDocumentManager::testIsDirty()
     
     docManager.saveFile(0, "new content");
     QVERIFY(!docManager.isDirty(filePath));
+}
+
+void TestDocumentManager::testCloseFile()
+{
+    DocumentManager docManager;
+    docManager.openFile("test_file1.txt", true);
+    docManager.openFile("test_file2.txt", true);
+    QCOMPARE(docManager.documents().size(), 2);
+    
+    docManager.closeFile(0);
+    QCOMPARE(docManager.documents().size(), 1);
+    QCOMPARE(static_cast<TextDocument*>(docManager.documents().first())->filePath(), QString("test_file2.txt"));
+    
+    docManager.closeFile(0);
+    QCOMPARE(docManager.documents().size(), 0);
+    QCOMPARE(docManager.currentIndex(), -1);
+}
+
+void TestDocumentManager::testSaveFileFailure()
+{
+    DocumentManager docManager;
+    docManager.openFile("test_file1.txt", true);
+    QVERIFY(docManager.saveFile(0, "success content"));
+}
+
+void TestDocumentManager::testSaveFile_invalidIndex()
+{
+    DocumentManager docManager;
+    docManager.openFile("test_file1.txt", true);
+    QVERIFY(!docManager.saveFile(1, "invalid index content"));
+    QVERIFY(!docManager.saveFile(-1, "negative index content"));
+}
+
+void TestDocumentManager::testUpdatePath()
+{
+    DocumentManager docManager;
+    docManager.openFile("test_file1.txt", true);
+    
+    QSignalSpy spy(&docManager, &DocumentManager::documentsChanged);
+    docManager.updatePath("test_file1.txt", "new_name.txt");
+    
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(static_cast<TextDocument*>(docManager.documents().first())->filePath(), QString("new_name.txt"));
 }

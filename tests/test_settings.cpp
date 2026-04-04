@@ -3,6 +3,17 @@
 #include <QSettings>
 #include <QSignalSpy>
 #include "settings.h"
+#include "syntaxtheme.h"
+
+void TestSettings::initTestCase()
+{
+}
+
+void TestSettings::cleanupTestCase()
+{
+    QSettings settings("veskuh.net", "PariTests");
+    settings.clear();
+}
 
 void TestSettings::init()
 {
@@ -170,4 +181,27 @@ void TestSettings::testBuildCommands()
 
     // 6. Ensure the original project's settings are still intact
     QCOMPARE(settings.getBuildCommand(projectPath), buildCommand);
+}
+
+void TestSettings::testThemeColors()
+{
+    Settings settings("PariTests");
+    
+    SyntaxTheme *light = settings.lightTheme();
+    SyntaxTheme *dark = settings.darkTheme();
+    
+    QVERIFY(light != nullptr);
+    QVERIFY(dark != nullptr);
+    
+    light->setKeywordColor(QColor("red"));
+    dark->setKeywordColor(QColor("blue"));
+    
+    settings.saveColors();
+    
+    // Verify persistence
+    {
+        Settings settings2("PariTests");
+        QCOMPARE(settings2.lightTheme()->keywordColor, QColor("red"));
+        QCOMPARE(settings2.darkTheme()->keywordColor, QColor("blue"));
+    }
 }

@@ -8,12 +8,14 @@ class TestLlm : public QObject
     Q_OBJECT
 
 private slots:
-    void init();
-    void cleanup();
+    void initTestCase();
+    void cleanupTestCase();
     void testSendPromptAddsToLog();
     void testSuccessfulResponseAddsToLog();
     void testErrorResponseAddsToLog();
     void testSettingsChangeAddsToLog();
+    void testResponseParsing();
+    void testListModels();
 };
 
 #endif // TEST_LLM_H

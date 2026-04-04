@@ -21,7 +21,6 @@ private:
     enum BlockState {
         Normal = 0,
         InComment = 1,
-        InString = 2
     };
 
     struct HighlightingRule
@@ -30,9 +29,6 @@ private:
         QTextCharFormat format;
     };
     QVector<HighlightingRule> highlightingRules;
-
-    QRegularExpression multiLineCommentStartExpression;
-    QRegularExpression multiLineCommentEndExpression;
 
     QTextCharFormat keywordFormat;
     QTextCharFormat includeFormat;

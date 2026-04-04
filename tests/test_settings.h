@@ -8,6 +8,8 @@ class TestSettings : public QObject
     Q_OBJECT
 
 private slots:
+    void initTestCase();
+    void cleanupTestCase();
     void init();
     void cleanup();
     void testDefaults();
@@ -17,6 +19,7 @@ private slots:
     void testAvailableModels();
     void testRecentFolders();
     void testBuildCommands();
+    void testThemeColors();
 };
 
 #endif // TEST_SETTINGS_H

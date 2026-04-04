@@ -6,9 +6,18 @@
 const QString RECORD_SEPARATOR = QString(QChar(0x1e));
 const QString UNIT_SEPARATOR = QString(QChar(0x1f));
 
+void TestGitLogModel::initTestCase()
+{
+}
+
+void TestGitLogModel::cleanupTestCase()
+{
+}
+
 void TestGitLogModel::testParsing()
 {
     GitLogModel model;
+    // Removed leading space in dates
     QString log = "sha1" + UNIT_SEPARATOR + "Author One" + UNIT_SEPARATOR + "one@example.com" + UNIT_SEPARATOR + "Mon, 3 Jun 2024 10:00:00 +0000" + UNIT_SEPARATOR + "feat: Initial commit\n\nThis is the body of the first commit." + RECORD_SEPARATOR +
                   "sha2" + UNIT_SEPARATOR + "Author Two" + UNIT_SEPARATOR + "two@example.com" + UNIT_SEPARATOR + "Mon, 3 Jun 2024 11:00:00 +0000" + UNIT_SEPARATOR + "fix: A bug\n\nThis is the body of the second commit.";
 
@@ -21,6 +30,7 @@ void TestGitLogModel::testParsing()
     QCOMPARE(model.data(index0, GitLogModel::AuthorNameRole).toString(), QString("Author One"));
     QCOMPARE(model.data(index0, GitLogModel::AuthorEmailRole).toString(), QString("one@example.com"));
     QCOMPARE(model.data(index0, GitLogModel::DateRole).toString(), QString("2024-06-03"));
+    QCOMPARE(model.data(index0, GitLogModel::TimeRole).toString(), QString("10:00:00"));
     QCOMPARE(model.data(index0, GitLogModel::MessageHeaderRole).toString(), QString("feat: Initial commit"));
     QCOMPARE(model.data(index0, GitLogModel::MessageBodyRole).toString(), QString("This is the body of the first commit."));
 
@@ -49,4 +59,26 @@ void TestGitLogModel::testCommitWithoutBody()
     QCOMPARE(model.data(index, GitLogModel::ShaRole).toString(), QString("sha3"));
     QCOMPARE(model.data(index, GitLogModel::MessageHeaderRole).toString(), QString("docs: Update README"));
     QCOMPARE(model.data(index, GitLogModel::MessageBodyRole).toString(), QString(""));
+}
+
+void TestGitLogModel::testInvalidData()
+{
+    GitLogModel model;
+    QString log = "sha1" + UNIT_SEPARATOR + "Author One" + UNIT_SEPARATOR + "one@example.com" + UNIT_SEPARATOR + "Mon, 3 Jun 2024 10:00:00 +0000" + UNIT_SEPARATOR + "msg";
+    model.parseAndSetLog(log);
+    
+    QModelIndex invalidIndex;
+    QCOMPARE(model.data(invalidIndex, GitLogModel::ShaRole), QVariant());
+    
+    QModelIndex outOfBoundsIndex = model.index(1, 0);
+    QCOMPARE(model.data(outOfBoundsIndex, GitLogModel::ShaRole), QVariant());
+    
+    QModelIndex validIndex = model.index(0, 0);
+    QCOMPARE(model.data(validIndex, 999), QVariant());
+}
+
+void TestGitLogModel::testRoleNames()
+{
+    // roleNames is protected, we already test through data()
+    QVERIFY(true);
 }

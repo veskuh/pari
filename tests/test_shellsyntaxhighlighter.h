@@ -2,12 +2,14 @@
 #define TEST_SHELLSYNTAXHIGHLIGHTER_H
 
 #include <QObject>
-#include <QTest>
 
 class TestShellSyntaxHighlighter : public QObject
 {
     Q_OBJECT
+
 private slots:
+    void initTestCase();
+    void cleanupTestCase();
     void testComment();
     void testSingleQuotedString();
     void testDoubleQuotedString();

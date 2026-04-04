@@ -2,9 +2,6 @@
 #define TEST_QMLSYNTAXHIGHLIGHTER_H
 
 #include <QObject>
-#include <QTest>
-
-#include "syntaxtheme.h"
 
 class TestQmlSyntaxHighlighter : public QObject
 {
@@ -12,13 +9,11 @@ class TestQmlSyntaxHighlighter : public QObject
 
 private slots:
     void initTestCase();
+    void cleanupTestCase();
     void testInitialState();
     void testKeywords();
     void testStrings();
     void testComments();
-
-private:
-    SyntaxTheme *m_theme;
 };
 
 #endif // TEST_QMLSYNTAXHIGHLIGHTER_H

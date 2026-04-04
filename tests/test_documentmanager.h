@@ -12,10 +12,14 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void testOpenFile_data();
     void testOpenFile();
     void testOpenFile_dirty();
+    void testOpenFile_alreadyOpen();
     void testIsDirty();
+    void testCloseFile();
+    void testSaveFileFailure();
+    void testSaveFile_invalidIndex();
+    void testUpdatePath();
 };
 
 #endif // TEST_DOCUMENTMANAGER_H

@@ -1,9 +1,10 @@
 #include <QtTest>
+#include <QQmlEngine>
 #include "test_settings.h"
 #include "test_filesystem.h"
 #include "test_markdownformatter.h"
 #include "test_llm.h"
-#include "test_cppsyntaxhighlighter.h"
+#include "test_markdownsyntaxhighlighter.h"
 #include "test_qmlsyntaxhighlighter.h"
 #include "test_shellsyntaxhighlighter.h"
 #include "test_diffutils.h"
@@ -12,11 +13,24 @@
 #include "test_gitlogmodel.h"
 #include "test_gitmanager.h"
 #include "test_documentmanager.h"
+#include "test_syntaxtheme.h"
+
+#include "textdocumentsearcher.h"
+#include "gitlogmodel.h"
+#include "gitmanager.h"
+#include "documentmanager.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
+    app.setOrganizationName("veskuh.net");
     app.setApplicationName("PariTests");
+    
+    qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
+    qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");
+    qmlRegisterType<GitManager>("net.veskuh.pari", 1, 0, "GitManager");
+    qmlRegisterType<DocumentManager>("net.veskuh.pari", 1, 0, "DocumentManager");
+
     int status = 0;
 
     TestSettings tc_settings;
@@ -30,6 +44,9 @@ int main(int argc, char *argv[])
 
     TestLlm tc_llm;
     status |= QTest::qExec(&tc_llm, argc, argv);
+
+    TestMarkdownSyntaxHighlighter tc_md_syntax;
+    status |= QTest::qExec(&tc_md_syntax, argc, argv);
 
     TestQmlSyntaxHighlighter tc_qml;
     status |= QTest::qExec(&tc_qml, argc, argv);
@@ -54,6 +71,9 @@ int main(int argc, char *argv[])
 
     TestDocumentManager tc_doc_manager;
     status |= QTest::qExec(&tc_doc_manager, argc, argv);
+
+    TestSyntaxTheme tc_theme;
+    status |= QTest::qExec(&tc_theme, argc, argv);
 
     return status;
 }

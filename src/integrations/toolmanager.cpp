@@ -22,7 +22,7 @@ void ToolManager::runCommand(const QString &command, const QString &workingDirec
         m_command = command;
         m_workingDirectory = workingDirectory;
         m_branchProcess->setWorkingDirectory(workingDirectory);
-        m_branchProcess->startCommand("git branch --show-current");
+        m_branchProcess->start("/bin/sh", QStringList() << "-c" << "git branch --show-current");
     }
 }
 
@@ -54,12 +54,12 @@ void ToolManager::onBranchProcessFinished(int exitCode, QProcess::ExitStatus exi
     if (exitCode == 0 && exitStatus == QProcess::NormalExit) {
         m_branchName = m_branchProcess->readAllStandardOutput().trimmed();
         m_process->setWorkingDirectory(m_workingDirectory);
-        m_process->startCommand(m_command);
+        m_process->start("/bin/sh", QStringList() << "-c" << m_command);
     } else {
         qDebug() << "Failed to get branch name";
         m_branchName = "unknown";
         m_process->setWorkingDirectory(m_workingDirectory);
-        m_process->startCommand(m_command);
+        m_process->start("/bin/sh", QStringList() << "-c" << m_command);
     }
 }
 

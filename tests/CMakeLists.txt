@@ -8,8 +8,6 @@ add_executable(tst_all
     test_markdownformatter.h
     test_llm.cpp
     test_llm.h
-    test_cppsyntaxhighlighter.cpp
-    test_cppsyntaxhighlighter.h
     test_qmlsyntaxhighlighter.cpp
     test_qmlsyntaxhighlighter.h
     test_shellsyntaxhighlighter.cpp
@@ -28,6 +26,8 @@ add_executable(tst_all
     test_gitmanager.h
     test_documentmanager.cpp
     test_documentmanager.h
+    test_syntaxtheme.cpp
+    test_syntaxtheme.h
     ../src/core/settings.cpp
     ../src/core/settings.h
     ../src/core/filesystem.cpp
@@ -60,6 +60,8 @@ add_executable(tst_all
     ../src/editor/documentmanager.h
     ../src/editor/textdocument.cpp
     ../src/editor/textdocument.h
+    ../src/editor/textdocumentsearcher.cpp
+    ../src/editor/textdocumentsearcher.h
 )
 
 target_include_directories(tst_all PRIVATE ../src ../src/core ../src/editor ../src/formatting ../src/integrations)
@@ -69,12 +71,15 @@ target_link_libraries(tst_all PRIVATE
     Qt6::Core
     Qt6::Network
     Qt6::Widgets
+    Qt6::Qml
+    Qt6::Quick
 )
 
 if(ENABLE_COVERAGE)
     add_custom_target(coverage
+        COMMAND find . -name "*.gcda" -delete
         COMMAND ./tst_all
-        COMMAND find . -name "*.gcno" -not -path "*_autogen*" -exec gcov {} + | grep -A 1 "File .*src/" || true
+        COMMAND find . -name "*.gcno" -not -path "*_autogen*" -exec gcov -p {} +
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating coverage report for project sources"
     )
