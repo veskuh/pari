@@ -13,6 +13,9 @@ ColumnLayout {
     property bool isActivePane: false
     property string filePath: ""
 
+    // Theme helper
+    readonly property bool isDark: appSettings.systemThemeIsDark
+
     TextDocumentSearcher {
         id: textDocumentSearcher
     }
@@ -76,8 +79,27 @@ ColumnLayout {
         goToPosition(position)
     }
 
+    function refreshLineNumbers() {
+        const coordinates = [];
+        const textContent = codeEditor.text;
+        let searchIndex = 0;
+        let newlineIndex;
+
+        const rect = codeEditor.positionToRectangle(0);
+        coordinates.push(rect.y);
+
+        while ((newlineIndex = textContent.indexOf('\n', searchIndex)) !== -1) {
+            const nextCharIndex = newlineIndex + 1;
+            const lineRect = codeEditor.positionToRectangle(nextCharIndex);
+            coordinates.push(lineRect.y);
+            searchIndex = nextCharIndex;
+        }
+        lineNumberRepeater.model = coordinates;
+    }
+
     FindOverlay {
         id: findOverlay
+        z: 10
         width: parent.width
         color: appWindow.palette.window
         borderColor: appWindow.palette.windowText
@@ -114,56 +136,120 @@ ColumnLayout {
         onCloseOverlay: close()
     }
 
-    // ScrollView is necessary for when content exceeds the visible area.
-    ScrollView {
-        id: codeEditorScrollView
+    // Recessed 'Paper' Well
+    Rectangle {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        clip: true // Ensures content doesn't draw outside the ScrollView
+        Layout.margins: 4
+        radius: 2
+        
+        // Background: Transitions to creamy (light) or navy (dark) finish when dirty
+        color: {
+            if (dirty) return isDark ? "#1e2538" : "#fffdf0";
+            return isDark ? "#1a1a1a" : "#ffffff";
+        }
+        
+        Behavior on color { ColorAnimation { duration: 300 } }
 
-        Flickable {
-            id: codeEditorFlickable
+        // Outer "bevel" to simulate recession into the machine
+        border.color: isDark ? "#121212" : "#bcbcbc"
+        border.width: 1
+
+        // Inset shadow effect
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: 1
+            color: "transparent"
+            border.color: isDark ? "#000000" : "black"
+            opacity: isDark ? 0.2 : 0.05
+            radius: 2
+        }
+
+        ScrollView {
+            id: codeEditorScrollView
+            anchors.fill: parent
+            anchors.margins: 1
             clip: true
-            contentHeight: codeEditor.contentHeight
-            Item {
-                width: codeEditorScrollView.width
 
+            Flickable {
+                id: codeEditorFlickable
+                clip: true
+                // Use implicitHeight of the TextArea plus some bottom buffer
+                contentHeight: Math.max(codeEditor.implicitHeight + 100, codeEditorScrollView.height)
+
+                // Line Number Column Background (Subtle Metallic)
+                Rectangle {
+                    width: 35
+                    height: parent.contentHeight
+                    z: 1
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: isDark ? "#2d2d2d" : "#f0f0f0" }
+                        GradientStop { position: 1.0; color: isDark ? "#252525" : "#e8e8e8" }
+                    }
+                    
+                    Rectangle {
+                        anchors.right: parent.right
+                        width: 1
+                        height: parent.height
+                        color: isDark ? "#121212" : "#d0d0d0"
+                    }
+                }
+
+                // Line Number Container
                 Item {
-
-                    width: 25
+                    width: 35
                     height: codeEditor.height
+                    z: 2
 
                     Repeater {
                         id: lineNumberRepeater
-                        model: [] // Initially empty
+                        model: []
 
                         delegate: Text {
-                            // Position the line number. 'modelData' is the y-coordinate from the array.
                             y: modelData
-                            x: 5 // A small horizontal padding from the left edge.
-
-                            // Display the line number (index is 0-based, so we add 1).
+                            x: 0
+                            width: 30
                             text: index + 1
-
-                            color: codeEditor.cursorRectangle.y == y ? palette.highlightedText : palette.placeholderText
-                            font.pixelSize: codeEditor.font.pixelSize
-                            font.family: codeEditor.font.family
+                            color: codeEditor.currentLineIndex === index ? (isDark ? "#4aa9ff" : "#0051a6") : (isDark ? "#555555" : "#888888")
+                            font.pixelSize: codeEditor.font.pixelSize * 0.9
+                            font.family: "Menlo"
+                            font.bold: codeEditor.currentLineIndex === index
                             horizontalAlignment: Text.AlignRight
-                            width: 25 // Fixed width to ensure alignment
+                            verticalAlignment: Text.AlignTop
                         }
                     }
                 }
 
                 TextArea {
                     id: codeEditor
-                    x: 30
+                    x: 40
                     width: codeEditorScrollView.width - 50
-                    height: contentHeight > codeEditorScrollView.height ? (contentHeight + 20) : codeEditorScrollView.height
+                    // Set height to implicitHeight to let the Flickable handle scrolling
+                    height: implicitHeight
                     placeholderText: "✏️ Open a file or start typing..."
                     wrapMode: Text.WordWrap
                     font.family: appSettings.fontFamily
                     font.pointSize: appSettings.fontSize
                     tabStopDistance: 4 * textMetrics.advanceWidth
+                    color: isDark ? "#d0d0d0" : "#1a1c1c"
+                    selectionColor: isDark ? "#00458d" : "#0051a6"
+                    selectedTextColor: "#ffffff"
+                    topPadding: 10
+                    bottomPadding: 50 // Large buffer at the bottom
+                    leftPadding: 10
+                    rightPadding: 10
+                    background: null
+
+                    property int savedCursorPosition: 0
+                    property int previousLength: 0
+                    property bool isIndenting: false
+                    
+                    // Logic to find current line index based on cursor position
+                    property int currentLineIndex: {
+                        var textToCursor = text.substring(0, cursorPosition);
+                        return textToCursor.split('\n').length - 1;
+                    }
 
                     function handleAutoIndent() {
                         if (isIndenting || !codeEditor.activeFocus) {
@@ -201,9 +287,10 @@ ColumnLayout {
                             dirty = true;
                         }
 
-                        // We are only intrested in new letters being typed
+                        // We are only interested in new letters being typed
                         if (codeEditor.length !== (previousLength + 1)) {
                             previousLength = codeEditor.length;
+                            refreshLineNumbers();
                             return;
                         }
                         previousLength = codeEditor.length;
@@ -222,45 +309,24 @@ ColumnLayout {
                             }
                         }
                         handleAutoIndent();
+                        refreshLineNumbers();
                     }
 
                     onContentHeightChanged: {
-                        // Array to store the y-coordinates.
-                        const coordinates = [];
-                        const textContent = codeEditor.text;
-                        let searchIndex = 0;
-                        let newlineIndex;
-
-                        // First line
-                        const rect = codeEditor.positionToRectangle(0);
-                        coordinates.push(rect.y);
-
-                        // Loop through the text to find all occurrences of the newline character '\n'.
-                        while ((newlineIndex = textContent.indexOf('\n', searchIndex)) !== -1) {
-                            // We want the y-coordinate of the character AFTER the newline
-                            const nextCharIndex = newlineIndex + 1;
-
-                            if (nextCharIndex < textContent.length) {
-                                const rect = codeEditor.positionToRectangle(nextCharIndex);
-                                coordinates.push(rect.y);
-                            }
-                            searchIndex = newlineIndex + 1;
-                        }
-                        lineNumberRepeater.model = coordinates;
+                        refreshLineNumbers();
                     }
-
-                    property int savedCursorPosition: 0
-                    property int previousLength: 0
-
-                    TextMetrics {
-                        id: textMetrics
-                        font: codeEditor.font
+                    
+                    Component.onCompleted: {
+                        refreshLineNumbers();
                     }
-
-                    property bool isIndenting: false
                 }
             }
         }
+    }
+
+    TextMetrics {
+        id: textMetrics
+        font: codeEditor.font
     }
 
     Connections {
@@ -270,6 +336,7 @@ ColumnLayout {
             codeEditor.text = result;
             restoreCursorPosition();
             restoreScrollPosition();
+            refreshLineNumbers();
         }
 
         function onCompletionItems(items) {

@@ -55,24 +55,27 @@ We use **Public Sans** for the interface and **Menlo** for the technical instrum
 *   **Skeuomorphism:** Uses a vertical gradient and a 1px top highlight for depth.
 *   **LCD Readouts:** Functional information (Git branch, LLM model, Status) is housed in recessed "wells" with Menlo typography to simulate physical LCD displays.
 
-### File Tree (Source List)
-*   **Organization:** Grouped into logical sections: **WORKSPACE**, **INTEGRATIONS**, and **SYSTEM**.
-*   **Headers:** All-caps, dimmed labels (#888888) to provide structural hierarchy.
-*   **Iconography:** Each file type features a high-fidelity 3D icon to provide instant visual context.
-*   **Active File:** Vibrant blue gradient with white text.
+### File Tree (Source Selection)
+*   **Aesthetics:** The sidebar uses tonal shifts to appear slightly recessed from the toolbar bezel.
+*   **Progressive Depth:** Uses subtle vertical "etched" lines and 16px indentation per level to show hierarchy.
+*   **Iconography:** Features high-fidelity 3D iconography. Folders use a "Manila" metaphor (Open vs. Closed).
+*   **Selection & Hover:**
+    *   **Hover:** A subtle "raised bezel" effect (light top border, soft bottom shadow).
+    *   **Active File:** Vibrant blue gradient (#0069d3 to #0051a6) with white text and a light-catching top edge.
+*   **State LEDs:** Small, glowing circular indicators next to filenames:
+    *   **Amber LED:** File has unsaved changes.
+    *   **Green LED:** New/Untracked file.
+    *   **Yellow LED:** Modified file.
 
-### The Metrics Widgets (LCD Style)
-*   **Aesthetics:** High-contrast color gradients for "LCD" bars within a white recessed well.
-*   **Build Progress:** Blue/Teal theme.
-*   **AI Token Usage:** Orange/Yellow theme.
-*   **Git Diff Stats:** Green (Added) / Red (Removed) LCD readout.
+### Inkwell Editor (v1)
+*   **Aesthetics:** The editor background transitions to a warm Creamy finish (`#fffdf0`) in light mode or a Blueprint Navy (`#1e2538`) in dark mode when a file is "Dirty" (has unsaved changes) to signify an active drafting state.
+*   **Skeuomorphism:** The editor is recessed into the machine using an outer bezel and inner shadow.
+*   **Line Numbers:** Housed in a metallic column with high-contrast active line highlighting.
+*   **Word Wrap:** Enabled by default to ensure no horizontal scrolling is required.
 
 ### Syntax Highlighting
 *   **Engine:** Centralized in `SyntaxHighlighterProvider` for global consistency.
 *   **Palette:** Precision-tuned for high legibility on "Paper" wells. Use classic editorial colors (Deep Blue, Maroon, Forest Green).
-
-### Inkwell Editor (v1)
-*   **Aesthetics:** The editor background transitions to a warm Creamy finish (`#fffdf0`) when a file is "Dirty" (has unsaved changes) to signify an active drafting state.
 
 ---
 
