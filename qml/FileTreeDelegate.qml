@@ -12,30 +12,105 @@ Item {
     property var appWindow
     property bool isDirectory: fileSystem.isDirectory(model.filePath)
     property bool highlight: model.filePath === fileSystemView.selectedPath
-
-    SystemPalette {
-        id: palette
+    
+    // Check dirty state from documentManager
+    property bool isDirty: documentManager.isDirty(model.filePath)
+    
+    Connections {
+        target: documentManager
+        function onDirtyStatusChanged() {
+            root.isDirty = documentManager.isDirty(model.filePath);
+        }
     }
+    
+    // Helper for theme
+    readonly property bool isDark: appSettings.systemThemeIsDark
 
+    // --- Background (Selection/Hover) ---
     Rectangle {
+        id: backgroundRect
         anchors.fill: parent
-        anchors.leftMargin: 5
-        anchors.rightMargin: 5
-        radius: 5
-        visible: highlight || mouseArea.containsMouse
-        opacity: highlight ? 1.0 : 0.15
-        color: highlight ? palette.highlight : palette.shadow
+        anchors.leftMargin: 4
+        anchors.rightMargin: 4
+        anchors.topMargin: 1
+        anchors.bottomMargin: 1
+        radius: 4
+        
+        visible: root.highlight || mouseArea.containsMouse
+        
+        gradient: Gradient {
+            GradientStop { 
+                position: 0.0
+                color: root.highlight ? "#0069d3" : (root.isDark ? "#ffffff" : "#000000")
+            }
+            GradientStop { 
+                position: 1.0
+                color: root.highlight ? "#0051a6" : (root.isDark ? "#eeeeee" : "#333333")
+            }
+        }
+        
+        opacity: root.highlight ? 1.0 : (root.isDark ? 0.05 : 0.08)
+        
+        // Light-catching edge for selection
+        Rectangle {
+            anchors.top: parent.top
+            width: parent.width
+            height: 1
+            color: "#ffffff"
+            opacity: 0.3
+            visible: root.highlight
+            radius: 4
+        }
     }
 
+    // --- Progressive Depth (Etched line) ---
+    Rectangle {
+        id: depthLine
+        visible: root.depth > 0
+        x: (root.depth * 16) - 8
+        width: 1
+        height: parent.height
+        color: root.isDark ? "#404040" : "#d0d0d0"
+        opacity: 0.5
+    }
+
+    // --- Indicator (Folder Arrow) ---
     Label {
         id: indicator
-        text: (isDirectory ? "▶" : " ")
-        x: (root.depth * 10) + 10
-        rotation: expanded ? 90 : 0
+        text: isDirectory ? (expanded ? "▼" : "▶") : ""
+        x: (root.depth * 16) + 4
+        font.pixelSize: 10
+        color: root.highlight ? "#ffffff" : (root.isDark ? "#888888" : "#666666")
         anchors.verticalCenter: parent.verticalCenter
+        opacity: isDirectory ? 1.0 : 0
     }
 
+    // --- LED Indicator ---
+    Rectangle {
+        id: stateLed
+        width: 6
+        height: 6
+        radius: 3
+        x: indicator.x + 12
+        anchors.verticalCenter: parent.verticalCenter
+        visible: root.isDirty // Add Git status logic here later
+        
+        color: root.isDirty ? "#ffaa00" : "transparent"
+        
+        // Glow effect
+        layer.enabled: root.isDirty
+        /*
+        layer.effect: DropShadow {
+            transparentBorder: true
+            color: stateLed.color
+            radius: 4
+            samples: 8
+        }*/
+    }
+
+    // --- Icon ---
     Image {
+        id: fileIcon
         source: {
             if (!model || !model.filePath || model.filePath === null)
                 "qrc:/assets/file.png";
@@ -55,17 +130,22 @@ Item {
                 "qrc:/assets/file.png";
         }
         sourceSize.height: 20
-        x: indicator.x + 14
+        sourceSize.width: 20
+        x: indicator.x + 20
         anchors.verticalCenter: parent.verticalCenter
+        opacity: root.enabled ? 1.0 : 0.5
     }
 
+    // --- Label ---
     Label {
         text: model.display ? model.display : ""
-        x: indicator.x + 38
+        x: fileIcon.x + 24
         width: parent.width - x - 10
         clip: true
         elide: Text.ElideRight
-        font.bold: highlight
+        font.pixelSize: 12
+        font.bold: root.highlight
+        color: root.highlight ? "#ffffff" : (root.isDark ? "#d0d0d0" : "#333333")
         anchors.verticalCenter: parent.verticalCenter
     }
 

@@ -26,10 +26,12 @@ public slots:
     void setCurrentIndex(int index);
     void markDirty(int index);
     void updatePath(const QString &oldPath, const QString &newPath);
+    Q_INVOKABLE bool isDirty(const QString &filePath) const;
 
 signals:
     void documentsChanged();
     void currentIndexChanged();
+    void dirtyStatusChanged();
     void fileOpened(const QUrl &filePath, const QString &content);
 
 private:

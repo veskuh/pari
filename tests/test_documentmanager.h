@@ -15,6 +15,7 @@ private slots:
     void testOpenFile_data();
     void testOpenFile();
     void testOpenFile_dirty();
+    void testIsDirty();
 };
 
 #endif // TEST_DOCUMENTMANAGER_H

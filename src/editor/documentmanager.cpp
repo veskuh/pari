@@ -42,6 +42,8 @@ void DocumentManager::openFile(const QString &filePath, bool newTab)
         doc->setText(content);
         doc->setDirty(false);
 
+        connect(doc, &TextDocument::dirtyChanged, this, &DocumentManager::dirtyStatusChanged);
+
         if (newTab || m_documents.isEmpty() || m_currentIndex == -1 || (m_currentIndex !=-1 && m_documents[m_currentIndex]->isDirty())) {
             m_documents.append(doc);
             setCurrentIndex(m_documents.size() - 1);
@@ -50,6 +52,7 @@ void DocumentManager::openFile(const QString &filePath, bool newTab)
         }
         emit documentsChanged();
         emit currentIndexChanged();
+        emit dirtyStatusChanged();
 
     } else {
         qWarning() << "DocumentManager: Could not open file:" << filePath << ", Error:" << file.errorString();
@@ -62,6 +65,7 @@ void DocumentManager::closeFile(int index)
         TextDocument *doc = m_documents.takeAt(index);
         doc->deleteLater();
         emit documentsChanged();
+        emit dirtyStatusChanged();
 
         if (m_documents.isEmpty()) {
             setCurrentIndex(-1);
@@ -85,6 +89,7 @@ bool DocumentManager::saveFile(int index, const QString &content)
             out << content;
             file.close();
             doc->setDirty(false);
+            emit dirtyStatusChanged();
             return true;
         }
     }
@@ -103,6 +108,7 @@ void DocumentManager::markDirty(int index)
 {
     if (index >= 0 && index < m_documents.size()) {
         m_documents[index]->setDirty(true);
+        emit dirtyStatusChanged();
     }
 }
 
@@ -115,4 +121,14 @@ void DocumentManager::updatePath(const QString &oldPath, const QString &newPath)
             return;
         }
     }
+}
+
+bool DocumentManager::isDirty(const QString &filePath) const
+{
+    for (TextDocument *doc : m_documents) {
+        if (doc->filePath() == filePath) {
+            return doc->isDirty();
+        }
+    }
+    return false;
 }

@@ -57,8 +57,23 @@ void TestDocumentManager::cleanupTestCase()
 void TestDocumentManager::testOpenFile_dirty()
 {
     DocumentManager docManager;
-    docManager.openFile("test_file1.txt", "test content 1");
+    docManager.openFile("test_file1.txt");
     docManager.markDirty(0);
-    docManager.openFile("test_file2.txt", "test content 2");
+    docManager.openFile("test_file2.txt");
     QCOMPARE(docManager.documents().size(), 2);
+}
+
+void TestDocumentManager::testIsDirty()
+{
+    DocumentManager docManager;
+    QString filePath = "test_file1.txt";
+    docManager.openFile(filePath);
+    
+    QVERIFY(!docManager.isDirty(filePath));
+    
+    docManager.markDirty(0);
+    QVERIFY(docManager.isDirty(filePath));
+    
+    docManager.saveFile(0, "new content");
+    QVERIFY(!docManager.isDirty(filePath));
 }
