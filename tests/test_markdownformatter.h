@@ -2,14 +2,20 @@
 #define TEST_MARKDOWNFORMATTER_H
 
 #include <QObject>
+#include "markdownformatter.h"
 
 class TestMarkdownFormatter : public QObject
 {
     Q_OBJECT
 
+private:
+    MarkdownFormatter formatter;
+
 private slots:
     void initTestCase();
     void cleanupTestCase();
+    void testBold();
+    void testItalics();
     void testStrikethrough();
     void testLinks();
     void testUnorderedLists();
