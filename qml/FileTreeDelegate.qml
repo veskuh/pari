@@ -117,6 +117,24 @@ Item {
                 dialog.show();
             }
         }
+        MenuItem {
+            text: qsTr("Rename")
+            onTriggered: {
+                var component = Qt.createComponent("RenameDialog.qml");
+                if (component.status === Component.Ready) {
+                    var dialog = component.createObject(root, { oldPath: model.filePath });
+                    if (dialog) {
+                        dialog.onClosed.connect(function() {
+                            dialog.destroy();
+                        });
+                        dialog.open();
+                    } else {
+                        console.error("Failed to create Rename dialog object");
+                    }
+                } else {
+                    console.error("RenameDialog component is not ready. Status:", component.status, "Error:", component.errorString());
+                }
+            }
+        }
     }
 }
-

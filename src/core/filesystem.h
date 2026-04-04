@@ -39,6 +39,7 @@ public slots:
     Q_INVOKABLE bool fileExistsInProject(const QString &filePath);
     Q_INVOKABLE QString getAbsolutePath(const QString &filePath);
     Q_INVOKABLE QVariantMap getFileInfo(const QString &filePath);
+    Q_INVOKABLE bool renameFile(const QString &oldPath, const QString &newPath);
 
 signals:
     void fileContentReady(const QString &filePath, const QString &content);
@@ -50,6 +51,7 @@ signals:
     void fileSaved(const QString &filePath);
     void isGitRepositoryChanged();
     void projectOpened(const QString &path);
+    void fileRenamed(const QString &oldPath, const QString &newPath);
 
 private:
     QFileSystemModel* m_model;

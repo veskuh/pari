@@ -37,3 +37,20 @@ void TestFileSystem::testGetFileInfo()
     QCOMPARE(fileInfo["path"].toString(), filePath);
     QCOMPARE(fileInfo["size"].toLongLong(), content.size());
 }
+
+void TestFileSystem::testRenameFile()
+{
+    FileSystem fileSystem;
+    QTemporaryDir tempDir;
+    QString oldPath = tempDir.path() + "/old.txt";
+    QString newPath = tempDir.path() + "/new.txt";
+
+    QFile file(oldPath);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    file.close();
+
+    QVERIFY(fileSystem.renameFile(oldPath, newPath));
+
+    QVERIFY(!QFile::exists(oldPath));
+    QVERIFY(QFile::exists(newPath));
+}

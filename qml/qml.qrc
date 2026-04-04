@@ -16,5 +16,6 @@
         <file>PariTabBar.qml</file>
         <file>GoToLineDialog.qml</file>
         <file>FileInfoDialog.qml</file>
+        <file>RenameDialog.qml</file>
     </qresource>
 </RCC>
