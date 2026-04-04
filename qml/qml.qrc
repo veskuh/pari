@@ -14,6 +14,8 @@
         <file>OutputPane.qml</file>
         <file>CompletionPopup.qml</file>
         <file>PariTabBar.qml</file>
+        <file>PariToolBar.qml</file>
+        <file>PariToolButton.qml</file>
         <file>GoToLineDialog.qml</file>
         <file>FileInfoDialog.qml</file>
         <file>RenameDialog.qml</file>

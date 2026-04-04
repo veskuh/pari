@@ -305,74 +305,61 @@ ApplicationWindow {
         }
     }
 
-    header: ToolBar {
-        height: 64
-
+    header: PariToolBar {
+        id: customToolBar
+        
         Row {
-            ToolButton {
+            id: leftButtons
+            spacing: 5
+            anchors.verticalCenter: parent.verticalCenter
+            leftPadding: 5
+
+            PariToolButton {
                 text: qsTr("Build")
-                icon.source: "qrc:/assets/build.png"
-                icon.width: 32
-                icon.height: 32
-                display: AbstractButton.TextUnderIcon
-                width: 64
-                action: buildAction
+                iconSource: "qrc:/assets/build.png"
+                onClicked: buildAction.trigger()
+                enabled: buildAction.enabled
             }
-            ToolButton {
+            PariToolButton {
                 text: qsTr("Run")
-                icon.source: "qrc:/assets/play.png"
-                icon.width: 32
-                icon.height: 32
-                display: AbstractButton.TextUnderIcon
-                width: 64
-                action: runAction
+                iconSource: "qrc:/assets/play.png"
+                onClicked: runAction.trigger()
+                enabled: runAction.enabled
             }
-            ToolButton {
+            PariToolButton {
                 text: qsTr("Search")
-                icon.source: "qrc:/assets/search.png"
-                icon.width: 32
-                icon.height: 32
-                display: AbstractButton.TextUnderIcon
-                width: 64
-
-                action: findAction
+                iconSource: "qrc:/assets/search.png"
+                onClicked: findAction.trigger()
+                enabled: findAction.enabled
             }
-        }
-
-        Row {
-            anchors.right: parent.right
-            visible: true
-
-            ToolButton {
-                text: qsTr("Diff")
-                icon.source: "qrc:/assets/diff.png"
-                icon.width: 32
-                icon.height: 32
-                display: AbstractButton.TextUnderIcon
-                width: 64
-                enabled: aiOutputPane.text !== ""
-                checkable: true
-                onCheckedChanged: aiOutputPane.diffVisible = checked
-            }
-            /*
-            ToolButton {
-                text: qsTr("Use")
-                icon.source: "qrc:/assets/accept.png"
-                icon.width: 32
-                icon.height: 32
-                display: AbstractButton.TextUnderIcon
-                width: 64
-            }*/
         }
 
         PariTabBar {
             id: tabBar
-
+            anchors.verticalCenter: parent.verticalCenter
+            height: parent.height
+            // Position based on the tree column width
             x: treeColumn.width
             width: codeColumn.width - 10
 
             onTabClicked: function(index) { appWindow.setEditorIndex(index) }
             model: documentManager.documents
+        }
+
+        Row {
+            id: rightButtons
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            rightPadding: 5
+
+            PariToolButton {
+                text: qsTr("Diff")
+                iconSource: "qrc:/assets/diff.png"
+                enabled: aiOutputPane.text !== ""
+                checkable: true
+                checked: aiOutputPane.diffVisible
+                onClicked: aiOutputPane.diffVisible = !aiOutputPane.diffVisible
+            }
         }
     }
 
