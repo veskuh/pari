@@ -426,7 +426,7 @@ ApplicationWindow {
                 width: parent.width
                 height: parent.height - tabBar.height
                 currentIndex: documentManager.currentIndex
-                visible: !outputPanel.expanded
+                visible: !outputPanel.expanded && documentManager.documents.length > 0
 
                 Repeater {
                     id: editorRepeater
@@ -458,6 +458,12 @@ ApplicationWindow {
                         }
                     }
                 }
+            }
+
+            EmptyEditorState {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                visible: !outputPanel.expanded && documentManager.documents.length === 0
             }
 
             Rectangle {

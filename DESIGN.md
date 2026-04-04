@@ -73,6 +73,11 @@ We use **Public Sans** for the interface and **Menlo** for the technical instrum
 *   **Line Numbers:** Housed in a metallic column with high-contrast active line highlighting.
 *   **Word Wrap:** Enabled by default to ensure no horizontal scrolling is required.
 
+### Empty Editor State ("The Prepared Tray")
+*   **Aesthetics:** When no documents are open, the "Machine Base" is revealed (#e8e8e8 in light, #1a1a1a in dark).
+*   **Engraved Mark:** A large, centered "PARI" logo appears engraved into the surface.
+*   **Action Cards:** Skeuomorphic "paper scraps" sit in the tray for primary actions (Open Folder, etc.), providing tactile entry points for the user.
+
 ### Syntax Highlighting
 *   **Engine:** Centralized in `SyntaxHighlighterProvider` for global consistency.
 *   **Palette:** Precision-tuned for high legibility on "Paper" wells. Use classic editorial colors (Deep Blue, Maroon, Forest Green).
