@@ -4,15 +4,16 @@ import QtQuick.Layouts
 import net.veskuh.pari 1.0
 
 ColumnLayout {
-    id: aiPane // Keep the ID for isThinking property
+    id: aiPane
     property var currentEditor: null
     property bool isThinking: false
     property string thinkingText: ""
-
     property bool diffVisible: false
 
     property alias text: aiOutputPane.text
     property alias diff: diffView.text
+
+    readonly property bool isDark: appSettings.systemThemeIsDark
 
     DiffUtils {
         id: diffUtils
@@ -27,8 +28,8 @@ ColumnLayout {
     }
 
     function sendPrompt() {
-        aiOutputPane.text = ""; // Clear previous output
-        diffView.text = ""; // Clear previous diff
+        aiOutputPane.text = "";
+        diffView.text = "";
         var prompt = aiMessagePane.text;
         if (currentEditor && currentEditor.selection != "" ) {
             llm.sendPrompt("You are AI code assistant. \
@@ -39,167 +40,223 @@ Follow the instructions by user. You will get a full file content and user selec
         }
     }
 
-
-    StackLayout {
-        id: rightSideStackLayout
+    // --- AI Output Area (The 'Paper' Well) ---
+    Rectangle {
+        id: aiOutputWell
         Layout.fillWidth: true
         Layout.fillHeight: true
-        currentIndex: aiPane.diffVisible ? 1 : 0
+        Layout.margins: 4
+        radius: 2
+        color: isDark ? "#1a1a1a" : "#ffffff"
+        border.color: isDark ? "#121212" : "#bcbcbc"
+        border.width: 1
 
-        // Pane for AI Output
-        Item {
-            id: aiOutputItem
+        // Inset shadow for depth
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: 1
+            color: "transparent"
+            border.color: isDark ? "#000000" : "black"
+            opacity: isDark ? 0.2 : 0.05
+            radius: 2
+        }
+
+        StackLayout {
+            id: rightSideStackLayout
+            anchors.fill: parent
+            anchors.margins: 2
+            currentIndex: aiPane.diffVisible ? 1 : 0
+
+            // AI Output View
             ScrollView {
-                id: aiOutputScrollView
-                width: aiOutputItem.width
-                height: aiOutputItem.height
                 clip: true
-
                 TextArea {
                     id: aiOutputPane
                     readOnly: true
-                    placeholderText: "✨AI assistant output will appear here..."
+                    placeholderText: "✨ AI assistant output..."
                     wrapMode: Text.WordWrap
                     textFormat: Text.MarkdownText
+                    font.family: appSettings.fontFamily
+                    font.pointSize: appSettings.fontSize - 1
+                    color: isDark ? "#d0d0d0" : "#1a1c1c"
+                    padding: 10
+                    background: null
                 }
             }
 
-            // Thinking Overlay
-            Rectangle {
-                id: thinkingOverlay
+            // Diff View
+            ScrollView {
+                clip: true
+                TextArea {
+                    id: diffView
+                    textFormat: Text.RichText
+                    readOnly: true
+                    placeholderText: "Diff view..."
+                    wrapMode: Text.NoWrap
+                    font.family: "Menlo"
+                    font.pointSize: appSettings.fontSize - 1
+                    color: isDark ? "#d0d0d0" : "#1a1c1c"
+                    padding: 10
+                    background: null
+                }
+            }
+        }
+
+        // --- LCD Thinking Indicator ---
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: 10
+            visible: aiPane.isThinking
+            radius: 4
+            z: 10
+            
+            color: isDark ? "#2a1a00" : "#fff9e6" // Warm LCD amber base
+            border.color: isDark ? "#ffaa00" : "#ffcc00"
+            border.width: 1
+
+            ColumnLayout {
                 anchors.fill: parent
-                color: "#AA000000"
-                opacity: aiPane.isThinking ? 1.0 : 0.0
-                visible: opacity > 0.01
-                z: 10
-                Behavior on opacity {
-                    PropertyAnimation {
-                        duration: 500
-                        easing.type: Easing.InOutQuad
+                anchors.margins: 15
+                
+                RowLayout {
+                    spacing: 8
+                    Rectangle {
+                        width: 8; height: 8; radius: 4
+                        color: "#ffaa00"
+                        SequentialAnimation on opacity {
+                            loops: Animation.Infinite
+                            NumberAnimation { from: 1.0; to: 0.3; duration: 800 }
+                            NumberAnimation { from: 0.3; to: 1.0; duration: 800 }
+                        }
+                    }
+                    Label {
+                        text: "AI IS THINKING..."
+                        font.family: "Menlo"
+                        font.pixelSize: 12
+                        font.bold: true
+                        color: isDark ? "#ffaa00" : "#805500"
                     }
                 }
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    Label {
-                        text: "🤔 Thinking..."
-                        font.bold: true
-                        color: "white"
-                    }
-                    ScrollView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                ScrollView {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    Flickable {
+                        id: thinkingFlickable
+                        anchors.fill: parent
+                        contentHeight: thinkingOutput.height
                         clip: true
-                        Flickable {
-                            id: flickable
-                            clip: true
-                            Text {
-                                id: thinkingOutput
-                                width: parent.width
-
-                                text: aiPane.thinkingText
-                                color: "white"
-                                wrapMode: Text.WordWrap
-                                font.family: appSettings.fontFamily
-                                font.pointSize: appSettings.fontSize
-                                onTextChanged: {
-                                    if (contentHeight > flickable.height) {
-                                        flickable.contentY = contentHeight - flickable.height;
-                                    }
+                        
+                        Text {
+                            id: thinkingOutput
+                            width: thinkingFlickable.width
+                            text: aiPane.thinkingText
+                            color: isDark ? "#ffaa00" : "#805500"
+                            wrapMode: Text.WordWrap
+                            font.family: "Menlo"
+                            font.pixelSize: 11
+                            
+                            onTextChanged: {
+                                if (contentHeight > thinkingFlickable.height) {
+                                    thinkingFlickable.contentY = contentHeight - thinkingFlickable.height;
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-
-        // Pane for Diff View
-        Item {
-            id: diffViewItem
-            ScrollView {
-                width: diffViewItem.width
-                height: diffViewItem.height
-                clip: true
-                TextArea {
-                    id: diffView
-                    textFormat: Text.RichText
-                    readOnly: true
-                    placeholderText: "Diff will appear here..."
-                    wrapMode: Text.NoWrap
-                    font.family: "Courier"
+            
+            // Subtle scanline effect for LCD
+            Rectangle {
+                anchors.fill: parent
+                opacity: 0.05
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: "black" }
+                    GradientStop { position: 0.5; color: "transparent" }
+                    GradientStop { position: 1.0; color: "black" }
                 }
             }
         }
     }
 
-    // AI Input Controls - Placed below the tab view
-    Label {
-        text: qsTr("AI Prompt")
-        font.bold: true
-        Layout.topMargin: 10
-        Layout.leftMargin: 10
-    }
-    TextField {
-        id: aiMessagePane
+    // --- AI Input Area (The 'Machine' Control) ---
+    ColumnLayout {
         Layout.fillWidth: true
-        Layout.preferredHeight: 80
-        Layout.rightMargin: 10
-        Layout.leftMargin: 10
-        wrapMode: Text.WordWrap
+        Layout.margins: 10
+        spacing: 8
 
-        placeholderText: "Type a prompt or select a command..."
-        onTextChanged: {
-            if (text !== promptComboBox.prompt) {
-                promptComboBox.currentIndex = 4;
-            }
+        Label {
+            text: qsTr("AI PROMPT")
+            font.family: "Public Sans"
+            font.pixelSize: 10
+            font.bold: true
+            color: isDark ? "#888888" : "#646464"
         }
-        onAccepted: {
-            aiPane.sendPrompt();
-        }
-    }
-    RowLayout {
-        Layout.topMargin: 5
-        Layout.alignment: Qt.AlignRight
 
-        ComboBox {
-            id: promptComboBox
-            property string prompt: "Add comments to the following code. Do not add any other text, just the commented code."
-            model: ["Comment the code", "Explain the code", "Refactor the code", "Write unit tests", "Custom prompt"]
-            onCurrentTextChanged: {
-                switch (currentIndex) {
-                case 0:
-                    prompt = "Add comments to the following code. Do not add any other text, just the commented code.";
-                    break;
-                case 1:
-                    prompt = "Explain the following code in a clear and concise way. Focus on the overall purpose of the code and the role of each major component.";
-                    break;
-                case 2:
-                    prompt = "Refactor the following code to improve its readability, performance, and maintainability. Do not add any new functionality.";
-                    break;
-                case 3:
-                    prompt = "Write unit tests for the following code. Use the Qt Test framework and cover all major functionality.";
-                    break;
+        // Recessed Input Well
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 100
+            radius: 4
+            color: isDark ? "#121212" : "#fdfdfd"
+            border.color: isDark ? "#1a1a1a" : "#bcbcbc"
+            border.width: 1
+
+            ScrollView {
+                anchors.fill: parent
+                anchors.margins: 4
+                TextArea {
+                    id: aiMessagePane
+                    placeholderText: "Command the machine..."
+                    wrapMode: Text.WordWrap
+                    font.family: "Menlo"
+                    font.pixelSize: 12
+                    color: isDark ? "#4aa9ff" : "#0051a6"
+                    background: null
+                    padding: 8
+                    
+                    onTextChanged: {
+                        if (text !== promptComboBox.prompt) {
+                            promptComboBox.currentIndex = 4;
+                        }
+                    }
                 }
-                aiMessagePane.text = prompt;
             }
         }
-        Button {
-            id: sendButton
-            text: "Send"
-            enabled: {
-                return currentEditor && currentEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy;
-            }
-            icon.source: "qrc:/assets/send.png"
-            icon.height: 24
-            icon.width: 24
 
-            onClicked: {
-                aiPane.diffVisible = false;
-                aiPane.sendPrompt();
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 10
+
+            ComboBox {
+                id: promptComboBox
+                Layout.fillWidth: true
+                property string prompt: "Add comments to the following code."
+                model: ["Comment code", "Explain code", "Refactor code", "Write tests", "Custom prompt"]
+                
+                onCurrentIndexChanged: {
+                    switch (currentIndex) {
+                    case 0: prompt = "Add comments to the following code. Do not add any other text, just the commented code."; break;
+                    case 1: prompt = "Explain the following code in a clear and concise way."; break;
+                    case 2: prompt = "Refactor the following code to improve its readability."; break;
+                    case 3: prompt = "Write unit tests for the following code using Qt Test."; break;
+                    }
+                    if (currentIndex < 4) aiMessagePane.text = prompt;
+                }
             }
-            highlighted: true
+
+            PariToolButton {
+                id: sendButton
+                text: "SEND"
+                iconSource: "qrc:/assets/send.png"
+                isPrimary: true
+                enabled: currentEditor && currentEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy
+                onClicked: {
+                    aiPane.diffVisible = false;
+                    aiPane.sendPrompt();
+                }
+            }
         }
     }
 
@@ -217,11 +274,7 @@ Follow the instructions by user. You will get a full file content and user selec
                         currentLine = currentLine.substring(endThinkIndex + 8);
                     } else {
                         aiPane.thinkingText += currentLine;
-
-                        if (currentLine.trim() !== "") {
-                            aiPane.thinkingText += "\n\n";
-                        }
-
+                        if (currentLine.trim() !== "") aiPane.thinkingText += "\n\n";
                         currentLine = "";
                     }
                 } else {
@@ -229,7 +282,7 @@ Follow the instructions by user. You will get a full file content and user selec
                     if (startThinkIndex !== -1) {
                         aiOutputPane.text += currentLine.substring(0, startThinkIndex);
                         aiPane.isThinking = true;
-                        aiPane.thinkingText = ""; // Clear previous thinking
+                        aiPane.thinkingText = "";
                         currentLine = currentLine.substring(startThinkIndex + 7);
                     } else {
                         aiOutputPane.text += currentLine;
