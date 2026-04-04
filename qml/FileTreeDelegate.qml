@@ -181,6 +181,7 @@ Item {
             enabled: !isDirectory
             onTriggered: {
                 documentManager.openFile(model.filePath, true);
+                fileSystemView.selectedPath = model.filePath;
             }
         }
         MenuItem {

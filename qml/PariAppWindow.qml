@@ -369,6 +369,14 @@ ApplicationWindow {
     function setEditorIndex(index) {
         tabBar.currentIndex = index
         documentManager.setCurrentIndex(index);
+        
+        // Synchronize File Tree highlight with the active document
+        if (index >= 0 && index < documentManager.documents.length) {
+            var doc = documentManager.documents[index];
+            fileSystemView.selectedPath = doc.filePath;
+        } else if (documentManager.documents.length === 0) {
+            fileSystemView.selectedPath = "";
+        }
     }
 
     footer: CustomStatusBar {
@@ -728,6 +736,8 @@ ApplicationWindow {
     function closeCurrentFile() {
         if (stackLayout.currentIndex !== -1) {
             documentManager.closeFile(stackLayout.currentIndex);
+            // Synchronize selection with the new current document
+            setEditorIndex(documentManager.currentIndex);
         }
     }
 
