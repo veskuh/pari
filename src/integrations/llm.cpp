@@ -77,7 +77,6 @@ void Llm::onSettingsChanged()
     addToChatLog(QString("INFO: Settings changed. New URL: %1, New Model: %2")
                      .arg(m_settings->ollamaUrl())
                      .arg(m_settings->ollamaModel()));
-    qDebug() << "Llm settings changed.";
 }
 
 void Llm::onReadyRead()
@@ -122,7 +121,6 @@ void Llm::onNetworkReply()
         return;
 
     setBusy(false);
-    qDebug() << "onNetworkReply called, busy:" << m_busy;
     if (reply->error() == QNetworkReply::NoError) {
         // Process any remaining data in the buffer
         onReadyRead();
@@ -137,7 +135,6 @@ void Llm::onNetworkReply()
         finalResponse.replace(QRegularExpression("<think>.*?</think>", QRegularExpression::DotMatchesEverythingOption), "");
         emit responseReady(finalResponse);
     } else {
-        qDebug() << "Network error: " << reply->errorString();
         addToChatLog("ERROR: " + reply->errorString());
         emit responseReady("Error: " + reply->errorString());
     }
