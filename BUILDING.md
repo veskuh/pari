@@ -45,3 +45,19 @@ Run the application with:
 ```bash
 ./build/src/pari
 ```
+
+## Code Coverage
+
+To measure code coverage for unit tests, you need to have `gcov` installed.
+
+1.  **Configure with coverage enabled:**
+    ```bash
+    cmake -DENABLE_COVERAGE=ON -B build
+    ```
+
+2.  **Build and run coverage target:**
+    ```bash
+    cmake --build build --target coverage
+    ```
+
+The coverage results will be generated as `.gcov` files in the `build/tests` directory. You can view them with any text editor or use tools like `lcov` or `gcovr` for better visualization.

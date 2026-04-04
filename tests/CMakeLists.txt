@@ -71,4 +71,13 @@ target_link_libraries(tst_all PRIVATE
     Qt6::Widgets
 )
 
+if(ENABLE_COVERAGE)
+    add_custom_target(coverage
+        COMMAND ./tst_all
+        COMMAND find . -name "*.gcno" -not -path "*_autogen*" -exec gcov {} + | grep -A 1 "File .*src/" || true
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating coverage report for project sources"
+    )
+endif()
+
 add_test(NAME AllTests COMMAND tst_all)
