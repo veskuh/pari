@@ -307,10 +307,12 @@ ApplicationWindow {
 
     header: PariToolBar {
         id: customToolBar
+        implicitHeight: 64
         
         Row {
             id: leftButtons
             spacing: 5
+            height: 56
             anchors.verticalCenter: parent.verticalCenter
             leftPadding: 5
 
@@ -350,6 +352,7 @@ ApplicationWindow {
             id: rightButtons
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
+            height: 56
             rightPadding: 5
 
             PariToolButton {
