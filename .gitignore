@@ -27,3 +27,6 @@ test_project/
 /src/pari
 /tests/tst_all
 test_project/
+# Coverage
+gcov_output.txt
+coverage_html/
