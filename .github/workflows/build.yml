@@ -33,18 +33,16 @@ jobs:
         make
 
     - name: Run unit tests
+      working-directory: build/tests
       run: |
-        cd build/tests
         QT_QPA_PLATFORM=offscreen ./tst_all
 
     - name: Run UI tests
       run: |
-        # UI tests often need a window system even if offscreen, xvfb helps
-        # Use full paths to be sure
-        ls -R tests
+        # Use full path for input to ensure discovery
         xvfb-run --server-args="-screen 0 1024x768x24" ./build/tests/tst_ui -input $(pwd)/tests
 
     - name: Run smoke test
+      working-directory: build/src
       run: |
-        cd build/src
         QT_QPA_PLATFORM=offscreen ./pari --selfcheck

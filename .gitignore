@@ -6,7 +6,12 @@ Makefile
 .qmake.stash
 moc_*.cpp
 moc_*.h
-tst_*
+
+# Binaries (CMake build usually stays in build/, but for safety)
+/tests/tst_all
+/tests/tst_ui
+/tests/tst_settings
+/src/pari
 
 # Qt installation
 qt/
@@ -21,12 +26,11 @@ notes.md
 .DS_Store
 *.app
 src/qrc_*
-/src/pari
-/tests/tst_all
 test_project/
-/src/pari
-/tests/tst_all
-test_project/
+
 # Coverage
 gcov_output.txt
 coverage_html/
+*.gcda
+*.gcno
+*.gcov
