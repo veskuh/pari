@@ -39,9 +39,10 @@ jobs:
 
     - name: Run UI tests
       run: |
-        cd build/tests
         # UI tests often need a window system even if offscreen, xvfb helps
-        xvfb-run --server-args="-screen 0 1024x768x24" ./tst_ui -input ../../tests
+        # Use full paths to be sure
+        ls -R tests
+        xvfb-run --server-args="-screen 0 1024x768x24" ./build/tests/tst_ui -input $(pwd)/tests
 
     - name: Run smoke test
       run: |
