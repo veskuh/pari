@@ -17,7 +17,7 @@ if(ENABLE_COVERAGE)
     endif()
 endif()
 
-find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test LabsSettings QuickDialogs2 REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test LabsSettings QuickDialogs2 QuickTest REQUIRED)
 qt_standard_project_setup(REQUIRES 6.5)
 
 add_subdirectory(src)

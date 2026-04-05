@@ -14,11 +14,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1 libxcb-randr0 xvfb
+
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
         version: '6.8.0'
         arch: 'linux_gcc_64'
+        modules: 'qtquicktest'
 
     - name: Build project
       run: |
@@ -31,6 +37,12 @@ jobs:
       run: |
         cd build/tests
         QT_QPA_PLATFORM=offscreen ./tst_all
+
+    - name: Run UI tests
+      run: |
+        cd build/tests
+        # UI tests often need a window system even if offscreen, xvfb helps
+        xvfb-run --server-args="-screen 0 1024x768x24" ./tst_ui -input ../../tests
 
     - name: Run smoke test
       run: |
