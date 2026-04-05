@@ -24,7 +24,6 @@ jobs:
       with:
         version: '6.8.0'
         arch: 'linux_gcc_64'
-        modules: 'qtquicktest'
 
     - name: Build project
       run: |
