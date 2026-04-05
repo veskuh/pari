@@ -115,8 +115,12 @@ The application is engineered for maintainability and technical isolation using 
 
 ## 8. Self-Test & Verification Architecture
 
-*   **The `BasePage` Contract:** All primary QML views (Editor, File Tree, Output) should eventually inherit from a shared base for standardized initialization.
-*   **Automated Verification:** The system supports a `--selfcheck` CLI argument for smoke testing, with plans to expand to `--self-test=[view]` for isolated component validation.
+The project maintains a rigorous quality standard through automated testing and coverage measurement.
+
+*   **Unit Testing:** Core C++ components are verified using the Qt Test framework. Integration with external services (like Ollama) is facilitated through localized mocks (e.g., `MockOllamaServer`) to ensure deterministic results.
+*   **Code Coverage:** The project maintains a target of **80% weighted average coverage** across all `.cpp` files in the `src/` directory. Coverage is measured using `gcov` and `lcov`.
+*   **Smoke Testing:** The system supports a `--selfcheck` CLI argument for validating the integrity of the QML engine and primary interface initialization.
+*   **Automation:** A dedicated `scripts/coverage_report.sh` script automates the full profiling cycle, generating both terminal summaries and visual HTML reports.
 
 ---
 

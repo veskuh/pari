@@ -55,7 +55,10 @@
 
 **5. Testing**
 
-*   Unit tests will be written for the core components, including the `Llm` class and the prompt engineering module.
+*   Unit tests are implemented for core components using the Qt Test framework.
+*   Target: **80% weighted average code coverage** across all `.cpp` files.
+*   Automated reporting: `scripts/coverage_report.sh` generates text summaries and visual HTML reports (via `lcov`).
+*   Mocking: A `MockOllamaServer` is used for reliable integration testing of AI features.
 
 **6. Implementation Steps:**
 
@@ -97,7 +100,7 @@
     *   Optimize performance and scalability.
 *   **Phase 4: UI/UX Polish and Testing**
     *   Refine the UI and user experience.
-    *   Write comprehensive unit tests.
+    *   Write comprehensive unit tests and achieve 80%+ coverage.
 
 **7. Technology Stack:**
 

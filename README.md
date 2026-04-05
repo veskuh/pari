@@ -40,29 +40,35 @@ The project is organized into the following directories:
 
 *   `src/`: Contains the C++ source code for the application.
     *   `core/`: Core application logic, such as settings management and file system access.
-    *   `editor/`: Code editor components.
-    *   `formatting/`: Code formatting and syntax highlighting.
-    *   `integrations/`: Integration with external tools like Ollama and `clangd`.
+    *   `editor/`: Code editor components and document management.
+    *   `formatting/`: Code formatting and syntax highlighting engines.
+    *   `integrations/`: Integration with external tools like Ollama and build systems.
 *   `qml/`: Contains the QML source code for the user interface.
 *   `assets/`: Contains assets like icons and images.
 *   `tests/`: Contains the unit tests for the application.
+*   `scripts/`: Utility scripts for development (e.g., coverage reporting).
 *   `build/`: The build directory, where the compiled application and test executables are placed.
 
 ## Testing
 
-This project includes unit tests and a smoke test to ensure code quality and application stability. These tests are integrated into the CI workflow and are run automatically on every push and pull request.
-
-The tests are configured to use a separate settings file to avoid interfering with the main application's settings.
+This project includes a robust unit test suite and a smoke test to ensure code quality.
 
 ### Unit Tests
 
-The unit tests are built using the Qt Test framework and can be found in the `tests/` directory. To run the unit tests locally, first build the project, and then execute the test binary:
+The unit tests use the Qt Test framework. A **Mock Ollama Server** is included in the test suite to allow testing AI integrations without requiring a running Ollama instance.
+
+To run all tests:
+```bash
+./build/tests/tst_all
+```
+
+### Code Coverage
+
+Pari targets **80% code coverage** for core logic. You can generate a detailed HTML report using the provided script:
 
 ```bash
-mkdir build
-cmake -S . -B build
-cmake --build build
-./build/tests/tst_all
+./scripts/coverage_report.sh
+open coverage_html/index.html
 ```
 
 ### Smoke Test
@@ -79,8 +85,4 @@ The application includes a smoke test that verifies if the main QML interface ca
 ./build/src/pari --selfcheck
 ```
 
-**Note:** Running these tests locally requires a proper Qt development environment. The test scripts are primarily designed for use in automated testing environments, such as the GitHub Actions CI workflow, where the environment is pre-configured with all necessary dependencies. If you are running the tests locally, you may need to install Qt development packages first. For example, on a recent Debian/Ubuntu-based system, you can install the necessary packages with:
-
-```bash
-sudo apt-get install qt6-base-dev qt6-declarative-dev qt6-tools-dev qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-dialogs qml6-module-qtquick-layouts qml6-module-qtquick-window qml6-module-qtqml-workerscript qml6-module-qtquick-templates
-```
+**Note:** Running these tests locally requires a proper Qt development environment. See [BUILDING.md](BUILDING.md) for details.
