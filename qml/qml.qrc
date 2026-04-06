@@ -3,6 +3,7 @@
         <file>PariAppWindow.qml</file>
         <file>CustomStatusBar.qml</file>
         <file>SettingsWindow.qml</file>
+        <file>SettingColorRow.qml</file>
         <file>AboutWindow.qml</file>
         <file>ChatLogWindow.qml</file>
         <file>FindOverlay.qml</file>
