@@ -446,12 +446,13 @@ ApplicationWindow {
                         dirty: model.isDirty
                         filePath: model.filePath
                         isActivePane: stackLayout.currentIndex === index
+                        textDocumentSearcher: TextDocumentSearcher {}
+                        injectedLspClient: lspClient
 
                         onIsActivePaneChanged: {
                             if (isActivePane) {
                                 tabBar.currentIndex = index
-                                appWindow.currentEditor = stackLayout.itemAt(stackLayout.currentIndex)
-
+                                appWindow.currentEditor = editor
                             }
                         }
 

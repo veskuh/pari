@@ -42,16 +42,19 @@ Item {
         function toggleExpanded(index) {}
     }
 
-    // Wrap in a component that provides 'model'
+    // Wrap in a component that provides required properties
     Item {
         id: delegateContainer
         anchors.fill: parent
-        property var testModel: { "filePath": "test.cpp", "display": "test.cpp" }
+        property string testFilePath: "test.cpp"
+        property string testDisplay: "test.cpp"
 
         FileTreeDelegate {
             id: delegate
             anchors.fill: parent
-            model: delegateContainer.testModel
+            filePath: delegateContainer.testFilePath
+            fileName: "test.cpp"
+            display: delegateContainer.testDisplay
             depth: 1
             expanded: false
         }
@@ -62,7 +65,8 @@ Item {
         when: windowShown
 
         function init() {
-            delegateContainer.testModel = { "filePath": "test.cpp", "display": "test.cpp" }
+            delegateContainer.testFilePath = "test.cpp"
+            delegateContainer.testDisplay = "test.cpp"
             delegate.depth = 1
             delegate.expanded = false
             fileSystemView.selectedPath = "selected.cpp"
@@ -76,18 +80,18 @@ Item {
         }
 
         function test_highlight() {
-            delegateContainer.testModel = { "filePath": "selected.cpp", "display": "selected.cpp" }
+            delegateContainer.testFilePath = "selected.cpp"
             verify(delegate.highlight, "Highlight should be true")
         }
 
         function test_dirty_state() {
-            delegateContainer.testModel = { "filePath": "dirty.cpp", "display": "dirty.cpp" }
+            delegateContainer.testFilePath = "dirty.cpp"
             documentManager.dirtyStatusChanged()
             compare(delegate.isDirty, true)
         }
 
         function test_directory_detection() {
-            delegateContainer.testModel = { "filePath": "src/", "display": "src" }
+            delegateContainer.testFilePath = "src/"
             compare(delegate.isDirectory, true)
         }
 
@@ -96,15 +100,16 @@ Item {
             verify(icon !== null)
             
             // CPP file
-            delegateContainer.testModel = { "filePath": "test.cpp", "display": "test.cpp" }
+            delegateContainer.testFilePath = "test.cpp"
             verify(icon.source.toString().indexOf("cpp.png") !== -1, "Expected cpp.png, got " + icon.source)
             
             // QML file
-            delegateContainer.testModel = { "filePath": "test.qml", "display": "test.qml" }
+            delegateContainer.testFilePath = "test.qml"
             verify(icon.source.toString().indexOf("qml.png") !== -1, "Expected qml.png, got " + icon.source)
             
             // Folder
-            delegateContainer.testModel = { "filePath": "folder", "display": "folder" }
+            delegateContainer.testFilePath = "folder"
+            compare(delegate.isDirectory, true)
             verify(icon.source.toString().indexOf("folder.png") !== -1, "Expected folder.png, got " + icon.source)
         }
 

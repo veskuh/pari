@@ -8,30 +8,30 @@ Item {
     implicitWidth: typeof fileSystemView !== 'undefined' ? fileSystemView.width : 200
     height: 28
     
-    // In TreeView delegates, model is often provided as a 'required property'
-    // but it can also be provided by context. 
-    // If we use 'required property var model', it's the safest way in modern QML.
-    required property var model
+    // Roles from QFileSystemModel/TreeView
+    required property string filePath
+    required property string fileName
+    required property var display
+    
     required property int depth
     required property bool expanded
     
     property var appWindow
-    property bool isDirectory: model ? fileSystem.isDirectory(model.filePath) : false
-    property bool highlight: (model && typeof fileSystemView !== 'undefined') ? (model.filePath === fileSystemView.selectedPath) : false
+    property bool isDirectory: fileSystem.isDirectory(root.filePath)
+    property bool highlight: (typeof fileSystemView !== 'undefined') ? (root.filePath === fileSystemView.selectedPath) : false
     
     // Check dirty state from documentManager
     property bool isDirty: false
     
     function updateDirtyState() {
-        if (model && model.filePath) {
-            isDirty = documentManager.isDirty(model.filePath);
+        if (root.filePath) {
+            isDirty = documentManager.isDirty(root.filePath);
         } else {
             isDirty = false;
         }
     }
     
-    // React to model changes
-    onModelChanged: updateDirtyState()
+    onFilePathChanged: updateDirtyState()
     Component.onCompleted: updateDirtyState()
     
     Connections {
@@ -42,7 +42,7 @@ Item {
     }
     
     // Helper for theme
-    readonly property bool isDark: (typeof appSettings !== 'undefined') ? appSettings.systemThemeIsDark : false
+    readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
 
     // --- Background (Selection/Hover) ---
     Rectangle {
@@ -121,7 +121,7 @@ Item {
         // --- Icon ---
         FileIconProvider {
             id: iconProvider
-            filePath: model ? model.filePath : ""
+            filePath: root.filePath
             isDirectory: root.isDirectory
         }
 
@@ -137,7 +137,7 @@ Item {
 
         // --- Label ---
         Label {
-            text: (model && model.display) ? model.display : ""
+            text: root.display ? root.display : ""
             Layout.fillWidth: true
             clip: true
             elide: Text.ElideRight
@@ -159,8 +159,8 @@ Item {
                 if (isDirectory) {
                     if (typeof fileSystemView !== 'undefined') fileSystemView.toggleExpanded(index);
                 } else {
-                    documentManager.openFile(model.filePath, false);
-                    if (typeof fileSystemView !== 'undefined') fileSystemView.selectedPath = model.filePath;
+                    documentManager.openFile(root.filePath, false);
+                    if (typeof fileSystemView !== 'undefined') fileSystemView.selectedPath = root.filePath;
                 }
             }
         }
@@ -179,14 +179,14 @@ Item {
             text: qsTr("Open in new tab")
             enabled: !isDirectory
             onTriggered: {
-                documentManager.openFile(model.filePath, true);
-                if (typeof fileSystemView !== 'undefined') fileSystemView.selectedPath = model.filePath;
+                documentManager.openFile(root.filePath, true);
+                if (typeof fileSystemView !== 'undefined') fileSystemView.selectedPath = root.filePath;
             }
         }
         MenuItem {
             text: qsTr("Info")
             onTriggered: {
-                var fileInfo = fileSystem.getFileInfo(model.filePath);
+                var fileInfo = fileSystem.getFileInfo(root.filePath);
                 var component = Qt.createComponent("FileInfoDialog.qml");
                 var dialog = component.createObject(root, {
                     fileName: fileInfo.name,
@@ -202,7 +202,7 @@ Item {
             onTriggered: {
                 var component = Qt.createComponent("RenameDialog.qml");
                 if (component.status === Component.Ready) {
-                    var dialog = component.createObject(root, { oldPath: model.filePath });
+                    var dialog = component.createObject(root, { oldPath: root.filePath });
                     if (dialog) {
                         dialog.onClosed.connect(function() {
                             dialog.destroy();

@@ -14,6 +14,9 @@
         <file>GitOutputWindow.qml</file>
         <file>GitLogDelegate.qml</file>
         <file>CodeEditorPane.qml</file>
+        <file>LineNumberGutter.qml</file>
+        <file>SearchManager.qml</file>
+        <file>EditorLogic.qml</file>
         <file>OutputPane.qml</file>
         <file>AiThinkingIndicator.qml</file>
         <file>AiInputControl.qml</file>

@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import net.veskuh.pari 1.0
 
 ColumnLayout {
+    id: root
     property alias text: codeEditor.text
     property alias selection: codeEditor.selectedText
     property alias textDocument: codeEditor.textDocument
@@ -13,11 +13,26 @@ ColumnLayout {
     property bool isActivePane: false
     property string filePath: ""
 
-    // Theme helper
-    readonly property bool isDark: appSettings.systemThemeIsDark
+    // Theme helper - uses global appSettings or one from parent scope in tests
+    readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
 
-    TextDocumentSearcher {
-        id: textDocumentSearcher
+    // Dependency injection
+    property var textDocumentSearcher: null
+    property var injectedLspClient: null
+
+    SearchManager {
+        id: searchManager
+        editor: codeEditor
+        overlay: findOverlay
+        positionCallback: (pos) => root.goToPosition(pos)
+    }
+
+    EditorLogic {
+        id: editorLogic
+        editor: codeEditor
+        filePath: root.filePath
+        // use injected or global
+        lspClient: root.injectedLspClient || (typeof lspClient !== 'undefined' ? lspClient : null)
     }
 
     function saveCursorPosition() {
@@ -44,9 +59,9 @@ ColumnLayout {
         saveScrollPosition();
         if (filePath) {
             if (filePath.endsWith(".qml")) {
-                toolManager.indentQmlFile(filePath, codeEditor.text);
+                if (typeof toolManager !== 'undefined') toolManager.indentQmlFile(filePath, codeEditor.text);
             } else if (isCppFile(filePath)) {
-                lspClient.format(filePath, codeEditor.text);
+                if (typeof lspClient !== 'undefined') lspClient.format(filePath, codeEditor.text);
             }
         }
     }
@@ -80,59 +95,20 @@ ColumnLayout {
     }
 
     function refreshLineNumbers() {
-        const coordinates = [];
-        const textContent = codeEditor.text;
-        let searchIndex = 0;
-        let newlineIndex;
-
-        const rect = codeEditor.positionToRectangle(0);
-        coordinates.push(rect.y);
-
-        while ((newlineIndex = textContent.indexOf('\n', searchIndex)) !== -1) {
-            const nextCharIndex = newlineIndex + 1;
-            const lineRect = codeEditor.positionToRectangle(nextCharIndex);
-            coordinates.push(lineRect.y);
-            searchIndex = nextCharIndex;
-        }
-        lineNumberRepeater.model = coordinates;
+        lineNumberGutter.refresh(codeEditor);
     }
 
     FindOverlay {
         id: findOverlay
         z: 10
         width: parent.width
-        color: appWindow.palette.window
-        borderColor: appWindow.palette.windowText
-        textColor: appWindow.palette.text
-        textBackgroundColor: appWindow.palette.base
-        onFindNext: {
-            var newPos = codeEditor.text.indexOf(findOverlay.searchText, codeEditor.cursorPosition)
-
-            if (newPos !== -1) {
-                codeEditor.cursorPosition = newPos + searchText.length;
-                codeEditor.select(newPos, newPos + searchText.length);
-                goToPosition(newPos)
-            }
-            var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
-            findOverlay.updateResults(occurrences);
-        }
-
-        onFindPrevious: {
-            var oldPos = codeEditor.cursorPosition;
-            var newPos = codeEditor.text.lastIndexOf(findOverlay.searchText, codeEditor.cursorPosition - (searchText.length+1))
-
-            if (codeEditor.cursorPosition === newPos) {
-                newPos = codeEditor.text.lastIndexOf(findOverlay.searchText, codeEditor.cursorPosition - (searchText.length+1))
-            }
-
-            if (newPos !== -1) {
-                codeEditor.cursorPosition = newPos + searchText.length;
-                codeEditor.select(newPos, newPos + searchText.length);
-                goToPosition(newPos)
-            }
-            var occurrences = codeEditor.text.split(findOverlay.searchText).length - 1;
-            findOverlay.updateResults(occurrences);
-        }
+        // palette and other properties will be found via appWindow or mock in parent scope
+        color: (typeof appWindow !== 'undefined' && appWindow && appWindow.palette) ? appWindow.palette.window : "lightgray"
+        borderColor: (typeof appWindow !== 'undefined' && appWindow && appWindow.palette) ? appWindow.palette.windowText : "black"
+        textColor: (typeof appWindow !== 'undefined' && appWindow && appWindow.palette) ? appWindow.palette.text : "black"
+        textBackgroundColor: (typeof appWindow !== 'undefined' && appWindow && appWindow.palette) ? appWindow.palette.base : "white"
+        onFindNext: searchManager.findNext()
+        onFindPrevious: searchManager.findPrevious()
         onCloseOverlay: close()
     }
 
@@ -143,7 +119,6 @@ ColumnLayout {
         Layout.margins: 4
         radius: 2
         
-        // Background: Transitions to creamy (light) or navy (dark) finish when dirty
         color: {
             if (dirty) return isDark ? "#1e2538" : "#fffdf0";
             return isDark ? "#1a1a1a" : "#ffffff";
@@ -151,11 +126,9 @@ ColumnLayout {
         
         Behavior on color { ColorAnimation { duration: 300 } }
 
-        // Outer "bevel" to simulate recession into the machine
         border.color: isDark ? "#121212" : "#bcbcbc"
         border.width: 1
 
-        // Inset shadow effect
         Rectangle {
             anchors.fill: parent
             anchors.margins: 1
@@ -174,141 +147,57 @@ ColumnLayout {
             Flickable {
                 id: codeEditorFlickable
                 clip: true
-                // Use implicitHeight of the TextArea plus some bottom buffer
                 contentHeight: Math.max(codeEditor.implicitHeight + 100, codeEditorScrollView.height)
 
-                // Line Number Column Background (Subtle Metallic)
-                Rectangle {
-                    width: 35
+                LineNumberGutter {
+                    id: lineNumberGutter
+                    objectName: "lineNumberGutter"
                     height: parent.contentHeight
+                    isDark: root.isDark
+                    editorFont: codeEditor.font
+                    currentLineIndex: codeEditor.currentLineIndex
                     z: 1
-                    gradient: Gradient {
-                        orientation: Gradient.Horizontal
-                        GradientStop { position: 0.0; color: isDark ? "#2d2d2d" : "#f0f0f0" }
-                        GradientStop { position: 1.0; color: isDark ? "#252525" : "#e8e8e8" }
-                    }
-                    
-                    Rectangle {
-                        anchors.right: parent.right
-                        width: 1
-                        height: parent.height
-                        color: isDark ? "#121212" : "#d0d0d0"
-                    }
-                }
-
-                // Line Number Container
-                Item {
-                    width: 35
-                    height: codeEditor.height
-                    z: 2
-
-                    Repeater {
-                        id: lineNumberRepeater
-                        model: []
-
-                        delegate: Text {
-                            y: modelData
-                            x: 0
-                            width: 30
-                            text: index + 1
-                            color: codeEditor.currentLineIndex === index ? (isDark ? "#4aa9ff" : "#0051a6") : (isDark ? "#555555" : "#888888")
-                            font.pixelSize: codeEditor.font.pixelSize * 0.9
-                            font.family: "Menlo"
-                            font.bold: codeEditor.currentLineIndex === index
-                            horizontalAlignment: Text.AlignRight
-                            verticalAlignment: Text.AlignTop
-                        }
-                    }
                 }
 
                 TextArea {
                     id: codeEditor
-                    x: 40
-                    width: codeEditorScrollView.width - 50
-                    // Set height to implicitHeight to let the Flickable handle scrolling
+                    objectName: "codeEditor"
+                    x: lineNumberGutter.width + 5
+                    width: codeEditorScrollView.width - (lineNumberGutter.width + 15)
                     height: implicitHeight
-                    placeholderText: "✏️ Open a file or start typing..."
+                    placeholderText: qsTr("✏️ Open a file or start typing...")
                     wrapMode: Text.WordWrap
-                    font.family: appSettings.fontFamily
-                    font.pointSize: appSettings.fontSize
+                    font.family: (typeof appSettings !== 'undefined' && appSettings && appSettings.fontFamily) ? appSettings.fontFamily : "Menlo"
+                    font.pointSize: (typeof appSettings !== 'undefined' && appSettings && appSettings.fontSize) ? appSettings.fontSize : 12
                     tabStopDistance: 4 * textMetrics.advanceWidth
                     color: isDark ? "#d0d0d0" : "#1a1c1c"
                     selectionColor: isDark ? "#00458d" : "#0051a6"
                     selectedTextColor: "#ffffff"
                     topPadding: 10
-                    bottomPadding: 50 // Large buffer at the bottom
+                    bottomPadding: 50
                     leftPadding: 10
                     rightPadding: 10
                     background: null
 
-                    property int savedCursorPosition: 0
                     property int previousLength: 0
-                    property bool isIndenting: false
                     
-                    // Logic to find current line index based on cursor position
                     property int currentLineIndex: {
                         var textToCursor = text.substring(0, cursorPosition);
                         return textToCursor.split('\n').length - 1;
                     }
 
-                    function handleAutoIndent() {
-                        if (isIndenting || !codeEditor.activeFocus) {
-                            return;
-                        }
-
-                        var currentPos = codeEditor.cursorPosition;
-                        var text = codeEditor.getText(0, currentPos);
-                        var lines = text.split('\n');
-                        if (lines.length < 2) {
-                            return;
-                        }
-
-                        var line = lines[lines.length - 1];
-                        if (line !== "") {
-                            return;
-                        }
-
-                        var previousLine = lines[lines.length - 2];
-                        var indentation = previousLine.match(/^\s*/)[0];
-                        if (previousLine.trim().endsWith('{')) {
-                            indentation += "    ";
-                        }
-                        if (line.trim().startsWith('}')) {
-                            indentation = indentation.substring(0, Math.max(0, indentation.length - 4));
-                        }
-                        isIndenting = true;
-                        codeEditor.insert(currentPos, indentation);
-                        isIndenting = false;
-                    }
-
                     onTextChanged: {
                         if (codeEditor.activeFocus && codeEditor.length !== previousLength) {
-                            // Not just a formatting change
                             dirty = true;
                         }
-
-                        // We are only interested in new letters being typed
-                        if (codeEditor.length !== (previousLength + 1)) {
-                            previousLength = codeEditor.length;
-                            refreshLineNumbers();
-                            return;
+                        
+                        if (typeof aiOutputPane !== 'undefined' && aiOutputPane) {
+                            aiOutputPane.updateDiff(codeEditor.text);
                         }
+                        
+                        editorLogic.handleTextChanged();
+                        
                         previousLength = codeEditor.length;
-
-                        aiOutputPane.updateDiff(codeEditor.text);
-                        if (filePath && isCppFile(filePath)) {
-                            lspClient.documentChanged(filePath, codeEditor.text);
-                            var text = codeEditor.getText(0, codeEditor.cursorPosition);
-                            if (text.endsWith(".") || text.endsWith("->")) {
-                                var textToCursor = codeEditor.getText(0, codeEditor.cursorPosition);
-                                var lines = textToCursor.split(/\r?\n/);
-                                var line = lines.length - 1;
-                                var character = lines[lines.length - 1].length;
-                                console.log("Requesting completion at", line, character);
-                                lspClient.requestCompletion(filePath, line, character);
-                            }
-                        }
-                        handleAutoIndent();
                         refreshLineNumbers();
                     }
 
@@ -330,7 +219,7 @@ ColumnLayout {
     }
 
     Connections {
-        target: lspClient
+        target: root.injectedLspClient || (typeof lspClient !== 'undefined' ? lspClient : null)
 
         function onFormattingResult(result) {
             codeEditor.text = result;
