@@ -9,6 +9,7 @@
         <file>FindOverlay.qml</file>
         <file>ColorButton.qml</file>
         <file>FileTreeDelegate.qml</file>
+        <file>FileIconProvider.qml</file>
         <file>BuildConfigurationDialog.qml</file>
         <file>GitOutputWindow.qml</file>
         <file>GitLogDelegate.qml</file>

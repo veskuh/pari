@@ -5,26 +5,44 @@ import QtQuick.Layouts
 Item {
     id: root
     implicitHeight: 28
-    implicitWidth: fileSystemView.width
+    implicitWidth: typeof fileSystemView !== 'undefined' ? fileSystemView.width : 200
     height: 28
+    
+    // In TreeView delegates, model is often provided as a 'required property'
+    // but it can also be provided by context. 
+    // If we use 'required property var model', it's the safest way in modern QML.
+    required property var model
     required property int depth
     required property bool expanded
+    
     property var appWindow
-    property bool isDirectory: fileSystem.isDirectory(model.filePath)
-    property bool highlight: model.filePath === fileSystemView.selectedPath
+    property bool isDirectory: model ? fileSystem.isDirectory(model.filePath) : false
+    property bool highlight: (model && typeof fileSystemView !== 'undefined') ? (model.filePath === fileSystemView.selectedPath) : false
     
     // Check dirty state from documentManager
-    property bool isDirty: documentManager.isDirty(model.filePath)
+    property bool isDirty: false
+    
+    function updateDirtyState() {
+        if (model && model.filePath) {
+            isDirty = documentManager.isDirty(model.filePath);
+        } else {
+            isDirty = false;
+        }
+    }
+    
+    // React to model changes
+    onModelChanged: updateDirtyState()
+    Component.onCompleted: updateDirtyState()
     
     Connections {
         target: documentManager
         function onDirtyStatusChanged() {
-            root.isDirty = documentManager.isDirty(model.filePath);
+            root.updateDirtyState();
         }
     }
     
     // Helper for theme
-    readonly property bool isDark: appSettings.systemThemeIsDark
+    readonly property bool isDark: (typeof appSettings !== 'undefined') ? appSettings.systemThemeIsDark : false
 
     // --- Background (Selection/Hover) ---
     Rectangle {
@@ -35,7 +53,6 @@ Item {
         anchors.topMargin: 1
         anchors.bottomMargin: 1
         radius: 4
-        
         visible: root.highlight || mouseArea.containsMouse
         
         gradient: Gradient {
@@ -74,79 +91,61 @@ Item {
         opacity: 0.5
     }
 
-    // --- Indicator (Folder Arrow) ---
-    Label {
-        id: indicator
-        text: isDirectory ? (expanded ? "▼" : "▶") : ""
-        x: (root.depth * 16) + 4
-        font.pixelSize: 10
-        color: root.highlight ? "#ffffff" : (root.isDark ? "#888888" : "#666666")
-        anchors.verticalCenter: parent.verticalCenter
-        opacity: isDirectory ? 1.0 : 0
-    }
+    RowLayout {
+        anchors.fill: parent
+        anchors.leftMargin: (root.depth * 16) + 4
+        spacing: 4
 
-    // --- LED Indicator ---
-    Rectangle {
-        id: stateLed
-        width: 6
-        height: 6
-        radius: 3
-        x: indicator.x + 12
-        anchors.verticalCenter: parent.verticalCenter
-        visible: root.isDirty // Add Git status logic here later
-        
-        color: root.isDirty ? "#ffaa00" : "transparent"
-        
-        // Glow effect
-        layer.enabled: root.isDirty
-        /*
-        layer.effect: DropShadow {
-            transparentBorder: true
-            color: stateLed.color
-            radius: 4
-            samples: 8
-        }*/
-    }
-
-    // --- Icon ---
-    Image {
-        id: fileIcon
-        source: {
-            if (!model || !model.filePath || model.filePath === null)
-                "qrc:/assets/file.png";
-            else if (model.filePath.endsWith(".cpp") || model.filePath.endsWith(".h"))
-                "qrc:/assets/cpp.png";
-            else if (model.filePath.endsWith(".png"))
-                "qrc:/assets/png.png";
-            else if (model.filePath.endsWith(".qml"))
-                "qrc:/assets/qml.png";
-            else if (isDirectory)
-                "qrc:/assets/folder.png";
-            else if (model.filePath.endsWith(".md"))
-                "qrc:/assets/md.png";
-            else if (model.filePath.endsWith(".txt"))
-                "qrc:/assets/txt.png";
-            else
-                "qrc:/assets/file.png";
+        // --- Indicator (Folder Arrow) ---
+        Label {
+            id: indicator
+            text: isDirectory ? (expanded ? "▼" : "▶") : ""
+            font.pixelSize: 10
+            color: root.highlight ? "#ffffff" : (root.isDark ? "#888888" : "#666666")
+            Layout.alignment: Qt.AlignVCenter
+            Layout.preferredWidth: 12
+            horizontalAlignment: Text.AlignHCenter
         }
-        sourceSize.height: 20
-        sourceSize.width: 20
-        x: indicator.x + 20
-        anchors.verticalCenter: parent.verticalCenter
-        opacity: root.enabled ? 1.0 : 0.5
-    }
 
-    // --- Label ---
-    Label {
-        text: model.display ? model.display : ""
-        x: fileIcon.x + 24
-        width: parent.width - x - 10
-        clip: true
-        elide: Text.ElideRight
-        font.pixelSize: 12
-        font.bold: root.highlight
-        color: root.highlight ? "#ffffff" : (root.isDark ? "#d0d0d0" : "#333333")
-        anchors.verticalCenter: parent.verticalCenter
+        // --- Status LED (Dirty Indicator) ---
+        Rectangle {
+            id: statusLed
+            width: 6
+            height: 6
+            radius: 3
+            visible: root.isDirty
+            color: root.isDirty ? "#ffaa00" : "transparent"
+            Layout.alignment: Qt.AlignVCenter
+        }
+
+        // --- Icon ---
+        FileIconProvider {
+            id: iconProvider
+            filePath: model ? model.filePath : ""
+            isDirectory: root.isDirectory
+        }
+
+        Image {
+            id: fileIcon
+            objectName: "fileIcon"
+            source: iconProvider.source
+            sourceSize.height: 20
+            sourceSize.width: 20
+            Layout.alignment: Qt.AlignVCenter
+            opacity: root.enabled ? 1.0 : 0.5
+        }
+
+        // --- Label ---
+        Label {
+            text: (model && model.display) ? model.display : ""
+            Layout.fillWidth: true
+            clip: true
+            elide: Text.ElideRight
+            font.pixelSize: 12
+            font.bold: root.highlight
+            color: root.highlight ? "#ffffff" : (root.isDark ? "#d0d0d0" : "#333333")
+            Layout.alignment: Qt.AlignVCenter
+        }
     }
 
     MouseArea {
@@ -158,10 +157,10 @@ Item {
         onClicked: (mouse) => {
             if (mouse.button === Qt.LeftButton) {
                 if (isDirectory) {
-                    fileSystemView.toggleExpanded(index);
+                    if (typeof fileSystemView !== 'undefined') fileSystemView.toggleExpanded(index);
                 } else {
                     documentManager.openFile(model.filePath, false);
-                    fileSystemView.selectedPath = model.filePath;
+                    if (typeof fileSystemView !== 'undefined') fileSystemView.selectedPath = model.filePath;
                 }
             }
         }
@@ -181,7 +180,7 @@ Item {
             enabled: !isDirectory
             onTriggered: {
                 documentManager.openFile(model.filePath, true);
-                fileSystemView.selectedPath = model.filePath;
+                if (typeof fileSystemView !== 'undefined') fileSystemView.selectedPath = model.filePath;
             }
         }
         MenuItem {
