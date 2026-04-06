@@ -54,6 +54,7 @@ ApplicationWindow {
             }
             TextField {
                 id: ollamaUrlField
+                objectName: "ollamaUrlField"
                 Layout.fillWidth: true
             }
 
@@ -63,11 +64,13 @@ ApplicationWindow {
             RowLayout {
                 ComboBox {
                     id: ollamaModelComboBox
+                    objectName: "ollamaModelComboBox"
                     model: appSettings.availableModels
                     Layout.fillWidth: true
                 }
                 Button {
                     text: "Refresh"
+                    objectName: "refreshButton"
                     onClicked: llm.listModels()
                 }
             }
@@ -103,149 +106,69 @@ ApplicationWindow {
             font.bold: true
         }
 
-        GridLayout {
-            columns: 3
-            columnSpacing: 10
+        ColumnLayout {
+            spacing: 5
+            Layout.fillWidth: true
 
-            Item {}
-
-            Label {
-                text: "Dark:"
-            }
-            Label {
-                text: "Light:"
+            RowLayout {
+                spacing: 10
+                Item { Layout.preferredWidth: 120 }
+                Label { text: "Dark:"; Layout.fillWidth: true; horizontalAlignment: Text.AlignHCenter }
+                Label { text: "Light:"; Layout.fillWidth: true; horizontalAlignment: Text.AlignHCenter }
             }
 
-            Label {
-                text: "Keyword Color:"
-            }
-            ColorButton {
-                color: appSettings.darkTheme.keywordColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.darkTheme.keywordColor);
-                }
-                function updateColor() {
-                    appSettings.darkTheme.keywordColor = colorDialog.selectedColor;
-                }
-            }
-            ColorButton {
-                color: appSettings.lightTheme.keywordColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.lightTheme.keywordColor);
-                }
-                function updateColor() {
-                    appSettings.lightTheme.keywordColor = colorDialog.selectedColor;
-                }
+            SettingColorRow {
+                labelText: "Keyword Color:"
+                colorDialog: colorDialog
+                darkColor: appSettings.darkTheme.keywordColor
+                lightColor: appSettings.lightTheme.keywordColor
+                onDarkColorSelected: (c) => appSettings.darkTheme.keywordColor = c
+                onLightColorSelected: (c) => appSettings.lightTheme.keywordColor = c
             }
 
-            Label {
-                text: "String Color:"
-            }
-            ColorButton {
-                color: appSettings.darkTheme.stringColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.darkTheme.stringColor);
-                }
-                function updateColor() {
-                    appSettings.darkTheme.stringColor = colorDialog.selectedColor;
-                }
-            }
-            ColorButton {
-                color: appSettings.lightTheme.stringColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.lightTheme.stringColor);
-                }
-                function updateColor() {
-                    appSettings.lightTheme.stringColor = colorDialog.selectedColor;
-                }
+            SettingColorRow {
+                labelText: "String Color:"
+                colorDialog: colorDialog
+                darkColor: appSettings.darkTheme.stringColor
+                lightColor: appSettings.lightTheme.stringColor
+                onDarkColorSelected: (c) => appSettings.darkTheme.stringColor = c
+                onLightColorSelected: (c) => appSettings.lightTheme.stringColor = c
             }
 
-            Label {
-                text: "Comment Color:"
-            }
-            ColorButton {
-                color: appSettings.darkTheme.commentColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.darkTheme.commentColor);
-                }
-                function updateColor() {
-                    appSettings.darkTheme.commentColor = colorDialog.selectedColor;
-                }
-            }
-            ColorButton {
-                color: appSettings.lightTheme.commentColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.lightTheme.commentColor);
-                }
-                function updateColor() {
-                    appSettings.lightTheme.commentColor = colorDialog.selectedColor;
-                }
+            SettingColorRow {
+                labelText: "Comment Color:"
+                colorDialog: colorDialog
+                darkColor: appSettings.darkTheme.commentColor
+                lightColor: appSettings.lightTheme.commentColor
+                onDarkColorSelected: (c) => appSettings.darkTheme.commentColor = c
+                onLightColorSelected: (c) => appSettings.lightTheme.commentColor = c
             }
 
-            Label {
-                text: "Type Color:"
-            }
-            ColorButton {
-                color: appSettings.darkTheme.typeColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.darkTheme.typeColor);
-                }
-                function updateColor() {
-                    appSettings.darkTheme.typeColor = colorDialog.selectedColor;
-                }
-            }
-            ColorButton {
-                color: appSettings.lightTheme.typeColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.lightTheme.typeColor);
-                }
-                function updateColor() {
-                    appSettings.lightTheme.typeColor = colorDialog.selectedColor;
-                }
+            SettingColorRow {
+                labelText: "Type Color:"
+                colorDialog: colorDialog
+                darkColor: appSettings.darkTheme.typeColor
+                lightColor: appSettings.lightTheme.typeColor
+                onDarkColorSelected: (c) => appSettings.darkTheme.typeColor = c
+                onLightColorSelected: (c) => appSettings.lightTheme.typeColor = c
             }
 
-            Label {
-                text: "Number Color:"
-            }
-            ColorButton {
-                color: appSettings.darkTheme.numberColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.darkTheme.numberColor);
-                }
-                function updateColor() {
-                    appSettings.darkTheme.numberColor = colorDialog.selectedColor;
-                }
-            }
-            ColorButton {
-                color: appSettings.lightTheme.numberColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.lightTheme.numberColor);
-                }
-                function updateColor() {
-                    appSettings.lightTheme.numberColor = colorDialog.selectedColor;
-                }
+            SettingColorRow {
+                labelText: "Number Color:"
+                colorDialog: colorDialog
+                darkColor: appSettings.darkTheme.numberColor
+                lightColor: appSettings.lightTheme.numberColor
+                onDarkColorSelected: (c) => appSettings.darkTheme.numberColor = c
+                onLightColorSelected: (c) => appSettings.lightTheme.numberColor = c
             }
 
-            Label {
-                text: "Preprocessor Color:"
-            }
-            ColorButton {
-                color: appSettings.darkTheme.preprocessorColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.darkTheme.preprocessorColor);
-                }
-                function updateColor() {
-                    appSettings.darkTheme.preprocessorColor = colorDialog.selectedColor;
-                }
-            }
-            ColorButton {
-                color: appSettings.lightTheme.preprocessorColor
-                onClicked: () => {
-                    colorDialog.openForColor(this, appSettings.lightTheme.preprocessorColor);
-                }
-                function updateColor() {
-                    appSettings.lightTheme.preprocessorColor = colorDialog.selectedColor;
-                }
+            SettingColorRow {
+                labelText: "Preprocessor Color:"
+                colorDialog: colorDialog
+                darkColor: appSettings.darkTheme.preprocessorColor
+                lightColor: appSettings.lightTheme.preprocessorColor
+                onDarkColorSelected: (c) => appSettings.darkTheme.preprocessorColor = c
+                onLightColorSelected: (c) => appSettings.lightTheme.preprocessorColor = c
             }
         }
 
@@ -259,6 +182,7 @@ ApplicationWindow {
 
             Button {
                 text: "Apply"
+                objectName: "applyButton"
                 onClicked: {
                     appSettings.ollamaUrl = ollamaUrlField.text;
                     appSettings.ollamaModel = ollamaModelComboBox.currentValue;

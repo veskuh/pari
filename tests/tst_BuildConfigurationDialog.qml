@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import QtQuick.Controls
 import "../qml"
 
 Item {
@@ -25,13 +26,8 @@ Item {
             dialog.buildCommand = ""
             dialog.runCommand = ""
             dialog.cleanCommand = ""
-            // Access text fields via id isn't possible directly from outside if they aren't property aliases,
-            // but we can test the behavior by setting the properties which initialize them or using findChild if it's an object.
-            // Actually, TextField `text` is bound to dialog.buildCommand initially, but setting text via QML test might be tricky without IDs exposed.
-            // Let's rely on finding children.
         }
 
-        // QML test helper to find a child by a specific type and optionally property
         function findChildByText(parent, text) {
             for (var i = 0; i < parent.children.length; ++i) {
                 var child = parent.children[i]
@@ -45,8 +41,11 @@ Item {
         }
 
         function findTextFields(parent, results) {
-            if (parent.toString().indexOf("QQuickTextField") !== -1 || parent.toString().indexOf("TextField") !== -1) {
+            // Check if it's actually a TextField by looking for common properties
+            if (parent.hasOwnProperty("placeholderText") && parent.hasOwnProperty("text")) {
+                // Ensure we don't count internal components of the TextField
                 results.push(parent)
+                return; // Don't look at children of TextField
             }
             for (var i = 0; i < parent.children.length; ++i) {
                 findTextFields(parent.children[i], results)
@@ -61,7 +60,7 @@ Item {
             var textFields = []
             findTextFields(dialog.contentItem, textFields)
 
-            // BuildConfigurationDialog has 3 text fields
+            // Should find exactly 3 TextFields: build, run, clean
             compare(textFields.length, 3, "Expected 3 text fields")
 
             var buildCommandField = textFields[0]
