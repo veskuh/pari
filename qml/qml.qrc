@@ -11,6 +11,7 @@
         <file>FileTreeDelegate.qml</file>
         <file>BuildConfigurationDialog.qml</file>
         <file>GitOutputWindow.qml</file>
+        <file>GitLogDelegate.qml</file>
         <file>CodeEditorPane.qml</file>
         <file>OutputPane.qml</file>
         <file>EmptyEditorState.qml</file>
