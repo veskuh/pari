@@ -19,6 +19,7 @@ Window {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10
+        spacing: 10
 
         Label {
             text: qsTr("Chat Session Log")
@@ -27,23 +28,45 @@ Window {
             color: palette.windowText
         }
 
-        ScrollView {
+        ListView {
+            id: chatLogView
+            objectName: "chatLogView"
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
+            model: chatLlm ? chatLlm.chatLog : []
+            spacing: 5
 
-            TextArea {
-                id: chatLogArea
-                readOnly: true
-                wrapMode: Text.WordWrap
-                text: chatLlm ? chatLlm.chatLog.join("\\n") : "No chat log available."
-
-                Connections {
-                    target: chatLlm
-                    function onChatLogChanged() {
-                        chatLogArea.text = chatLlm.chatLog.join("\\n");
-                    }
+            delegate: Rectangle {
+                width: chatLogView.width - 20
+                height: logText.implicitHeight + 10
+                color: {
+                    if (modelData.includes("USER:")) return palette.alternateBase
+                    if (modelData.includes("ERROR:")) return "#ffebee"
+                    return palette.base
                 }
+                radius: 4
+                border.color: palette.mid
+                border.width: 1
+
+                Text {
+                    id: logText
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    text: modelData
+                    wrapMode: Text.WordWrap
+                    color: modelData.includes("ERROR:") ? "red" : palette.text
+                    font.family: "Menlo"
+                    font.pixelSize: 12
+                }
+            }
+
+            ScrollBar.vertical: ScrollBar {
+                active: true
+            }
+
+            onCountChanged: {
+                chatLogView.positionViewAtEnd()
             }
         }
 
