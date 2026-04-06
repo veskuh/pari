@@ -14,6 +14,8 @@
         <file>GitLogDelegate.qml</file>
         <file>CodeEditorPane.qml</file>
         <file>OutputPane.qml</file>
+        <file>AiThinkingIndicator.qml</file>
+        <file>AiInputControl.qml</file>
         <file>EmptyEditorState.qml</file>
         <file>EmptyStateCard.qml</file>
         <file>CompletionPopup.qml</file>

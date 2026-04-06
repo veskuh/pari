@@ -561,8 +561,8 @@ ApplicationWindow {
             SplitView.preferredWidth: appWindow.width * 0.30
             SplitView.minimumWidth: 250
             currentEditor: appWindow.currentEditor
-        }
-    }
+            diffUtils: DiffUtils {}
+        }    }
 
     function isCppFile(filePath) {
         return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh");

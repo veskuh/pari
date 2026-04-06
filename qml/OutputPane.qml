@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import net.veskuh.pari 1.0
 
 ColumnLayout {
     id: aiPane
@@ -13,14 +12,12 @@ ColumnLayout {
     property alias text: aiOutputPane.text
     property alias diff: diffView.text
 
+    property var diffUtils: null
+
     readonly property bool isDark: appSettings.systemThemeIsDark
 
-    DiffUtils {
-        id: diffUtils
-    }
-
     function updateDiff(code) {
-        if (code.length > 0 && aiOutputPane.text.length > 0) {
+        if (diffUtils && code.length > 0 && aiOutputPane.text.length > 0) {
             aiPane.diff = diffUtils.createDiff(code, aiOutputPane.text);
         } else {
             aiPane.diff = "";
@@ -30,7 +27,7 @@ ColumnLayout {
     function sendPrompt() {
         aiOutputPane.text = "";
         diffView.text = "";
-        var prompt = aiMessagePane.text;
+        var prompt = aiInput.messageText;
         if (currentEditor && currentEditor.selection != "" ) {
             llm.sendPrompt("You are AI code assistant. \
 Follow the instructions by user. You will get a full file content and user selection at the code in the end of message.\
@@ -72,8 +69,9 @@ Follow the instructions by user. You will get a full file content and user selec
                 clip: true
                 TextArea {
                     id: aiOutputPane
+                    objectName: "aiOutputPane"
                     readOnly: true
-                    placeholderText: "✨ AI assistant output..."
+                    placeholderText: qsTr("✨ AI assistant output...")
                     wrapMode: Text.WordWrap
                     textFormat: Text.MarkdownText
                     font.family: appSettings.fontFamily
@@ -89,9 +87,10 @@ Follow the instructions by user. You will get a full file content and user selec
                 clip: true
                 TextArea {
                     id: diffView
+                    objectName: "diffView"
                     textFormat: Text.RichText
                     readOnly: true
-                    placeholderText: "Diff view..."
+                    placeholderText: qsTr("Diff view...")
                     wrapMode: Text.NoWrap
                     font.family: "Menlo"
                     font.pointSize: appSettings.fontSize - 1
@@ -102,161 +101,27 @@ Follow the instructions by user. You will get a full file content and user selec
             }
         }
 
-        // --- LCD Thinking Indicator ---
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: 10
+        AiThinkingIndicator {
+            id: thinkingIndicator
+            objectName: "thinkingIndicator"
             visible: aiPane.isThinking
-            radius: 4
-            z: 10
-            
-            color: isDark ? "#2a1a00" : "#fff9e6" // Warm LCD amber base
-            border.color: isDark ? "#ffaa00" : "#ffcc00"
-            border.width: 1
-
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 15
-                
-                RowLayout {
-                    spacing: 8
-                    Rectangle {
-                        width: 8; height: 8; radius: 4
-                        color: "#ffaa00"
-                        SequentialAnimation on opacity {
-                            loops: Animation.Infinite
-                            NumberAnimation { from: 1.0; to: 0.3; duration: 800 }
-                            NumberAnimation { from: 0.3; to: 1.0; duration: 800 }
-                        }
-                    }
-                    Label {
-                        text: "AI IS THINKING..."
-                        font.family: "Menlo"
-                        font.pixelSize: 12
-                        font.bold: true
-                        color: isDark ? "#ffaa00" : "#805500"
-                    }
-                }
-
-                ScrollView {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    clip: true
-                    Flickable {
-                        id: thinkingFlickable
-                        anchors.fill: parent
-                        contentHeight: thinkingOutput.height
-                        clip: true
-                        
-                        Text {
-                            id: thinkingOutput
-                            width: thinkingFlickable.width
-                            text: aiPane.thinkingText
-                            color: isDark ? "#ffaa00" : "#805500"
-                            wrapMode: Text.WordWrap
-                            font.family: "Menlo"
-                            font.pixelSize: 11
-                            
-                            onTextChanged: {
-                                if (contentHeight > thinkingFlickable.height) {
-                                    thinkingFlickable.contentY = contentHeight - thinkingFlickable.height;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Subtle scanline effect for LCD
-            Rectangle {
-                anchors.fill: parent
-                opacity: 0.05
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: "black" }
-                    GradientStop { position: 0.5; color: "transparent" }
-                    GradientStop { position: 1.0; color: "black" }
-                }
-            }
+            isDark: aiPane.isDark
+            thinkingText: aiPane.thinkingText
         }
     }
 
     // --- AI Input Area (The 'Machine' Control) ---
-    ColumnLayout {
+    AiInputControl {
+        id: aiInput
+        objectName: "aiInput"
         Layout.fillWidth: true
         Layout.margins: 10
-        spacing: 8
-
-        Label {
-            text: qsTr("AI PROMPT")
-            font.family: "Public Sans"
-            font.pixelSize: 10
-            font.bold: true
-            color: isDark ? "#888888" : "#646464"
-        }
-
-        // Recessed Input Well
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 100
-            radius: 4
-            color: isDark ? "#121212" : "#fdfdfd"
-            border.color: isDark ? "#1a1a1a" : "#bcbcbc"
-            border.width: 1
-
-            ScrollView {
-                anchors.fill: parent
-                anchors.margins: 4
-                TextArea {
-                    id: aiMessagePane
-                    placeholderText: "Command the machine..."
-                    wrapMode: Text.WordWrap
-                    font.family: "Menlo"
-                    font.pixelSize: 12
-                    color: isDark ? "#4aa9ff" : "#0051a6"
-                    background: null
-                    padding: 8
-                    
-                    onTextChanged: {
-                        if (text !== promptComboBox.prompt) {
-                            promptComboBox.currentIndex = 4;
-                        }
-                    }
-                }
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 10
-
-            ComboBox {
-                id: promptComboBox
-                Layout.fillWidth: true
-                property string prompt: "Add comments to the following code."
-                model: ["Comment code", "Explain code", "Refactor code", "Write tests", "Custom prompt"]
-                
-                onCurrentIndexChanged: {
-                    switch (currentIndex) {
-                    case 0: prompt = "Add comments to the following code. Do not add any other text, just the commented code."; break;
-                    case 1: prompt = "Explain the following code in a clear and concise way."; break;
-                    case 2: prompt = "Refactor the following code to improve its readability."; break;
-                    case 3: prompt = "Write unit tests for the following code using Qt Test."; break;
-                    }
-                    if (currentIndex < 4) aiMessagePane.text = prompt;
-                }
-            }
-
-            PariToolButton {
-                id: sendButton
-                text: "SEND"
-                iconSource: "qrc:/assets/send.png"
-                isPrimary: true
-                enabled: currentEditor && currentEditor.text !== "" && aiMessagePane.text !== "" && !llm.busy
-                onClicked: {
-                    aiPane.diffVisible = false;
-                    aiPane.sendPrompt();
-                }
-            }
+        isDark: aiPane.isDark
+        llmBusy: llm.busy
+        currentEditor: aiPane.currentEditor
+        onSendClicked: {
+            aiPane.diffVisible = false;
+            aiPane.sendPrompt();
         }
     }
 
