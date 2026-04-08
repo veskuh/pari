@@ -53,14 +53,21 @@ Item {
             editorPane.dirty = false
         }
 
+        SignalSpy {
+            id: spy
+            target: editorPane
+            signalName: "textChangedByUser"
+        }
+
         function test_text_entry() {
             var textArea = findChild(editorPane, "codeEditor")
             verify(textArea !== null)
             
+            spy.clear()
             textArea.forceActiveFocus()
             textArea.text = "Hello"
             keyClick(" ")
-            verify(editorPane.dirty)
+            verify(spy.count >= 1)
         }
 
         function test_line_numbers() {

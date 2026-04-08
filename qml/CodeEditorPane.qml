@@ -14,6 +14,8 @@ ColumnLayout {
     property bool isActivePane: false
     property string filePath: ""
 
+    signal textChangedByUser()
+
     // Theme helper - uses global appSettings or one from parent scope in tests
     readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
 
@@ -168,7 +170,7 @@ ColumnLayout {
 
                     onTextChanged: {
                         if (codeEditor.activeFocus && codeEditor.length !== previousLength) {
-                            dirty = true;
+                            root.textChangedByUser();
                         }
                         
                         if (typeof aiOutputPane !== 'undefined' && aiOutputPane) {

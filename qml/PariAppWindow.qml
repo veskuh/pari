@@ -200,7 +200,7 @@ ApplicationWindow {
                             }
                         }
 
-                        onDirtyChanged: {
+                        onTextChangedByUser: {
                             documentManager.markDirty(index);
                         }
                         Component.onCompleted: {
