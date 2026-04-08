@@ -1,4 +1,5 @@
 import QtQuick
+import "FileUtils.js" as FileUtils
 
 QtObject {
     id: editorLogic
@@ -51,7 +52,7 @@ QtObject {
         }
         previousLength = editor.length;
 
-        if (filePath && isCppFile(filePath) && lspClient) {
+        if (filePath && FileUtils.isCppFile(filePath) && lspClient) {
             lspClient.documentChanged(filePath, editor.text);
             var text = editor.getText(0, editor.cursorPosition);
             if (text.endsWith(".") || text.endsWith("->")) {
@@ -64,10 +65,5 @@ QtObject {
             }
         }
         handleAutoIndent();
-    }
-
-    function isCppFile(path) {
-        if (!path) return false;
-        return path.endsWith(".cpp") || path.endsWith(".h") || path.endsWith(".cxx") || path.endsWith(".hpp") || path.endsWith(".cc") || path.endsWith(".hh");
     }
 }

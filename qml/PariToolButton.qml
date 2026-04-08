@@ -8,6 +8,9 @@ AbstractButton {
     property alias iconSource: iconImage.source
     property bool isPrimary: false
     
+    text: action ? action.text : ""
+    iconSource: action ? action.iconSource : ""
+    
     readonly property bool isDark: appSettings.systemThemeIsDark
     
     implicitWidth: 56

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "FileUtils.js" as FileUtils
 
 ColumnLayout {
     id: root
@@ -31,8 +32,8 @@ ColumnLayout {
         id: editorLogic
         editor: codeEditor
         filePath: root.filePath
-        // use injected or global
-        lspClient: root.injectedLspClient || (typeof lspClient !== 'undefined' ? lspClient : null)
+        // use injected or global context property
+        lspClient: root.injectedLspClient !== null ? root.injectedLspClient : (typeof lspClient !== 'undefined' ? lspClient : null)
     }
 
     function saveCursorPosition() {
@@ -60,14 +61,10 @@ ColumnLayout {
         if (filePath) {
             if (filePath.endsWith(".qml")) {
                 if (typeof toolManager !== 'undefined') toolManager.indentQmlFile(filePath, codeEditor.text);
-            } else if (isCppFile(filePath)) {
+            } else if (FileUtils.isCppFile(filePath)) {
                 if (typeof lspClient !== 'undefined') lspClient.format(filePath, codeEditor.text);
             }
         }
-    }
-
-    function isCppFile(filePath) {
-        return filePath.endsWith(".cpp") || filePath.endsWith(".h") || filePath.endsWith(".cxx") || filePath.endsWith(".hpp") || filePath.endsWith(".cc") || filePath.endsWith(".hh");
     }
 
     function goToPosition(position) {
@@ -112,36 +109,19 @@ ColumnLayout {
         onCloseOverlay: close()
     }
 
-    // Recessed 'Paper' Well
-    Rectangle {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        Layout.margins: 4
-        radius: 2
+    PariPaperWell {
+        isDark: root.isDark 
         
         color: {
-            if (dirty) return isDark ? "#1e2538" : "#fffdf0";
-            return isDark ? "#1a1a1a" : "#ffffff";
+            if (dirty) return root.isDark ? "#1e2538" : "#fffdf0";
+            return root.isDark ? "#1a1a1a" : "#ffffff";
         }
         
         Behavior on color { ColorAnimation { duration: 300 } }
 
-        border.color: isDark ? "#121212" : "#bcbcbc"
-        border.width: 1
-
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: 1
-            color: "transparent"
-            border.color: isDark ? "#000000" : "black"
-            opacity: isDark ? 0.2 : 0.05
-            radius: 2
-        }
-
         ScrollView {
             id: codeEditorScrollView
             anchors.fill: parent
-            anchors.margins: 1
             clip: true
 
             Flickable {

@@ -14,7 +14,7 @@ ColumnLayout {
 
     property var diffUtils: null
 
-    readonly property bool isDark: appSettings.systemThemeIsDark
+    readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
 
     function updateDiff(code) {
         if (diffUtils && code.length > 0 && aiOutputPane.text.length > 0) {
@@ -37,67 +37,28 @@ Follow the instructions by user. You will get a full file content and user selec
         }
     }
 
-    // --- AI Output Area (The 'Paper' Well) ---
-    Rectangle {
+    PariPaperWell {
         id: aiOutputWell
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        Layout.margins: 4
-        radius: 2
-        color: isDark ? "#1a1a1a" : "#ffffff"
-        border.color: isDark ? "#121212" : "#bcbcbc"
-        border.width: 1
-
-        // Inset shadow for depth
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: 1
-            color: "transparent"
-            border.color: isDark ? "#000000" : "black"
-            opacity: isDark ? 0.2 : 0.05
-            radius: 2
-        }
-
+        isDark: aiPane.isDark
+        
         StackLayout {
             id: rightSideStackLayout
             anchors.fill: parent
-            anchors.margins: 2
             currentIndex: aiPane.diffVisible ? 1 : 0
 
-            // AI Output View
-            ScrollView {
-                clip: true
-                TextArea {
-                    id: aiOutputPane
-                    objectName: "aiOutputPane"
-                    readOnly: true
-                    placeholderText: qsTr("✨ AI assistant output...")
-                    wrapMode: Text.WordWrap
-                    textFormat: Text.MarkdownText
-                    font.family: appSettings.fontFamily
-                    font.pointSize: appSettings.fontSize - 1
-                    color: isDark ? "#d0d0d0" : "#1a1c1c"
-                    padding: 10
-                    background: null
-                }
+            PariReadOnlyTextArea {
+                id: aiOutputPane
+                objectName: "aiOutputPane"
+                placeholderText: qsTr("✨ AI assistant output...")
             }
 
-            // Diff View
-            ScrollView {
-                clip: true
-                TextArea {
-                    id: diffView
-                    objectName: "diffView"
-                    textFormat: Text.RichText
-                    readOnly: true
-                    placeholderText: qsTr("Diff view...")
-                    wrapMode: Text.NoWrap
-                    font.family: "Menlo"
-                    font.pointSize: appSettings.fontSize - 1
-                    color: isDark ? "#d0d0d0" : "#1a1c1c"
-                    padding: 10
-                    background: null
-                }
+            PariReadOnlyTextArea {
+                id: diffView
+                objectName: "diffView"
+                textFormat: Text.RichText
+                placeholderText: qsTr("Diff view...")
+                wrapMode: Text.NoWrap
+                textAreaFont.family: "Menlo"
             }
         }
 

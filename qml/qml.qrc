@@ -29,5 +29,13 @@
         <file>GoToLineDialog.qml</file>
         <file>FileInfoDialog.qml</file>
         <file>RenameDialog.qml</file>
+        <file>PariPaperWell.qml</file>
+        <file>PariReadOnlyTextArea.qml</file>
+        <file>AppLogic.qml</file>
+        <file>PariActions.qml</file>
+        <file>PariMenuBar.qml</file>
+        <file>PariDialogs.qml</file>
+        <file>FileUtils.js</file>
+        <file>FormattingUtils.js</file>
     </qresource>
 </RCC>
