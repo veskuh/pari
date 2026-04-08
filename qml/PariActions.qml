@@ -51,6 +51,7 @@ Item {
             if (stackLayout.currentIndex !== -1) {
                 var currentDoc = documentManager.documents[stackLayout.currentIndex];
                 if (currentDoc.isDirty) {
+                    dialogs.targetIndex = stackLayout.currentIndex;
                     dialogs.unsavedChangesDialog.open();
                 } else {
                     root.closeCurrentFile();

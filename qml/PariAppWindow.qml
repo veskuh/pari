@@ -318,15 +318,19 @@ ApplicationWindow {
                 appWindow.currentEditor.goToLine(lineNumber);
             }
         }
-        onDiscardChanges: closeCurrentFile()
-        onSaveAndClose: {
-            documentManager.saveFile(stackLayout.currentIndex, appWindow.currentEditor.text);
-            closeCurrentFile();
+        onDiscardChanges: (index) => closeCurrentFile(index)
+        onSaveAndClose: (index) => {
+            var doc = documentManager.documents[index];
+            if (doc) {
+                var text = (index === stackLayout.currentIndex) ? appWindow.currentEditor.text : doc.text;
+                documentManager.saveFile(index, text);
+            }
+            closeCurrentFile(index);
         }
 
         fileDialog.onAccepted: {
             if (dialogs.fileDialog.folder) {
-                const folderPath = dialogs.fileDialog.folder.folder.toString().replace("file://", "");
+                const folderPath = dialogs.fileDialog.folder.toString().replace("file://", "");
                 fileSystem.setRootPath(folderPath);
                 appSettings.addRecentFolder(folderPath);
             }
@@ -339,9 +343,10 @@ ApplicationWindow {
         }
     }
 
-    function closeCurrentFile() {
-        if (stackLayout.currentIndex !== -1) {
-            documentManager.closeFile(stackLayout.currentIndex);
+    function closeCurrentFile(index) {
+        var targetIndex = (typeof index !== 'undefined' && index !== -1) ? index : stackLayout.currentIndex;
+        if (targetIndex !== -1) {
+            documentManager.closeFile(targetIndex);
             // Synchronize selection with the new current document
             setEditorIndex(documentManager.currentIndex);
         }

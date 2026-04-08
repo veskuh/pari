@@ -17,11 +17,13 @@ Item {
     property alias fileDialog: fileDialog
     property alias saveAsDialog: saveAsDialog
 
+    property int targetIndex: -1
+
     // Signals for dialog actions
     signal saveConfiguration(string buildCommand, string runCommand, string cleanCommand)
     signal goToLine(int lineNumber)
-    signal discardChanges()
-    signal saveAndClose()
+    signal discardChanges(int index)
+    signal saveAndClose(int index)
 
     SettingsWindow {
         id: settingsDialog
@@ -47,17 +49,16 @@ Item {
         id: gitOutputWindow
     }
 
-    MessageDialog {
+    Platform.MessageDialog {
         id: unsavedChangesDialog
         title: qsTr("Unsaved Changes")
         text: qsTr("The current file has unsaved changes. Do you want to save them?")
-        buttons: MessageDialog.Save | MessageDialog.Discard | MessageDialog.Cancel
+        buttons: Platform.MessageDialog.Save | Platform.MessageDialog.Discard | Platform.MessageDialog.Cancel
         onAccepted: {
-            if (result === MessageDialog.Save) {
-                root.saveAndClose();
-            } else if (result === MessageDialog.Discard) {
-                root.discardChanges();
-            }
+            root.saveAndClose(root.targetIndex);
+        }
+        onDiscardClicked: {
+            root.discardChanges(root.targetIndex);
         }
     }
 

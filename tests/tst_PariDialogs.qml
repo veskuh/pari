@@ -37,11 +37,17 @@ Item {
             dialogs.goToLineDialog.goToLine(10)
             verify(goToLineCalled)
 
-            var discardCalled = false
-            dialogs.discardChanges.connect(function() { discardCalled = true })
-            // MessageDialog result is handled in onAccepted
-            // We can't easily trigger the MessageDialog buttons in a headless test without mocking MessageDialog itself,
-            // but we can check if the signals are connected.
+            var savedIndex = -1
+            dialogs.saveAndClose.connect(function(index) { savedIndex = index })
+            dialogs.targetIndex = 5
+            dialogs.unsavedChangesDialog.accepted()
+            compare(savedIndex, 5)
+
+            var discardedIndex = -1
+            dialogs.discardChanges.connect(function(index) { discardedIndex = index })
+            dialogs.targetIndex = 3
+            dialogs.unsavedChangesDialog.discardClicked()
+            compare(discardedIndex, 3)
         }
     }
 }
