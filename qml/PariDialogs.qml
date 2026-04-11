@@ -33,6 +33,7 @@ Item {
     }
     ChatLogWindow {
         id: chatLogWindow
+        chatLlm: (typeof llm !== 'undefined') ? llm : null
     }
 
     BuildConfigurationDialog {
