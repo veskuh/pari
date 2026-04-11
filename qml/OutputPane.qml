@@ -40,6 +40,7 @@ Follow the instructions by user. You will get a full file content and user selec
     PariPaperWell {
         id: aiOutputWell
         isDark: aiPane.isDark
+        Layout.fillHeight: true
         
         StackLayout {
             id: rightSideStackLayout

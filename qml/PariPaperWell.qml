@@ -8,7 +8,6 @@ Rectangle {
     property alias content: container.data
 
     Layout.fillWidth: true
-    Layout.fillHeight: true
     Layout.margins: 4
     radius: 2
     

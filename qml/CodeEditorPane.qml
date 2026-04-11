@@ -101,11 +101,6 @@ ColumnLayout {
         id: findOverlay
         z: 10
         width: parent.width
-        // palette and other properties will be found via appWindow or mock in parent scope
-        color: (typeof appWindow !== 'undefined' && appWindow && appWindow.palette) ? appWindow.palette.window : "lightgray"
-        borderColor: (typeof appWindow !== 'undefined' && appWindow && appWindow.palette) ? appWindow.palette.windowText : "black"
-        textColor: (typeof appWindow !== 'undefined' && appWindow && appWindow.palette) ? appWindow.palette.text : "black"
-        textBackgroundColor: (typeof appWindow !== 'undefined' && appWindow && appWindow.palette) ? appWindow.palette.base : "white"
         onFindNext: searchManager.findNext()
         onFindPrevious: searchManager.findPrevious()
         onCloseOverlay: close()
@@ -113,6 +108,7 @@ ColumnLayout {
 
     PariPaperWell {
         isDark: root.isDark 
+        Layout.fillHeight: true
         
         color: {
             if (dirty) return root.isDark ? "#1e2538" : "#fffdf0";
