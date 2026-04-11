@@ -369,8 +369,11 @@ ApplicationWindow {
         dialogs.gitOutputWindow.branchName = branch;
         if (command.startsWith("git log")) {
             dialogs.gitOutputWindow.gitLogModel = gitLogModel;
+            if (!output && gitLogModel.rowCount() === 0) {
+                 // gitLogModel might be empty
+            }
         } else {
-            dialogs.gitOutputWindow.output = output;
+            dialogs.gitOutputWindow.output = output !== "" ? output : qsTr("No output (empty diff or no changes).");
         }
         dialogs.gitOutputWindow.show();
     }

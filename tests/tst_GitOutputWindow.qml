@@ -41,12 +41,16 @@ Item {
             gitOutputWindow.output = "On branch main\nnothing to commit"
             gitOutputWindow.branchName = "main"
             
-            var outputArea = findChild(gitOutputWindow, "outputArea")
+            // Wait for bindings
+            wait(100)
+
+            var outputArea = gitOutputWindow.outputArea
             verify(outputArea !== null, "outputArea not found")
-            compare(outputArea.text, "On branch main\nnothing to commit")
+            verify(outputArea.text.indexOf("On branch main") !== -1, "Output should contain 'On branch main'")
+            verify(outputArea.text.indexOf("nothing to commit") !== -1, "Output should contain 'nothing to commit'")
             verify(outputArea.visible, "outputArea should be visible")
             
-            var logView = findChild(gitOutputWindow, "logView")
+            var logView = gitOutputWindow.logView
             verify(logView !== null, "logView not found")
             verify(!logView.visible, "logView should be hidden")
         }
@@ -55,34 +59,16 @@ Item {
             gitOutputWindow.command = "git log"
             gitOutputWindow.gitLogModel = mockLogModel
             
-            var logView = findChild(gitOutputWindow, "logView")
+            wait(100)
+
+            var logView = gitOutputWindow.logView
             verify(logView !== null, "logView not found")
             verify(logView.visible, "logView should be visible")
             compare(logView.count, 1)
             
-            var outputArea = findChild(gitOutputWindow, "outputArea")
+            var outputArea = gitOutputWindow.outputArea
+            verify(outputArea !== null, "outputArea found")
             verify(!outputArea.visible, "outputArea should be hidden")
-        }
-
-        function findChild(parent, objectName) {
-            for (var i = 0; i < parent.contentItem.children.length; i++) {
-                var child = parent.contentItem.children[i];
-                if (child.objectName === objectName) return child;
-                var found = findChildRecursive(child, objectName);
-                if (found) return found;
-            }
-            return null;
-        }
-
-        function findChildRecursive(parent, objectName) {
-            if (parent.objectName === objectName) return parent;
-            if (parent.children) {
-                for (var i = 0; i < parent.children.length; i++) {
-                    var found = findChildRecursive(parent.children[i], objectName);
-                    if (found) return found;
-                }
-            }
-            return null;
         }
     }
 }

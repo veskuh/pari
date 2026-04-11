@@ -21,6 +21,8 @@ void ToolManager::runCommand(const QString &command, const QString &workingDirec
     if (m_branchProcess->state() == QProcess::NotRunning && m_process->state() == QProcess::NotRunning) {
         m_command = command;
         m_workingDirectory = workingDirectory;
+        m_outputBuffer.clear();
+        m_errorBuffer.clear();
         m_branchProcess->setWorkingDirectory(workingDirectory);
         m_branchProcess->start("/bin/sh", QStringList() << "-c" << "git branch --show-current");
     }
@@ -66,24 +68,27 @@ void ToolManager::onBranchProcessFinished(int exitCode, QProcess::ExitStatus exi
 void ToolManager::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     if (m_command.startsWith("git log")) {
-        emit gitLogReady(m_gitLogOutput);
-        m_gitLogOutput.clear();
+        emit gitLogReady(m_outputBuffer);
+    } else {
+        if (!m_errorBuffer.isEmpty()) {
+            emit outputReady(m_command, m_errorBuffer, m_branchName);
+        } else {
+            emit outputReady(m_command, formatDiffOutput(m_outputBuffer), m_branchName);
+        }
     }
+    m_outputBuffer.clear();
+    m_errorBuffer.clear();
     qDebug() << "Tool command" << m_command << "finished with exit code" << exitCode << "and exit status" << exitStatus;
 }
 
 void ToolManager::onReadyReadStandardOutput()
 {
-    if (m_command.startsWith("git log")) {
-        m_gitLogOutput.append(m_process->readAllStandardOutput());
-    } else {
-        emit outputReady(m_command, formatDiffOutput(m_process->readAllStandardOutput()), m_branchName);
-    }
+    m_outputBuffer.append(m_process->readAllStandardOutput());
 }
 
 void ToolManager::onReadyReadStandardError()
 {
-    emit outputReady(m_command, m_process->readAllStandardError(), m_branchName);
+    m_errorBuffer.append(m_process->readAllStandardError());
 }
 
 void ToolManager::onQmlFormatProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -106,18 +111,26 @@ void ToolManager::onQmlFormatProcessFinished(int exitCode, QProcess::ExitStatus 
 
 QString ToolManager::formatDiffOutput(const QString &output) const
 {
-    QStringList lines = output.split('\n');
-    QString formattedOutput;
+    if (output.isEmpty()) return QString();
+
+    QString escaped = output;
+    escaped.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    
+    QStringList lines = escaped.split('\n');
+    QString formattedOutput = "<div style=\"white-space: pre; font-family: monospace;\">";
+    
     for (const QString &line : lines) {
-        QString escapedLine = line;
-        escapedLine.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
-        if (escapedLine.startsWith('+')) {
-            formattedOutput += "<font color=\"green\">" + escapedLine + "</font><br>";
-        } else if (escapedLine.startsWith('-')) {
-            formattedOutput += "<font color=\"red\">" + escapedLine + "</font><br>";
+        if (line.startsWith('+')) {
+            formattedOutput += "<font color=\"#228b22\">" + line + "</font><br>";
+        } else if (line.startsWith('-')) {
+            formattedOutput += "<font color=\"#cc0000\">" + line + "</font><br>";
+        } else if (line.startsWith('@')) {
+            formattedOutput += "<font color=\"#0000ff\">" + line + "</font><br>";
         } else {
-            formattedOutput += escapedLine + "<br>";
+            formattedOutput += line + "<br>";
         }
     }
+    
+    formattedOutput += "</div>";
     return formattedOutput;
 }
