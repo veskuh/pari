@@ -28,6 +28,12 @@ add_executable(tst_all
     test_documentmanager.h
     test_syntaxtheme.cpp
     test_syntaxtheme.h
+    test_cppsyntaxhighlighter.cpp
+    test_cppsyntaxhighlighter.h
+    test_textdocumentsearcher.cpp
+    test_textdocumentsearcher.h
+    mocktextdocument.cpp
+    mocktextdocument.h
     ../src/core/settings.cpp
     ../src/core/settings.h
     ../src/core/filesystem.cpp
@@ -73,6 +79,7 @@ target_link_libraries(tst_all PRIVATE
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick
+    Qt6::Gui
 )
 
 # UI Test Runner

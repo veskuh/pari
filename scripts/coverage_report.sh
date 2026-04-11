@@ -5,7 +5,9 @@
 
 BUILD_DIR="build"
 OUTPUT_DIR="coverage_html"
-INFO_FILE="coverage.info"
+INFO_ALL="coverage_all.info"
+INFO_UI="coverage_ui.info"
+INFO_COMBINED="coverage_combined.info"
 FILTERED_INFO="coverage_filtered.info"
 
 # lcov 2.0+ on macOS needs specific ignore flags for clang output
@@ -36,28 +38,30 @@ fi
 echo "Cleaning old profiling data..."
 find "$BUILD_DIR" -name "*.gcda" -delete 2>/dev/null
 
-# 3. Run Tests
-echo "Running test suite (tst_all)..."
+# 3. Run Unit Tests (tst_all)
+echo "Running unit test suite (tst_all)..."
 "./$BUILD_DIR/tests/tst_all" > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "Warning: Some tests failed. Coverage might be incomplete."
-fi
+lcov --capture --directory "$BUILD_DIR/tests/CMakeFiles/tst_all.dir" --output-file "$INFO_ALL" --quiet $LCOV_OPTS
 
-# 4. Capture Coverage with lcov
-# We point to the specific directory where tst_all compiled its sources
-echo "Capturing coverage data with lcov..."
-lcov --capture --directory "$BUILD_DIR/tests/CMakeFiles/tst_all.dir" --output-file "$INFO_FILE" --quiet $LCOV_OPTS
+# 4. Run UI Tests (tst_ui)
+echo "Running UI test suite (tst_ui)..."
+"./$BUILD_DIR/tests/tst_ui" -input "$(pwd)/tests" > /dev/null 2>&1
+lcov --capture --directory "$BUILD_DIR/tests/CMakeFiles/tst_ui.dir" --output-file "$INFO_UI" --quiet $LCOV_OPTS
 
-# 5. Filter to only include src/
+# 5. Merge Results
+echo "Combining coverage data..."
+lcov --add-tracefile "$INFO_ALL" --add-tracefile "$INFO_UI" --output-file "$INFO_COMBINED" --quiet $LCOV_OPTS
+
+# 6. Filter to only include src/
 echo "Filtering report to include only src/ files..."
-lcov --extract "$INFO_FILE" "$(pwd)/src/*" --output-file "$FILTERED_INFO" --quiet $LCOV_OPTS
+lcov --extract "$INFO_COMBINED" "$(pwd)/src/*" --output-file "$FILTERED_INFO" --quiet $LCOV_OPTS
 
-# 6. Generate HTML Report
+# 7. Generate HTML Report
 echo "Generating HTML report in $OUTPUT_DIR..."
 rm -rf "$OUTPUT_DIR"
 genhtml "$FILTERED_INFO" --output-directory "$OUTPUT_DIR" --quiet --title "Pari Code Coverage" $GENHTML_OPTS
 
-# 7. Generate Text Summary (for CLI convenience)
+# 8. Generate Text Summary
 echo ""
 echo "=================================================================="
 echo "                  CODE COVERAGE SUMMARY (CPPs)                    "
@@ -65,48 +69,23 @@ echo "=================================================================="
 printf "%-35s | %10s | %10s\n" "Source File" "Coverage" "Lines"
 echo "------------------------------------------------------------------"
 
-# Use gcov -p to get the summaries for the text report
-cd "$BUILD_DIR/tests"
-find . -name "*.gcno" -not -path "*_autogen*" -exec gcov -p {} + > "../../gcov_temp.log" 2>&1
-cd ../..
+lcov --summary "$FILTERED_INFO" $LCOV_OPTS | awk '
+/src\/.*\.cpp/ {
+    file=$1
+    split(file, f, "/")
+    filename = f[length(f)]
+    
+    # Simple parsing of lcov summary output for the file
+    # This might need adjustment depending on lcov version summary format
+}
+' 
 
-awk '
-/File .*src\/.*\.cpp/ {
-    file=$0
-    next
-}
-/Lines executed:/ {
-    if (file != "") {
-        split(file, f, "/")
-        filename = f[length(f)]
-        gsub(/'\''/, "", filename)
-        
-        split($0, a, ":")
-        split(a[2], b, "%")
-        percent = b[1]
-        total_lines = $4
-        
-        if (total_lines > 0) {
-            sum += percent * total_lines / 100
-            total += total_lines
-            printf "%-35s | %9s%% | %10d\n", filename, percent, total_lines
-        }
-        file = ""
-    }
-}
-END {
-    print "------------------------------------------------------------------"
-    if (total > 0) {
-        printf "OVERALL WEIGHTED AVERAGE: %.2f%%\n", (sum / total * 100)
-    }
-    print "=================================================================="
-}
-' "gcov_temp.log" | sort -rn -k 3
+# Use a simpler summary from lcov for the text report
+lcov --list "$FILTERED_INFO" $LCOV_OPTS | grep ".cpp" | sort -rn -k 2
 
-# 8. Cleanup
-rm -f "$INFO_FILE" "$FILTERED_INFO" "gcov_temp.log" "test.info"
+# 9. Cleanup
+rm -f "$INFO_ALL" "$INFO_UI" "$INFO_COMBINED" "$FILTERED_INFO"
 find . -name "*.gcov" -delete 2>/dev/null
 
 echo ""
 echo "HTML report ready at: $(pwd)/$OUTPUT_DIR/index.html"
-echo "You can open it with: open $OUTPUT_DIR/index.html"

@@ -14,6 +14,8 @@
 #include "test_gitmanager.h"
 #include "test_documentmanager.h"
 #include "test_syntaxtheme.h"
+#include "test_cppsyntaxhighlighter.h"
+#include "test_textdocumentsearcher.h"
 
 #include "textdocumentsearcher.h"
 #include "gitlogmodel.h"
@@ -74,6 +76,12 @@ int main(int argc, char *argv[])
 
     TestSyntaxTheme tc_theme;
     status |= QTest::qExec(&tc_theme, argc, argv);
+
+    TestCppSyntaxHighlighter tc_cpp_highlighter;
+    status |= QTest::qExec(&tc_cpp_highlighter, argc, argv);
+
+    TestTextDocumentSearcher tc_searcher;
+    status |= QTest::qExec(&tc_searcher, argc, argv);
 
     return status;
 }
