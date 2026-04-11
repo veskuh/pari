@@ -57,6 +57,7 @@ Item {
         }
 
         function test_save() {
+            dialog.open()
             var textFields = []
             findTextFields(dialog.contentItem, textFields)
 
@@ -71,7 +72,7 @@ Item {
             runCommandField.text = "./app"
             cleanCommandField.text = "make clean"
 
-            var saveBtn = findChildByText(dialog.contentItem, "Save")
+            var saveBtn = findChildByText(dialog.contentItem, "Save") || findChildByText(dialog.footer, "Save")
             verify(saveBtn !== null, "Save button should exist")
 
             mouseClick(saveBtn)
@@ -84,10 +85,10 @@ Item {
         }
 
         function test_cancel() {
-            var cancelBtn = findChildByText(dialog.contentItem, "Cancel")
+            var cancelBtn = findChildByText(dialog.contentItem, "Cancel") || findChildByText(dialog.footer, "Cancel")
             verify(cancelBtn !== null, "Cancel button should exist")
 
-            dialog.visible = true
+            dialog.open()
             mouseClick(cancelBtn)
 
             compare(saveSpy.count, 0)

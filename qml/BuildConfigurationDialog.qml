@@ -1,13 +1,16 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Window
 
-Window {
+Dialog {
     id: buildConfigurationWindow
-    title: "Configure Build"
+    title: qsTr("Configure Build")
+    modal: true
     width: 450
-    height: 250
+    height: 280
+    
+    // Theme helper
+    readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
 
     property string buildCommand: ""
     property string runCommand: ""
@@ -15,66 +18,106 @@ Window {
 
     signal saveConfiguration(string buildCommand, string runCommand, string cleanCommand)
 
-    Pane {
-        padding: 10
-        anchors.fill: parent
+    background: Rectangle {
+        color: isDark ? "#2d2d2d" : "#f5f5f5"
+        radius: 4
+        border.color: isDark ? "#444444" : "#cccccc"
+        border.width: 1
+    }
 
-        ColumnLayout {
-            spacing: 10
-            anchors.fill: parent
+    contentItem: ColumnLayout {
+        spacing: 10
+        
+        GridLayout {
+            columns: 2
+            rowSpacing: 10
+            columnSpacing: 10
+            Layout.fillWidth: true
 
             Label {
-                text: "Build Command:"
+                text: qsTr("Build:")
                 font.bold: true
+                color: isDark ? "#e0e0e0" : "#333333"
             }
             TextField {
                 id: buildCommandField
-                placeholderText: "e.g., make"
+                placeholderText: qsTr("cmake --build build")
                 text: buildConfigurationWindow.buildCommand
                 Layout.fillWidth: true
+                selectByMouse: true
+                color: isDark ? "#ffffff" : "#000000"
+                background: Rectangle {
+                    implicitHeight: 28
+                    color: isDark ? "#1e1e1e" : "#ffffff"
+                    border.color: parent.activeFocus ? (isDark ? "#4a9eff" : "#0078d7") : (isDark ? "#444444" : "#cccccc")
+                    radius: 2
+                }
             }
 
             Label {
-                text: "Run Command:"
+                text: qsTr("Run:")
                 font.bold: true
+                color: isDark ? "#e0e0e0" : "#333333"
             }
             TextField {
                 id: runCommandField
-                placeholderText: "e.g., ./my_app"
+                placeholderText: qsTr("./build/app")
                 text: buildConfigurationWindow.runCommand
                 Layout.fillWidth: true
+                selectByMouse: true
+                color: isDark ? "#ffffff" : "#000000"
+                background: Rectangle {
+                    implicitHeight: 28
+                    color: isDark ? "#1e1e1e" : "#ffffff"
+                    border.color: parent.activeFocus ? (isDark ? "#4a9eff" : "#0078d7") : (isDark ? "#444444" : "#cccccc")
+                    radius: 2
+                }
             }
 
             Label {
-                text: "Clean Command:"
+                text: qsTr("Clean:")
                 font.bold: true
+                color: isDark ? "#e0e0e0" : "#333333"
             }
             TextField {
                 id: cleanCommandField
-                placeholderText: "e.g., make clean"
+                placeholderText: qsTr("rm -rf build")
                 text: buildConfigurationWindow.cleanCommand
                 Layout.fillWidth: true
-            }
-
-            Item {
-                Layout.fillHeight: true
-            }
-
-            RowLayout {
-                Layout.alignment: Qt.AlignRight
-                Button {
-                    text: "Save"
-                    onClicked: {
-                        buildConfigurationWindow.saveConfiguration(buildCommandField.text, runCommandField.text, cleanCommandField.text);
-                        buildConfigurationWindow.close();
-                    }
-                    highlighted: true
-                }
-                Button {
-                    text: "Cancel"
-                    onClicked: buildConfigurationWindow.close()
+                selectByMouse: true
+                color: isDark ? "#ffffff" : "#000000"
+                background: Rectangle {
+                    implicitHeight: 28
+                    color: isDark ? "#1e1e1e" : "#ffffff"
+                    border.color: parent.activeFocus ? (isDark ? "#4a9eff" : "#0078d7") : (isDark ? "#444444" : "#cccccc")
+                    radius: 2
                 }
             }
         }
+
+        Item {
+            Layout.fillHeight: true
+        }
+    }
+
+    footer: DialogButtonBox {
+        alignment: Qt.AlignRight
+        background: Rectangle {
+            color: "transparent"
+        }
+        
+        Button {
+            text: qsTr("Save")
+            DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+            highlighted: true
+        }
+        Button {
+            text: qsTr("Cancel")
+            DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+        }
+    }
+
+    onAccepted: {
+        saveConfiguration(buildCommandField.text, runCommandField.text, cleanCommandField.text)
     }
 }

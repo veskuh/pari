@@ -20,6 +20,8 @@ ApplicationWindow {
     property var currentEditor: null
     property int goToLineNumber: -1
     property alias fileSystemView: fileSystemView
+    property alias aiOutputPane: aiOutputPane
+    property alias treeColumn: treeColumn
 
     minimumWidth: 800
     minimumHeight: 480
@@ -168,62 +170,72 @@ ApplicationWindow {
         }
 
         // Pane 2: Code Editor (55% width)
-        ColumnLayout {
+        SplitView {
             id: codeColumn
+            orientation: Qt.Vertical
             SplitView.preferredWidth: appWindow.width * 0.55
             SplitView.minimumWidth: 250
 
-            StackLayout {
-                id: stackLayout
-                width: parent.width
-                height: parent.height - tabBar.height
-                currentIndex: documentManager.currentIndex
-                visible: !outputPanel.expanded && documentManager.documents.length > 0
+            ColumnLayout {
+                spacing: 0
+                SplitView.fillWidth: true
+                SplitView.fillHeight: true
+                SplitView.minimumHeight: 100
 
-                Repeater {
-                    id: editorRepeater
-                    model: documentManager.documents
+                StackLayout {
+                    id: stackLayout
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    currentIndex: documentManager.currentIndex
+                    visible: documentManager.documents.length > 0
 
-                    CodeEditorPane {
-                        id: editor
-                        text: model.text
-                        dirty: model.isDirty
-                        filePath: model.filePath
-                        isActivePane: stackLayout.currentIndex === index
-                        textDocumentSearcher: TextDocumentSearcher {}
-                        injectedLspClient: lspClient
+                    Repeater {
+                        id: editorRepeater
+                        model: documentManager.documents
 
-                        onIsActivePaneChanged: {
-                            if (isActivePane) {
-                                tabBar.currentIndex = index
-                                appWindow.currentEditor = editor
+                        CodeEditorPane {
+                            id: editor
+                            text: model.text
+                            dirty: model.isDirty
+                            filePath: model.filePath
+                            isActivePane: stackLayout.currentIndex === index
+                            textDocumentSearcher: TextDocumentSearcher {}
+                            injectedLspClient: lspClient
+
+                            onIsActivePaneChanged: {
+                                if (isActivePane) {
+                                    tabBar.currentIndex = index
+                                    appWindow.currentEditor = editor
+                                }
                             }
-                        }
 
-                        onTextChangedByUser: {
-                            documentManager.markDirty(index);
-                        }
-                        Component.onCompleted: {
-                            syntaxHighlighterProvider.attachHighlighter(textDocument, model.filePath);
-                            if (FileUtils.isCppFile(model.filePath)) {
-                                lspClient.documentOpened(model.filePath, model.text);
+                            onTextChangedByUser: {
+                                documentManager.markDirty(index);
+                            }
+                            Component.onCompleted: {
+                                syntaxHighlighterProvider.attachHighlighter(textDocument, model.filePath);
+                                if (FileUtils.isCppFile(model.filePath)) {
+                                    lspClient.documentOpened(model.filePath, model.text);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            EmptyEditorState {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                visible: !outputPanel.expanded && documentManager.documents.length === 0
+                EmptyEditorState {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    visible: documentManager.documents.length === 0
+                }
             }
 
             PariPaperWell {
                 id: outputPanel
                 property bool expanded: false
-                Layout.fillWidth: true
-                Layout.preferredHeight: expanded ? codeColumn.height - 40 : 200
+                SplitView.fillWidth: true
+                SplitView.preferredHeight: expanded ? codeColumn.height - 40 : codeColumn.height * 0.20
+                SplitView.minimumHeight: expanded ? codeColumn.height - 40 : 100
+                SplitView.maximumHeight: expanded ? codeColumn.height - 40 : codeColumn.height * 0.5
                 visible: false
 
                 content: ColumnLayout {

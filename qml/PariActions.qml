@@ -77,7 +77,9 @@ Item {
             dialogs.buildConfigurationWindow.buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
             dialogs.buildConfigurationWindow.runCommand = appSettings.getRunCommand(fileSystem.rootPath);
             dialogs.buildConfigurationWindow.cleanCommand = appSettings.getCleanCommand(fileSystem.rootPath);
-            dialogs.buildConfigurationWindow.visible = true;
+            dialogs.buildConfigurationWindow.x = rootWindow.x + rootWindow.width / 2 - dialogs.buildConfigurationWindow.width / 2;
+            dialogs.buildConfigurationWindow.y = rootWindow.y + rootWindow.height / 2 - dialogs.buildConfigurationWindow.height / 2;
+            dialogs.buildConfigurationWindow.open();
         }
     }
 

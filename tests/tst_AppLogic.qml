@@ -29,8 +29,8 @@ Item {
         id: mockFileSystem
         property string rootPath: "/root"
         property var model: "fileModel"
-        // signals rootPathChanged, etc are auto-generated if we use property
-        // or we can just not declare them if we don't need to trigger them manually in the test
+        signal fileSaved(string filePath)
+        signal fileRenamed(string oldPath, string newPath)
     }
 
     QtObject {
