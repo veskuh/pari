@@ -14,6 +14,13 @@ class CppSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit CppSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    struct HighlightRange {
+        int start;
+        int length;
+        QTextCharFormat format;
+    };
+    QList<HighlightRange> highlightLine(const QString &text);
+
 protected:
     void highlightBlock(const QString &text) override;
 

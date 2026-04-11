@@ -1,4 +1,5 @@
 #include "cppsyntaxhighlighter.h"
+#include "syntaxtheme.h"
 
 CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
     : QSyntaxHighlighter(parent), m_theme(theme)
@@ -45,14 +46,16 @@ CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *t
     stringFormat.setForeground(m_theme->stringColor);
 }
 
-void CppSyntaxHighlighter::highlightBlock(const QString &text)
+QList<CppSyntaxHighlighter::HighlightRange> CppSyntaxHighlighter::highlightLine(const QString &text)
 {
+    QList<HighlightRange> ranges;
+
     // 1. Apply stateless rules (keywords, includes, macros)
     for (const HighlightingRule &rule : highlightingRules) {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
             QRegularExpressionMatch match = matchIterator.next();
-            setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+            ranges.append({(int)match.capturedStart(), (int)match.capturedLength(), rule.format});
         }
     }
 
@@ -61,7 +64,7 @@ void CppSyntaxHighlighter::highlightBlock(const QString &text)
     QRegularExpressionMatchIterator stringIterator = stringExpression.globalMatch(text);
     while (stringIterator.hasNext()) {
         QRegularExpressionMatch match = stringIterator.next();
-        setFormat(match.capturedStart(), match.capturedLength(), stringFormat);
+        ranges.append({(int)match.capturedStart(), (int)match.capturedLength(), stringFormat});
     }
 
     // 3. Handle single-line comments
@@ -69,10 +72,32 @@ void CppSyntaxHighlighter::highlightBlock(const QString &text)
     QRegularExpressionMatchIterator slcIterator = singleLineCommentExpression.globalMatch(text);
     while (slcIterator.hasNext()) {
         QRegularExpressionMatch match = slcIterator.next();
-        setFormat(match.capturedStart(), match.capturedLength(), singleLineCommentFormat);
+        ranges.append({(int)match.capturedStart(), (int)match.capturedLength(), singleLineCommentFormat});
     }
 
-    // 4. Handle multi-line comments
+    // 4. Handle multi-line comments (simple version for highlightLine, doesn't handle state)
+    QRegularExpression mlcStart(QStringLiteral("/\\*"));
+    QRegularExpression mlcEnd(QStringLiteral("\\*/"));
+    QRegularExpressionMatchIterator mlcIterator = mlcStart.globalMatch(text);
+    while (mlcIterator.hasNext()) {
+        QRegularExpressionMatch match = mlcIterator.next();
+        int end = text.indexOf(mlcEnd, match.capturedStart() + 2);
+        int len = (end == -1) ? text.length() - match.capturedStart() : end - match.capturedStart() + 2;
+        ranges.append({(int)match.capturedStart(), len, multiLineCommentFormat});
+    }
+
+    return ranges;
+}
+
+void CppSyntaxHighlighter::highlightBlock(const QString &text)
+{
+    // Apply basic rules via highlightLine
+    QList<HighlightRange> ranges = highlightLine(text);
+    for (const auto &range : ranges) {
+        setFormat(range.start, range.length, range.format);
+    }
+
+    // Multi-line comment state handling (needs to remain in highlightBlock for QSyntaxHighlighter)
     setCurrentBlockState(Normal);
     int startIndex = 0;
     if (previousBlockState() != InComment) {
@@ -80,7 +105,6 @@ void CppSyntaxHighlighter::highlightBlock(const QString &text)
     }
 
     while (startIndex >= 0) {
-        QRegularExpressionMatch endMatch;
         int endIndex = text.indexOf(QRegularExpression("\\*/"), startIndex + 2);
         int commentLength;
         if (endIndex == -1) {

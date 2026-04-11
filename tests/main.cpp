@@ -1,5 +1,6 @@
 #include <QtTest>
 #include <QQmlEngine>
+#include <QCoreApplication>
 #include "test_settings.h"
 #include "test_filesystem.h"
 #include "test_markdownformatter.h"
