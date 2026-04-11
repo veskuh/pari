@@ -30,8 +30,9 @@ void TestToolManager::testRunCommand()
     QCOMPARE(spy.count(), 1);
     QList<QVariant> arguments = spy.takeFirst();
     QCOMPARE(arguments.at(0).toString(), "echo hello");
-    // toolmanager adds <br> for every line, echo hello outputs "hello\n"
-    QCOMPARE(arguments.at(1).toString(), "hello<br><br>");
+    // toolmanager adds <br> for every line, and wraps in div. echo hello outputs "hello\n"
+    QString expected = "<div style=\"white-space: pre; font-family: monospace;\">hello<br><br></div>";
+    QCOMPARE(arguments.at(1).toString(), expected);
 }
 
 void TestToolManager::testFormatDiffOutput()
@@ -63,9 +64,10 @@ void TestToolManager::testFormatDiffOutput()
     QList<QVariant> arguments = spy.first();
     QString output = arguments.at(1).toString();
     
-    QVERIFY(output.contains("<font color=\"green\">+added</font><br>"));
-    QVERIFY(output.contains("<font color=\"red\">-removed</font><br>"));
+    QVERIFY(output.contains("<font color=\"#228b22\">+added</font><br>"));
+    QVERIFY(output.contains("<font color=\"#cc0000\">-removed</font><br>"));
     QVERIFY(output.contains("normal<br>"));
+    QVERIFY(output.startsWith("<div"));
 }
 
 void TestToolManager::testIndentQmlFile()
