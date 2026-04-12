@@ -67,6 +67,15 @@ MenuBar {
             checkable: true
             checked: actions.showAiPaneAction.checked
         }
+
+        MenuSeparator {}
+
+        MenuItem {
+            text: qsTr("Show Hidden Files")
+            action: actions.toggleHiddenFilesAction
+            checkable: true
+            checked: actions.toggleHiddenFilesAction.checked
+        }
     }
     Menu {
         title: qsTr("Build")

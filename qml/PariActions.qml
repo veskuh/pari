@@ -146,6 +146,18 @@ Item {
         }
     }
 
+    Action {
+        id: toggleHiddenFilesAction
+        text: qsTr("Show Hidden Files")
+        checkable: true
+        checked: (typeof appSettings !== 'undefined') ? appSettings.showHiddenFiles : false
+        onTriggered: {
+            if (typeof appSettings !== 'undefined') {
+                appSettings.showHiddenFiles = checked;
+            }
+        }
+    }
+
     // Export actions to be used by other components
     property alias openAction: openAction
     property alias saveAction: saveAction
@@ -159,4 +171,5 @@ Item {
     property alias goToAction: goToAction
     property alias showAiPaneAction: showAiPaneAction
     property alias showTreePaneAction: showTreePaneAction
+    property alias toggleHiddenFilesAction: toggleHiddenFilesAction
 }

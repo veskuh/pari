@@ -15,6 +15,7 @@ class FileSystem : public QObject
     Q_PROPERTY(QString currentFilePath READ currentFilePath WRITE setCurrentFilePath NOTIFY currentFilePathChanged)
     Q_PROPERTY(QString homePath READ homePath CONSTANT)
     Q_PROPERTY(bool isGitRepository READ isGitRepository NOTIFY isGitRepositoryChanged)
+    Q_PROPERTY(bool showHiddenFiles READ showHiddenFiles WRITE setShowHiddenFiles NOTIFY showHiddenFilesChanged)
 
 public:
     explicit FileSystem(QObject *parent = nullptr);
@@ -29,6 +30,8 @@ public:
     void setCurrentFilePath(const QString &path);
     QString homePath() const;
     bool isGitRepository() const;
+    bool showHiddenFiles() const;
+    void setShowHiddenFiles(bool show);
 
 public slots:
     void loadFileContent(const QString &filePath);
@@ -52,6 +55,7 @@ signals:
     void isGitRepositoryChanged();
     void projectOpened(const QString &path);
     void fileRenamed(const QString &oldPath, const QString &newPath);
+    void showHiddenFilesChanged();
 
 private:
     QFileSystemModel* m_model;
@@ -61,6 +65,7 @@ private:
     QString m_currentFilePath;
     QString m_homePath;
     bool m_isGitRepository;
+    bool m_showHiddenFiles;
 };
 
 #endif // FILESYSTEM_H

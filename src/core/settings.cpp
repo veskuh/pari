@@ -51,6 +51,7 @@ void Settings::loadSettings()
     m_fontFamily = m_qsettings.value("editor/fontFamily", "monospace").toString();
     m_fontSize = m_qsettings.value("editor/fontSize", 12).toInt();
     m_recentFolders = m_qsettings.value("recentFolders").toStringList();
+    m_showHiddenFiles = m_qsettings.value("editor/showHiddenFiles", false).toBool();
 
     m_lightTheme->keywordColor = m_qsettings.value("theme/light/keywordColor", QColor("#0000FF")).value<QColor>();
     m_lightTheme->stringColor = m_qsettings.value("theme/light/stringColor", QColor("#A31515")).value<QColor>();
@@ -206,6 +207,20 @@ void Settings::setSystemTheme(bool isDark)
     if (m_systemThemeIsDark != isDark) {
         m_systemThemeIsDark = isDark;
         emit systemThemeIsDarkChanged();
+    }
+}
+
+bool Settings::showHiddenFiles() const
+{
+    return m_showHiddenFiles;
+}
+
+void Settings::setShowHiddenFiles(bool show)
+{
+    if (m_showHiddenFiles != show) {
+        m_showHiddenFiles = show;
+        m_qsettings.setValue("editor/showHiddenFiles", m_showHiddenFiles);
+        emit showHiddenFilesChanged();
     }
 }
 

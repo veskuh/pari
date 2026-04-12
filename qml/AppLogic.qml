@@ -15,6 +15,18 @@ Item {
 
     Component.onCompleted: {
         console.log("AppLogic completed. fileSystem available:", typeof fileSystem !== 'undefined');
+        if (typeof fileSystem !== 'undefined' && typeof appSettings !== 'undefined') {
+            fileSystem.showHiddenFiles = appSettings.showHiddenFiles;
+        }
+    }
+
+    Connections {
+        target: (typeof appSettings !== 'undefined') ? appSettings : null
+        function onShowHiddenFilesChanged() {
+            if (typeof fileSystem !== 'undefined') {
+                fileSystem.showHiddenFiles = appSettings.showHiddenFiles;
+            }
+        }
     }
 
     Connections {

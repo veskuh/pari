@@ -20,8 +20,10 @@ FileSystem::FileSystem(QObject *parent)
     , m_currentRootIndex()
     , m_currentFilePath("")
     , m_isGitRepository(false)
+    , m_showHiddenFiles(false)
 {
     m_model = new QFileSystemModel(this);
+    m_model->setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
     m_model->setRootPath(m_rootPath);
 
     QSettings settings("Pari", "Pari");
@@ -141,6 +143,24 @@ QString FileSystem::homePath() const
 bool FileSystem::isGitRepository() const
 {
     return m_isGitRepository;
+}
+
+bool FileSystem::showHiddenFiles() const
+{
+    return m_showHiddenFiles;
+}
+
+void FileSystem::setShowHiddenFiles(bool show)
+{
+    if (m_showHiddenFiles != show) {
+        m_showHiddenFiles = show;
+        QDir::Filters filter = QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot;
+        if (m_showHiddenFiles) {
+            filter |= QDir::Hidden;
+        }
+        m_model->setFilter(filter);
+        emit showHiddenFilesChanged();
+    }
 }
 
 bool FileSystem::fileExistsInProject(const QString &filePath)
