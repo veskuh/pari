@@ -9,13 +9,17 @@ INFO_ALL="coverage_all.info"
 INFO_UI="coverage_ui.info"
 INFO_COMBINED="coverage_combined.info"
 FILTERED_INFO="coverage_filtered.info"
+LOG_FILE="coverage_run.log"
 
-# lcov 2.0+ on macOS needs specific ignore flags for clang output
-LCOV_OPTS="--ignore-errors unsupported,empty,inconsistent,format,unused"
+# lcov options: ignore common mismatched/missing data errors in clang/macOS
+LCOV_OPTS="--ignore-errors unsupported,empty,inconsistent,format,unused,missing"
 GENHTML_OPTS="--ignore-errors source,category"
 
 # Navigate to project root (assuming script is in scripts/)
 cd "$(dirname "$0")/.."
+
+# Clear log file
+> "$LOG_FILE"
 
 # 1. Check Requirements
 if [ ! -d "$BUILD_DIR" ]; then
@@ -37,55 +41,72 @@ fi
 # 2. Clean old data
 echo "Cleaning old profiling data..."
 find "$BUILD_DIR" -name "*.gcda" -delete 2>/dev/null
+rm -f "$INFO_ALL" "$INFO_UI" "$INFO_COMBINED" "$FILTERED_INFO"
 
 # 3. Run Unit Tests (tst_all)
 echo "Running unit test suite (tst_all)..."
-"./$BUILD_DIR/tests/tst_all" > /dev/null 2>&1
-lcov --capture --directory "$BUILD_DIR/tests/CMakeFiles/tst_all.dir" --output-file "$INFO_ALL" --quiet $LCOV_OPTS
+"./$BUILD_DIR/tests/tst_all" >> "$LOG_FILE" 2>&1
+if [ $? -ne 0 ]; then echo "Warning: Unit tests had some failures."; fi
+
+lcov --capture --directory "$BUILD_DIR" --output-file "$INFO_ALL" --quiet $LCOV_OPTS 2>> "$LOG_FILE"
 
 # 4. Run UI Tests (tst_ui)
 echo "Running UI test suite (tst_ui)..."
-"./$BUILD_DIR/tests/tst_ui" -input "$(pwd)/tests" > /dev/null 2>&1
-lcov --capture --directory "$BUILD_DIR/tests/CMakeFiles/tst_ui.dir" --output-file "$INFO_UI" --quiet $LCOV_OPTS
+"./$BUILD_DIR/tests/tst_ui" -input "$(pwd)/tests" >> "$LOG_FILE" 2>&1
+if [ $? -ne 0 ]; then echo "Warning: UI tests had some failures."; fi
 
-# 5. Merge Results
-echo "Combining coverage data..."
-lcov --add-tracefile "$INFO_ALL" --add-tracefile "$INFO_UI" --output-file "$INFO_COMBINED" --quiet $LCOV_OPTS
+lcov --capture --directory "$BUILD_DIR" --output-file "$INFO_UI" --quiet $LCOV_OPTS 2>> "$LOG_FILE"
 
-# 6. Filter to only include src/
-echo "Filtering report to include only src/ files..."
-lcov --extract "$INFO_COMBINED" "$(pwd)/src/*" --output-file "$FILTERED_INFO" --quiet $LCOV_OPTS
+# 5. Combine and Filter Results
+echo "Processing coverage data..."
 
-# 7. Generate HTML Report
-echo "Generating HTML report in $OUTPUT_DIR..."
-rm -rf "$OUTPUT_DIR"
-genhtml "$FILTERED_INFO" --output-directory "$OUTPUT_DIR" --quiet --title "Pari Code Coverage" $GENHTML_OPTS
+# Initialize tracefile list
+TRACEFILES=""
+[ -f "$INFO_ALL" ] && TRACEFILES="$TRACEFILES --add-tracefile $INFO_ALL"
+[ -f "$INFO_UI" ] && TRACEFILES="$TRACEFILES --add-tracefile $INFO_UI"
 
-# 8. Generate Text Summary
-echo ""
-echo "=================================================================="
-echo "                  CODE COVERAGE SUMMARY (CPPs)                    "
-echo "=================================================================="
-printf "%-35s | %10s | %10s\n" "Source File" "Coverage" "Lines"
-echo "------------------------------------------------------------------"
+if [ -z "$TRACEFILES" ]; then
+    echo "Error: No coverage data was captured. Check if tests actually ran and generated .gcda files."
+    exit 1
+fi
 
-lcov --summary "$FILTERED_INFO" $LCOV_OPTS | awk '
-/src\/.*\.cpp/ {
-    file=$1
-    split(file, f, "/")
-    filename = f[length(f)]
+# Combine
+lcov $TRACEFILES --output-file "$INFO_COMBINED" --quiet $LCOV_OPTS 2>> "$LOG_FILE"
+
+# Filter to only include src/ files
+if [ -f "$INFO_COMBINED" ]; then
+    echo "Filtering report to include only src/ files..."
+    lcov --extract "$INFO_COMBINED" "$(pwd)/src/*" --output-file "$FILTERED_INFO" --quiet $LCOV_OPTS 2>> "$LOG_FILE"
+else
+    echo "Error: Failed to create $INFO_COMBINED"
+    exit 1
+fi
+
+# 6. Generate HTML Report
+if [ -f "$FILTERED_INFO" ]; then
+    echo "Generating HTML report in $OUTPUT_DIR..."
+    rm -rf "$OUTPUT_DIR"
+    genhtml "$FILTERED_INFO" --output-directory "$OUTPUT_DIR" --quiet --title "Pari Code Coverage" $GENHTML_OPTS 2>> "$LOG_FILE"
     
-    # Simple parsing of lcov summary output for the file
-    # This might need adjustment depending on lcov version summary format
-}
-' 
+    echo ""
+    echo "=================================================================="
+    echo "                  CODE COVERAGE SUMMARY                           "
+    echo "=================================================================="
+    lcov --list "$FILTERED_INFO" $LCOV_OPTS 2>> "$LOG_FILE" | grep -E "\.cpp|\.h" | sort -rn -k 2
+else
+    echo "Error: Failed to create $FILTERED_INFO"
+    exit 1
+fi
 
-# Use a simpler summary from lcov for the text report
-lcov --list "$FILTERED_INFO" $LCOV_OPTS | grep ".cpp" | sort -rn -k 2
+# 7. Count Warnings
+# Count lines containing "WARNING" or "QWARN" or "Error:" (that didn't stop execution)
+WARNING_COUNT=$(grep -Ei "warning|qwarn" "$LOG_FILE" | wc -l | xargs)
 
-# 9. Cleanup
+# 8. Cleanup
 rm -f "$INFO_ALL" "$INFO_UI" "$INFO_COMBINED" "$FILTERED_INFO"
 find . -name "*.gcov" -delete 2>/dev/null
 
 echo ""
+echo "Total Warnings/Issues detected during run: $WARNING_COUNT"
 echo "HTML report ready at: $(pwd)/$OUTPUT_DIR/index.html"
+echo "Log file available at: $(pwd)/$LOG_FILE"
