@@ -21,6 +21,8 @@ class Settings : public QObject
     Q_PROPERTY(QStringList recentFolders READ recentFolders WRITE setRecentFolders NOTIFY recentFoldersChanged)
     Q_PROPERTY(bool systemThemeIsDark READ systemThemeIsDark NOTIFY systemThemeIsDarkChanged)
     Q_PROPERTY(bool showHiddenFiles READ showHiddenFiles WRITE setShowHiddenFiles NOTIFY showHiddenFilesChanged)
+    Q_PROPERTY(bool indentWithSpaces READ indentWithSpaces WRITE setIndentWithSpaces NOTIFY indentWithSpacesChanged)
+    Q_PROPERTY(int indentSize READ indentSize WRITE setIndentSize NOTIFY indentSizeChanged)
     Q_PROPERTY(SyntaxTheme* lightTheme READ lightTheme NOTIFY lightThemeChanged)
     Q_PROPERTY(SyntaxTheme* darkTheme READ darkTheme NOTIFY darkThemeChanged)
 
@@ -59,6 +61,12 @@ public:
     bool showHiddenFiles() const;
     void setShowHiddenFiles(bool show);
 
+    bool indentWithSpaces() const;
+    void setIndentWithSpaces(bool withSpaces);
+
+    int indentSize() const;
+    void setIndentSize(int size);
+
     SyntaxTheme* lightTheme() const;
     SyntaxTheme* darkTheme() const;
 
@@ -71,6 +79,8 @@ signals:
     void recentFoldersChanged();
     void systemThemeIsDarkChanged();
     void showHiddenFilesChanged();
+    void indentWithSpacesChanged();
+    void indentSizeChanged();
     void lightThemeChanged();
     void darkThemeChanged();
 
@@ -79,6 +89,8 @@ private:
     void setRecentFolders(const QStringList &recentFolders);
     bool m_systemThemeIsDark;
     bool m_showHiddenFiles;
+    bool m_indentWithSpaces;
+    int m_indentSize;
     bool querySystemTheme() const;
 
     QString m_ollamaUrl;

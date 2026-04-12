@@ -15,6 +15,8 @@ Item {
         property var availableModels: ["test-model", "other-model"]
         property string fontFamily: "Courier"
         property int fontSize: 14
+        property bool indentWithSpaces: true
+        property int indentSize: 4
         
         property var darkTheme: QtObject {
             property color keywordColor: "#ff0000"

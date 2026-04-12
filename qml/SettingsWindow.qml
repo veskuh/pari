@@ -103,6 +103,27 @@ ApplicationWindow {
                     onClicked: fontDialog.open()
                 }
             }
+
+            Label {
+                text: "Indentation:"
+            }
+            RowLayout {
+                spacing: 20
+                CheckBox {
+                    id: indentWithSpacesCheckBox
+                    text: "Use Spaces"
+                    checked: _appSettings ? _appSettings.indentWithSpaces : true
+                }
+                RowLayout {
+                    Label { text: "Size:" }
+                    SpinBox {
+                        id: indentSizeSpinBox
+                        from: 1
+                        to: 8
+                        value: _appSettings ? _appSettings.indentSize : 4
+                    }
+                }
+            }
         }
 
         Label {
@@ -201,6 +222,8 @@ ApplicationWindow {
                         _appSettings.ollamaModel = ollamaModelComboBox.currentValue;
                         _appSettings.fontFamily = fontDialog.selectedFont.family;
                         _appSettings.fontSize = fontDialog.selectedFont.pointSize;
+                        _appSettings.indentWithSpaces = indentWithSpacesCheckBox.checked;
+                        _appSettings.indentSize = indentSizeSpinBox.value;
                         _appSettings.saveColors();
                     }
                     settingsWindow.close();

@@ -52,6 +52,8 @@ void Settings::loadSettings()
     m_fontSize = m_qsettings.value("editor/fontSize", 12).toInt();
     m_recentFolders = m_qsettings.value("recentFolders").toStringList();
     m_showHiddenFiles = m_qsettings.value("editor/showHiddenFiles", false).toBool();
+    m_indentWithSpaces = m_qsettings.value("editor/indentWithSpaces", true).toBool();
+    m_indentSize = m_qsettings.value("editor/indentSize", 4).toInt();
 
     m_lightTheme->keywordColor = m_qsettings.value("theme/light/keywordColor", QColor("#0000FF")).value<QColor>();
     m_lightTheme->stringColor = m_qsettings.value("theme/light/stringColor", QColor("#A31515")).value<QColor>();
@@ -221,6 +223,34 @@ void Settings::setShowHiddenFiles(bool show)
         m_showHiddenFiles = show;
         m_qsettings.setValue("editor/showHiddenFiles", m_showHiddenFiles);
         emit showHiddenFilesChanged();
+    }
+}
+
+bool Settings::indentWithSpaces() const
+{
+    return m_indentWithSpaces;
+}
+
+void Settings::setIndentWithSpaces(bool withSpaces)
+{
+    if (m_indentWithSpaces != withSpaces) {
+        m_indentWithSpaces = withSpaces;
+        m_qsettings.setValue("editor/indentWithSpaces", m_indentWithSpaces);
+        emit indentWithSpacesChanged();
+    }
+}
+
+int Settings::indentSize() const
+{
+    return m_indentSize;
+}
+
+void Settings::setIndentSize(int size)
+{
+    if (m_indentSize != size) {
+        m_indentSize = size;
+        m_qsettings.setValue("editor/indentSize", m_indentSize);
+        emit indentSizeChanged();
     }
 }
 

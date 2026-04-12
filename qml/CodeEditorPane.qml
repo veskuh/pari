@@ -161,7 +161,7 @@ ColumnLayout {
                     wrapMode: Text.WordWrap
                     font.family: (typeof appSettings !== 'undefined' && appSettings && appSettings.fontFamily) ? appSettings.fontFamily : "Menlo"
                     font.pointSize: (typeof appSettings !== 'undefined' && appSettings && appSettings.fontSize) ? appSettings.fontSize : 12
-                    tabStopDistance: 4 * textMetrics.advanceWidth
+                    tabStopDistance: (typeof appSettings !== 'undefined' && appSettings) ? appSettings.indentSize * textMetrics.advanceWidth : 4 * textMetrics.advanceWidth
                     color: isDark ? "#d0d0d0" : "#1a1c1c"
                     selectionColor: isDark ? "#00458d" : "#0051a6"
                     selectedTextColor: "#ffffff"
@@ -170,6 +170,21 @@ ColumnLayout {
                     leftPadding: 10
                     rightPadding: 10
                     background: null
+
+                    Keys.onPressed: (event) => {
+                        if (event.key === Qt.Key_Tab) {
+                            event.accepted = true;
+                            if (typeof appSettings !== 'undefined' && appSettings.indentWithSpaces) {
+                                var spaces = "";
+                                for (var i = 0; i < appSettings.indentSize; i++) {
+                                    spaces += " ";
+                                }
+                                codeEditor.insert(codeEditor.cursorPosition, spaces);
+                            } else {
+                                codeEditor.insert(codeEditor.cursorPosition, "\t");
+                            }
+                        }
+                    }
 
                     property int previousLength: 0
                     
