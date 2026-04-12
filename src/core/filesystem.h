@@ -43,6 +43,7 @@ public slots:
     Q_INVOKABLE QString getAbsolutePath(const QString &filePath);
     Q_INVOKABLE QVariantMap getFileInfo(const QString &filePath);
     Q_INVOKABLE bool renameFile(const QString &oldPath, const QString &newPath);
+    Q_INVOKABLE bool createNewFile(const QString &folderPath, const QString &fileName);
 
 signals:
     void fileContentReady(const QString &filePath, const QString &content);

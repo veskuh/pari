@@ -16,6 +16,7 @@ Item {
     property alias unsavedChangesDialog: unsavedChangesDialog
     property alias fileDialog: fileDialog
     property alias saveAsDialog: saveAsDialog
+    property alias newFileDialog: newFileDialog
 
     property int targetIndex: -1
 
@@ -72,5 +73,12 @@ Item {
         id: saveAsDialog
         title: "Save As..."
         fileMode: Platform.FileDialog.SaveFile
+    }
+
+    NewFileDialog {
+        id: newFileDialog
+        onAccepted: {
+            // New file creation is handled inside doCreate
+        }
     }
 }

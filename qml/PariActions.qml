@@ -16,6 +16,29 @@ Item {
     signal closeCurrentFile()
 
     Action {
+        id: newAction
+        text: qsTr("New")
+        shortcut: StandardKey.New
+        onTriggered: {
+            var folder = fileSystem.rootPath;
+            if (stackLayout.currentIndex !== -1) {
+                var currentDoc = documentManager.documents[stackLayout.currentIndex];
+                var filePath = currentDoc.filePath;
+                folder = filePath.substring(0, filePath.lastIndexOf('/'));
+            } else if (typeof rootWindow.fileSystemView !== 'undefined' && rootWindow.fileSystemView.selectedPath !== "") {
+                var selPath = rootWindow.fileSystemView.selectedPath;
+                if (fileSystem.isDirectory(selPath)) {
+                    folder = selPath;
+                } else {
+                    folder = selPath.substring(0, selPath.lastIndexOf('/'));
+                }
+            }
+            dialogs.newFileDialog.folderPath = folder;
+            dialogs.newFileDialog.open();
+        }
+    }
+
+    Action {
         id: openAction
         text: qsTr("Open")
         shortcut: StandardKey.Open
@@ -159,6 +182,7 @@ Item {
     }
 
     // Export actions to be used by other components
+    property alias newAction: newAction
     property alias openAction: openAction
     property alias saveAction: saveAction
     property alias saveAsAction: saveAsAction

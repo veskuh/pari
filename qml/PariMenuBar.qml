@@ -10,6 +10,7 @@ MenuBar {
 
     Menu {
         title: qsTr("File")
+        MenuItem { action: actions.newAction }
         MenuItem { action: actions.openAction }
         Menu {
             title: qsTr("Recents")

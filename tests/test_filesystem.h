@@ -13,6 +13,7 @@ private slots:
     void testSaveFile();
     void testGetFileInfo();
     void testRenameFile();
+    void testCreateNewFile();
     void testLoadFileContent();
     void testSetRootPath();
     void testIsDirectory();

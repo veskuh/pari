@@ -176,6 +176,15 @@ Item {
         id: contextMenu
 
         MenuItem {
+            text: qsTr("New File...")
+            enabled: isDirectory
+            onTriggered: {
+                var dialog = dialogs.newFileDialog;
+                dialog.folderPath = root.filePath;
+                dialog.open();
+            }
+        }
+        MenuItem {
             text: qsTr("Open in new tab")
             enabled: !isDirectory
             onTriggered: {

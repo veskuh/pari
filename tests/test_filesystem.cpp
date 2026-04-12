@@ -64,6 +64,24 @@ void TestFileSystem::testRenameFile()
     QVERIFY(QFile::exists(newPath));
 }
 
+void TestFileSystem::testCreateNewFile()
+{
+    FileSystem fileSystem;
+    QTemporaryDir tempDir;
+    QString folderPath = tempDir.path();
+    QString fileName = "new_file.txt";
+    QString expectedPath = folderPath + "/" + fileName;
+
+    QSignalSpy spy(&fileSystem, &FileSystem::fileContentReady);
+    
+    QVERIFY(fileSystem.createNewFile(folderPath, fileName));
+    QVERIFY(QFile::exists(expectedPath));
+    QCOMPARE(fileSystem.currentFilePath(), expectedPath);
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.at(0).at(0).toString(), expectedPath);
+    QCOMPARE(spy.at(0).at(1).toString(), QString(""));
+}
+
 void TestFileSystem::testLoadFileContent()
 {
     FileSystem fileSystem;

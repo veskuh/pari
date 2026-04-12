@@ -14,6 +14,29 @@ bool FileSystem::renameFile(const QString &oldPath, const QString &newPath)
     return false;
 }
 
+bool FileSystem::createNewFile(const QString &folderPath, const QString &fileName)
+{
+    QDir dir(folderPath);
+    if (!dir.exists()) {
+        return false;
+    }
+
+    QString filePath = dir.absoluteFilePath(fileName);
+    if (QFile::exists(filePath)) {
+        return false;
+    }
+
+    QFile file(filePath);
+    if (file.open(QIODevice::WriteOnly)) {
+        file.close();
+        // Notify UI that a new empty file is ready
+        emit fileContentReady(filePath, "");
+        setCurrentFilePath(filePath);
+        return true;
+    }
+    return false;
+}
+
 FileSystem::FileSystem(QObject *parent)
     : QObject{parent}
     , m_rootPath("")
