@@ -196,6 +196,23 @@ ColumnLayout {
                     onContentHeightChanged: {
                         refreshLineNumbers();
                     }
+
+                    onCursorRectangleChanged: {
+                        if (!codeEditor.activeFocus) return;
+                        
+                        var cursorY = cursorRectangle.y;
+                        var cursorHeight = cursorRectangle.height;
+                        var viewY = codeEditorFlickable.contentY;
+                        var viewHeight = codeEditorFlickable.height;
+
+                        if (cursorY < viewY) {
+                            // Scroll up to show cursor
+                            codeEditorFlickable.contentY = cursorY - topPadding;
+                        } else if (cursorY + cursorHeight > viewY + viewHeight) {
+                            // Scroll down to show cursor
+                            codeEditorFlickable.contentY = cursorY + cursorHeight - viewHeight + bottomPadding;
+                        }
+                    }
                     
                     Component.onCompleted: {
                         refreshLineNumbers();
