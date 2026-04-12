@@ -1,88 +1,67 @@
-# Pari - Your Local AI Coding Companion
+# Pari - Local AI Coding Companion
 
-![Screenshot of Pari](assets/screenshot.png)
+![Screenshot of Pari](assets/screenshot2.png)
 
-Pari is a desktop application designed to be your local AI-powered coding partner. It leverages the power of local Large Language Models (LLMs) through Ollama to assist you with various coding tasks, right on your machine.
+Pari is a desktop application designed to be a local AI-powered coding partner. It leverages local Large Language Models (LLMs) through Ollama to assist with coding tasks.
 
 ## Purpose
 
-The primary goal of Pari is to provide a seamless and efficient way to use LLMs for:
+The primary goal of Pari is to provide a simple way to use LLMs for:
 
 *   **Code Review:** Get feedback and suggestions on your code.
-*   **Refactoring:** Improve the structure and quality of your code.
 *   **Documentation:** Generate comments and documentation for your code.
 *   **Code Generation:** Get help with writing new code snippets.
 
-Pari is not intended to replace a full-featured IDE or powerful cloud-based AI services. Instead, it aims to be a trusted, local utility that can assist with coding tasks in an offline-first environment, ensuring your code remains private and secure.
+Pari aims to be a trusted, local utility that can assist with coding tasks in an offline-first environment.
 
-## Features
+## Key Features
 
-*   **Local LLM Integration:** Pari communicates with a local Ollama instance to send prompts and receive responses.
-*   **File System Browser:** Browse your local file system and open files in the editor.
-*   **Code Editor:** A basic code editor with syntax highlighting for various languages.
-*   **Send Selection:** Send only the selected part of the code to the LLM.
-*   **C++ Formatting:** Format C++ code using `clang-format`.
+*   **Local LLM Integration:** Full streaming support for local Ollama instances.
+*   **Code Editor:** Syntax highlighting for C++, QML, Markdown, and Shell. Supports auto-indentation and LSP integration.
+*   **Git Support:** View diffs, logs, and branch information directly in the app.
+*   **Diff View:** Visualize changes with integrated diff highlighting.
+*   **Build System:** Configure and run build/run/clean commands.
 
-## Current Status
+## Testing & Quality
 
-Pari is currently in the **early development phase**. The foundational features are in place:
+### Unit & UI Testing
 
-*   **Basic UI:** A user interface built with QML, featuring a file system browser, a code editor, and panes for AI interaction.
-*   **File System Integration:** You can browse your local file system and open files in the editor.
-*   **LLM Integration:** Pari can communicate with a local Ollama instance to send prompts and receive responses.
-*   **Core Functionality:** The application can send the content of the code editor to the LLM and display the generated output.
+The project includes automated tests covering both C++ logic and QML UI components.
+*   **Unit Tests:** Verify core backend logic using the Qt Test framework.
+*   **UI Tests:** verify component behavior and state using `QtQuickTest`.
 
-The project is a hobby project (with Gemini) and somewhat actively being developed.
-
-## Directory Structure
-
-The project is organized into the following directories:
-
-*   `src/`: Contains the C++ source code for the application.
-    *   `core/`: Core application logic, such as settings management and file system access.
-    *   `editor/`: Code editor components and document management.
-    *   `formatting/`: Code formatting and syntax highlighting engines.
-    *   `integrations/`: Integration with external tools like Ollama and build systems.
-*   `qml/`: Contains the QML source code for the user interface.
-*   `assets/`: Contains assets like icons and images.
-*   `tests/`: Contains the unit tests for the application.
-*   `scripts/`: Utility scripts for development (e.g., coverage reporting).
-*   `build/`: The build directory, where the compiled application and test executables are placed.
-
-## Testing
-
-This project includes a robust unit test suite and a smoke test to ensure code quality.
-
-### Unit Tests
-
-The unit tests use the Qt Test framework. A **Mock Ollama Server** is included in the test suite to allow testing AI integrations without requiring a running Ollama instance.
-
-To run all tests:
+To run the complete test suite:
 ```bash
+# Run unit tests
 ./build/tests/tst_all
+
+# Run UI tests
+./build/tests/tst_ui -input tests/
 ```
 
 ### Code Coverage
 
-Pari targets **80% code coverage** for core logic. You can generate a detailed HTML report using the provided script:
+Pari targets above 80% coverage. You can generate a detailed HTML report:
 
 ```bash
+# Reconfigure with coverage enabled
+cmake -B build -DENABLE_COVERAGE=ON
+cmake --build build
+
+# Generate report
 ./scripts/coverage_report.sh
 open coverage_html/index.html
 ```
 
 ### Smoke Test
 
-The application includes a smoke test that verifies if the main QML interface can be loaded successfully. This is triggered by the `--selfcheck` command-line flag.
+The application includes a smoke test that verifies if the main interface can be loaded successfully. This is triggered by the `--selfcheck` command-line flag.
 
-**On macOS:**
 ```bash
+# Example (macOS)
 ./build/src/pari.app/Contents/MacOS/pari --selfcheck
 ```
 
-**On Linux:**
-```bash
-./build/src/pari --selfcheck
-```
+## Getting Started
 
-**Note:** Running these tests locally requires a proper Qt development environment. See [BUILDING.md](BUILDING.md) for details.
+See [BUILDING.md](BUILDING.md) for detailed build instructions and prerequisites.
