@@ -113,8 +113,16 @@ ApplicationWindow {
             RowLayout {
                 spacing: 10
                 Item { Layout.preferredWidth: 120 }
-                Label { text: "Dark:"; Layout.fillWidth: true; horizontalAlignment: Text.AlignHCenter }
-                Label { text: "Light:"; Layout.fillWidth: true; horizontalAlignment: Text.AlignHCenter }
+                Label {
+                    text: "Dark:"
+                    Layout.preferredWidth: 50
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                Label {
+                    text: "Light:"
+                    Layout.preferredWidth: 50
+                    horizontalAlignment: Text.AlignHCenter
+                }
             }
 
             SettingColorRow {
