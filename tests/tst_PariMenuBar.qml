@@ -10,6 +10,7 @@ Item {
     QtObject {
         id: mockActions
         property bool hasBuildConfiguration: true
+        property var newAction: Action { text: "New" }
         property var openAction: Action { text: "Open" }
         property var saveAction: Action { text: "Save" }
         property var saveAsAction: Action { text: "Save As..." }
@@ -22,6 +23,7 @@ Item {
         property var configureBuildAction: Action { text: "Build setup..." }
         property var showAiPaneAction: Action { text: "Show AI"; checkable: true; checked: true }
         property var showTreePaneAction: Action { text: "Show Files"; checkable: true; checked: true }
+        property var toggleHiddenFilesAction: Action { text: "Show Hidden"; checkable: true; checked: false }
         
         property var outputArea: QtObject { property string text: "" }
         property var outputPanel: QtObject { property bool visible: false }

@@ -29,12 +29,14 @@ Item {
         id: mockFileSystem
         property string rootPath: "/root"
         property var model: "fileModel"
+        property bool showHiddenFiles: false
         signal fileSaved(string filePath)
         signal fileRenamed(string oldPath, string newPath)
     }
 
     QtObject {
         id: mockAppSettings
+        property bool showHiddenFiles: false
         function getBuildCommand(path) { return "make" }
     }
 

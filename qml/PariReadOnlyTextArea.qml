@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Basic
 
 ScrollView {
     id: root
@@ -16,6 +17,7 @@ ScrollView {
 
     TextArea {
         id: textArea
+        width: root.width
         readOnly: true
         wrapMode: Text.WordWrap
         textFormat: root.textFormat
@@ -23,6 +25,8 @@ ScrollView {
         font.pointSize: (typeof appSettings !== 'undefined' && appSettings && appSettings.fontSize) ? appSettings.fontSize : 12
         color: isDark ? "#d0d0d0" : "#1a1c1c"
         padding: 10
-        background: null
+        background: Rectangle {
+            color: "transparent"
+        }
     }
 }

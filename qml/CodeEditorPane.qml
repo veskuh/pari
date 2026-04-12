@@ -34,8 +34,22 @@ ColumnLayout {
         id: editorLogic
         editor: codeEditor
         filePath: root.filePath
-        // use injected or global context property
-        lspClient: root.injectedLspClient !== null ? root.injectedLspClient : (typeof lspClient !== 'undefined' ? lspClient : null)
+    }
+
+    Component.onCompleted: {
+        updateLspClient();
+    }
+
+    onInjectedLspClientChanged: updateLspClient()
+
+    function updateLspClient() {
+        if (root.injectedLspClient !== null) {
+            editorLogic.lspClient = root.injectedLspClient;
+        } else if (typeof lspClient !== 'undefined') {
+            editorLogic.lspClient = lspClient;
+        } else {
+            editorLogic.lspClient = null;
+        }
     }
 
     function saveCursorPosition() {

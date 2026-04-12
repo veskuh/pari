@@ -50,6 +50,7 @@ Item {
 
     QtObject {
         id: mockAppSettings
+        property bool showHiddenFiles: false
         function getBuildCommand(path) { return "make" }
         function getRunCommand(path) { return "./app" }
         function getCleanCommand(path) { return "make clean" }

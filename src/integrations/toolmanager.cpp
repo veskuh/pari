@@ -67,6 +67,12 @@ void ToolManager::onBranchProcessFinished(int exitCode, QProcess::ExitStatus exi
 
 void ToolManager::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    // Read any remaining data
+    m_outputBuffer.append(m_process->readAllStandardOutput());
+    m_errorBuffer.append(m_process->readAllStandardError());
+
+    qDebug() << "ToolManager: Process finished. Command:" << m_command << "Output size:" << m_outputBuffer.size();
+
     if (m_command.startsWith("git log")) {
         emit gitLogReady(m_outputBuffer);
     } else {

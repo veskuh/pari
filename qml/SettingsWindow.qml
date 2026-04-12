@@ -9,6 +9,10 @@ ApplicationWindow {
     width: 600
     height: 520
 
+    // Use a local reference to the global objects to avoid repeated checks and make it safer for tests
+    readonly property var _appSettings: (typeof appSettings !== 'undefined') ? appSettings : null
+    readonly property var _llm: (typeof llm !== 'undefined') ? llm : null
+
     property alias ollamaUrl: ollamaUrlField.text
     property alias ollamaModel: ollamaModelComboBox.currentValue
 
@@ -65,13 +69,13 @@ ApplicationWindow {
                 ComboBox {
                     id: ollamaModelComboBox
                     objectName: "ollamaModelComboBox"
-                    model: appSettings.availableModels
+                    model: _appSettings ? _appSettings.availableModels : []
                     Layout.fillWidth: true
                 }
                 Button {
                     text: "Refresh"
                     objectName: "refreshButton"
-                    onClicked: llm.listModels()
+                    onClicked: if (_llm) _llm.listModels()
                 }
             }
         }
@@ -91,7 +95,7 @@ ApplicationWindow {
             RowLayout {
                 Label {
                     id: fontValue
-                    text: `${appSettings.fontFamily}, ${appSettings.fontSize}`
+                    text: _appSettings ? `${_appSettings.fontFamily}, ${_appSettings.fontSize}` : ""
                     Layout.fillWidth: true
                 }
                 Button {
@@ -128,55 +132,55 @@ ApplicationWindow {
             SettingColorRow {
                 labelText: "Keyword Color:"
                 colorDialog: colorDialog
-                darkColor: appSettings.darkTheme.keywordColor
-                lightColor: appSettings.lightTheme.keywordColor
-                onDarkColorSelected: (c) => appSettings.darkTheme.keywordColor = c
-                onLightColorSelected: (c) => appSettings.lightTheme.keywordColor = c
+                darkColor: _appSettings ? _appSettings.darkTheme.keywordColor : "black"
+                lightColor: _appSettings ? _appSettings.lightTheme.keywordColor : "black"
+                onDarkColorSelected: (c) => { if (_appSettings) _appSettings.darkTheme.keywordColor = c }
+                onLightColorSelected: (c) => { if (_appSettings) _appSettings.lightTheme.keywordColor = c }
             }
 
             SettingColorRow {
                 labelText: "String Color:"
                 colorDialog: colorDialog
-                darkColor: appSettings.darkTheme.stringColor
-                lightColor: appSettings.lightTheme.stringColor
-                onDarkColorSelected: (c) => appSettings.darkTheme.stringColor = c
-                onLightColorSelected: (c) => appSettings.lightTheme.stringColor = c
+                darkColor: _appSettings ? _appSettings.darkTheme.stringColor : "black"
+                lightColor: _appSettings ? _appSettings.lightTheme.stringColor : "black"
+                onDarkColorSelected: (c) => { if (_appSettings) _appSettings.darkTheme.stringColor = c }
+                onLightColorSelected: (c) => { if (_appSettings) _appSettings.lightTheme.stringColor = c }
             }
 
             SettingColorRow {
                 labelText: "Comment Color:"
                 colorDialog: colorDialog
-                darkColor: appSettings.darkTheme.commentColor
-                lightColor: appSettings.lightTheme.commentColor
-                onDarkColorSelected: (c) => appSettings.darkTheme.commentColor = c
-                onLightColorSelected: (c) => appSettings.lightTheme.commentColor = c
+                darkColor: _appSettings ? _appSettings.darkTheme.commentColor : "black"
+                lightColor: _appSettings ? _appSettings.lightTheme.commentColor : "black"
+                onDarkColorSelected: (c) => { if (_appSettings) _appSettings.darkTheme.commentColor = c }
+                onLightColorSelected: (c) => { if (_appSettings) _appSettings.lightTheme.commentColor = c }
             }
 
             SettingColorRow {
                 labelText: "Type Color:"
                 colorDialog: colorDialog
-                darkColor: appSettings.darkTheme.typeColor
-                lightColor: appSettings.lightTheme.typeColor
-                onDarkColorSelected: (c) => appSettings.darkTheme.typeColor = c
-                onLightColorSelected: (c) => appSettings.lightTheme.typeColor = c
+                darkColor: _appSettings ? _appSettings.darkTheme.typeColor : "black"
+                lightColor: _appSettings ? _appSettings.lightTheme.typeColor : "black"
+                onDarkColorSelected: (c) => { if (_appSettings) _appSettings.darkTheme.typeColor = c }
+                onLightColorSelected: (c) => { if (_appSettings) _appSettings.lightTheme.typeColor = c }
             }
 
             SettingColorRow {
                 labelText: "Number Color:"
                 colorDialog: colorDialog
-                darkColor: appSettings.darkTheme.numberColor
-                lightColor: appSettings.lightTheme.numberColor
-                onDarkColorSelected: (c) => appSettings.darkTheme.numberColor = c
-                onLightColorSelected: (c) => appSettings.lightTheme.numberColor = c
+                darkColor: _appSettings ? _appSettings.darkTheme.numberColor : "black"
+                lightColor: _appSettings ? _appSettings.lightTheme.numberColor : "black"
+                onDarkColorSelected: (c) => { if (_appSettings) _appSettings.darkTheme.numberColor = c }
+                onLightColorSelected: (c) => { if (_appSettings) _appSettings.lightTheme.numberColor = c }
             }
 
             SettingColorRow {
                 labelText: "Preprocessor Color:"
                 colorDialog: colorDialog
-                darkColor: appSettings.darkTheme.preprocessorColor
-                lightColor: appSettings.lightTheme.preprocessorColor
-                onDarkColorSelected: (c) => appSettings.darkTheme.preprocessorColor = c
-                onLightColorSelected: (c) => appSettings.lightTheme.preprocessorColor = c
+                darkColor: _appSettings ? _appSettings.darkTheme.preprocessorColor : "black"
+                lightColor: _appSettings ? _appSettings.lightTheme.preprocessorColor : "black"
+                onDarkColorSelected: (c) => { if (_appSettings) _appSettings.darkTheme.preprocessorColor = c }
+                onLightColorSelected: (c) => { if (_appSettings) _appSettings.lightTheme.preprocessorColor = c }
             }
         }
 
@@ -192,13 +196,13 @@ ApplicationWindow {
                 text: "Apply"
                 objectName: "applyButton"
                 onClicked: {
-                    appSettings.ollamaUrl = ollamaUrlField.text;
-                    appSettings.ollamaModel = ollamaModelComboBox.currentValue;
-                    appSettings.fontFamily = fontDialog.selectedFont.family;
-                    appSettings.fontSize = fontDialog.selectedFont.pointSize;
-
-                    appSettings.saveColors();
-
+                    if (_appSettings) {
+                        _appSettings.ollamaUrl = ollamaUrlField.text;
+                        _appSettings.ollamaModel = ollamaModelComboBox.currentValue;
+                        _appSettings.fontFamily = fontDialog.selectedFont.family;
+                        _appSettings.fontSize = fontDialog.selectedFont.pointSize;
+                        _appSettings.saveColors();
+                    }
                     settingsWindow.close();
                 }
             }
@@ -217,20 +221,24 @@ ApplicationWindow {
         interval: 1000
         repeat: false
         onTriggered: {
-            var modelIndex = appSettings.availableModels.indexOf(appSettings.ollamaModel);
-            if (modelIndex !== -1) {
-                ollamaModelComboBox.currentIndex = modelIndex;
+            if (_appSettings) {
+                var modelIndex = _appSettings.availableModels.indexOf(_appSettings.ollamaModel);
+                if (modelIndex !== -1) {
+                    ollamaModelComboBox.currentIndex = modelIndex;
+                }
             }
         }
     }
 
     Component.onCompleted: {
-        ollamaUrlField.text = appSettings.ollamaUrl;
-        var modelIndex = appSettings.availableModels.indexOf(appSettings.ollamaModel);
-        if (modelIndex !== -1) {
-            ollamaModelComboBox.currentIndex = modelIndex;
+        if (_appSettings) {
+            ollamaUrlField.text = _appSettings.ollamaUrl;
+            var modelIndex = _appSettings.availableModels.indexOf(_appSettings.ollamaModel);
+            if (modelIndex !== -1) {
+                ollamaModelComboBox.currentIndex = modelIndex;
+            }
+            fontValue.text = `${_appSettings.fontFamily}, ${_appSettings.fontSize}`;
         }
-        fontValue.text = `${appSettings.fontFamily}, ${appSettings.fontSize}`;
         timer.start();
     }
 }

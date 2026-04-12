@@ -173,7 +173,7 @@ Item {
         id: toggleHiddenFilesAction
         text: qsTr("Show Hidden Files")
         checkable: true
-        checked: (typeof appSettings !== 'undefined') ? appSettings.showHiddenFiles : false
+        checked: (typeof appSettings !== 'undefined' && appSettings.showHiddenFiles !== undefined) ? appSettings.showHiddenFiles : false
         onTriggered: {
             if (typeof appSettings !== 'undefined') {
                 appSettings.showHiddenFiles = checked;

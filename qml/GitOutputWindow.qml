@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
 Window {
@@ -55,36 +56,45 @@ Window {
             PariPaperWell {
                 id: well
                 isDark: gitOutputWindow.isDark
+                Layout.fillHeight: true
                 
-                ListView {
-                    id: logView
-                    objectName: "logView"
+                StackLayout {
+                    id: wellStack
                     anchors.fill: parent
                     anchors.margins: 5
-                    model: gitLogModel
-                    visible: gitLogModel !== null && logView.count > 0
-                    clip: true
-                    spacing: 5
-                    delegate: GitLogDelegate {}
-                }
+                    currentIndex: {
+                        if (gitLogModel !== null) {
+                            return logView.count > 0 ? 0 : 1;
+                        }
+                        return 2;
+                    }
 
-                Label {
-                    text: qsTr("No log entries found.")
-                    visible: gitLogModel !== null && logView.count === 0
-                    anchors.centerIn: parent
-                    font.italic: true
-                    color: isDark ? "#888888" : "#666666"
-                }
+                    ListView {
+                        id: logView
+                        objectName: "logView"
+                        model: gitLogModel
+                        clip: true
+                        spacing: 5
+                        delegate: GitLogDelegate {}
+                    }
 
-                PariReadOnlyTextArea {
-                    id: outputArea
-                    objectName: "outputArea"
-                    anchors.fill: parent
-                    visible: gitLogModel === null
-                    text: output
-                    textFormat: Text.RichText
-                    wrapMode: Text.NoWrap
-                    textAreaFont.family: Qt.platform.os === 'osx' ? 'Menlo' : 'Noto Sans Mono'
+                    Label {
+                        id: noEntriesLabel
+                        text: qsTr("No log entries found.")
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.italic: true
+                        color: isDark ? "#888888" : "#666666"
+                    }
+
+                    PariReadOnlyTextArea {
+                        id: outputArea
+                        objectName: "outputArea"
+                        text: output
+                        textFormat: Text.RichText
+                        wrapMode: Text.NoWrap
+                        textAreaFont.family: Qt.platform.os === 'osx' ? 'Menlo' : 'Noto Sans Mono'
+                    }
                 }
             }
 
