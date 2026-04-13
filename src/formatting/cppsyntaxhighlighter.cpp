@@ -2,7 +2,14 @@
 #include "syntaxtheme.h"
 
 CppSyntaxHighlighter::CppSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
-    : QSyntaxHighlighter(parent), m_theme(theme) {
+    : QSyntaxHighlighter(parent),
+      stringExpression(QStringLiteral("\"([^\"\\\\]|\\\\.)*\"")),
+      singleLineCommentExpression(QStringLiteral("//[^\n]*")),
+      mlcStart(QStringLiteral("/\\*")),
+      mlcEnd(QStringLiteral("\\*/")),
+      commentStart(QStringLiteral("/\\*")),
+      commentEnd(QStringLiteral("\\*/")),
+      m_theme(theme) {
     HighlightingRule rule;
 
     if (!m_theme) {
@@ -57,7 +64,6 @@ QList<CppSyntaxHighlighter::HighlightRange> CppSyntaxHighlighter::highlightLine(
     }
 
     // 2. Handle strings
-    static const QRegularExpression stringExpression(QStringLiteral("\"([^\"\\\\]|\\\\.)*\""));
     QRegularExpressionMatchIterator stringIterator = stringExpression.globalMatch(text);
     while (stringIterator.hasNext()) {
         QRegularExpressionMatch match = stringIterator.next();
@@ -65,7 +71,6 @@ QList<CppSyntaxHighlighter::HighlightRange> CppSyntaxHighlighter::highlightLine(
     }
 
     // 3. Handle single-line comments
-    static const QRegularExpression singleLineCommentExpression(QStringLiteral("//[^\n]*"));
     QRegularExpressionMatchIterator slcIterator = singleLineCommentExpression.globalMatch(text);
     while (slcIterator.hasNext()) {
         QRegularExpressionMatch match = slcIterator.next();
@@ -73,8 +78,6 @@ QList<CppSyntaxHighlighter::HighlightRange> CppSyntaxHighlighter::highlightLine(
     }
 
     // 4. Handle multi-line comments (simple version for highlightLine, doesn't handle state)
-    static const QRegularExpression mlcStart(QStringLiteral("/\\*"));
-    static const QRegularExpression mlcEnd(QStringLiteral("\\*/"));
     QRegularExpressionMatchIterator mlcIterator = mlcStart.globalMatch(text);
     while (mlcIterator.hasNext()) {
         QRegularExpressionMatch match = mlcIterator.next();
@@ -96,8 +99,6 @@ void CppSyntaxHighlighter::highlightBlock(const QString &text) {
     // Multi-line comment state handling (needs to remain in highlightBlock for QSyntaxHighlighter)
     setCurrentBlockState(Normal);
     int startIndex = 0;
-    static const QRegularExpression commentStart(QStringLiteral("/\\*"));
-    static const QRegularExpression commentEnd(QStringLiteral("\\*/"));
 
     if (previousBlockState() != InComment) {
         startIndex = text.indexOf(commentStart);
