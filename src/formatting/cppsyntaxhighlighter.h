@@ -44,6 +44,13 @@ private:
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat stringFormat;
 
+    QRegularExpression stringExpression;
+    QRegularExpression singleLineCommentExpression;
+    QRegularExpression mlcStart;
+    QRegularExpression mlcEnd;
+    QRegularExpression commentStart;
+    QRegularExpression commentEnd;
+
     SyntaxTheme *m_theme;
 };
 
