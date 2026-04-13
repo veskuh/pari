@@ -93,3 +93,22 @@ void TestCppSyntaxHighlighter::testNumbers()
     CppSyntaxHighlighter highlighter(nullptr, &theme);
     highlighter.highlightLine("12345");
 }
+
+void TestCppSyntaxHighlighter::testPerformance()
+{
+    SyntaxTheme theme;
+    theme.keywordColor = QColor("blue");
+    theme.stringColor = QColor("red");
+    theme.commentColor = QColor("green");
+    theme.preprocessorColor = QColor("purple");
+
+    QString largeText;
+    for (int i = 0; i < 1000; ++i) {
+        largeText += "int x = 0; // single line comment\n/* multi line \n comment */\nconst char* str = \"hello world\";\n";
+    }
+
+    QBENCHMARK {
+        QTextDocument doc(largeText);
+        CppSyntaxHighlighter highlighter(&doc, &theme);
+    }
+}
