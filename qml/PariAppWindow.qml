@@ -137,35 +137,55 @@ ApplicationWindow {
         anchors.fill: parent
         orientation: Qt.Horizontal
 
+        handle: Rectangle {
+            implicitWidth: 1
+            implicitHeight: 1
+            color: appSettings.systemThemeIsDark ? "#333333" : "#A6ABB2"
+        }
+
         // Pane 1: File System (20% width)
-        ColumnLayout {
+        Rectangle {
             id: treeColumn
-            // Use attached properties to define the pane's size within the SplitView
             SplitView.preferredWidth: appWindow.width * 0.15
-            SplitView.minimumWidth: 200 // Prevent the pane from becoming too small
+            SplitView.minimumWidth: 200
+            color: appSettings.systemThemeIsDark ? "#252525" : "#D6DDE5"
 
-            Label {
-                text: "💻 " + fileSystem.rootName
-                font.bold: true
-                Layout.leftMargin: 10
-                Layout.topMargin: 5
-                Layout.bottomMargin: 5
-            }
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
 
-            TreeView {
-                id: fileSystemView
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                model: fileSystem.model
-                property string selectedPath: ""
-
-                delegate: FileTreeDelegate {}
-            }
-            Connections {
-                target: fileSystemView
-                function onModelChanged() {
-                    fileSystemView.rootIndex = fileSystem.currentRootIndex;
+                Label {
+                    text: "💻 " + fileSystem.rootName
+                    font.bold: true
+                    Layout.leftMargin: 10
+                    Layout.topMargin: 5
+                    Layout.bottomMargin: 5
+                    color: appSettings.systemThemeIsDark ? "#ffffff" : "#000000"
                 }
+
+                TreeView {
+                    id: fileSystemView
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    model: fileSystem.model
+                    property string selectedPath: ""
+
+                    delegate: FileTreeDelegate {}
+                }
+                Connections {
+                    target: fileSystemView
+                    function onModelChanged() {
+                        fileSystemView.rootIndex = fileSystem.currentRootIndex;
+                    }
+                }
+            }
+
+            // Etched right border
+            Rectangle {
+                anchors.right: parent.right
+                width: 1
+                height: parent.height
+                color: appSettings.systemThemeIsDark ? "#333333" : "#A6ABB2"
             }
         }
 
@@ -175,6 +195,12 @@ ApplicationWindow {
             orientation: Qt.Vertical
             SplitView.preferredWidth: appWindow.width * 0.55
             SplitView.minimumWidth: 250
+
+            handle: Rectangle {
+                implicitWidth: 1
+                implicitHeight: 1
+                color: appSettings.systemThemeIsDark ? "#333333" : "#A6ABB2"
+            }
 
             ColumnLayout {
                 spacing: 0
@@ -311,13 +337,30 @@ ApplicationWindow {
             }
         }
 
-        OutputPane {
-            id: aiOutputPane
+        // Pane 3: AI Section (30% width)
+        Rectangle {
+            id: aiColumn
             SplitView.preferredWidth: appWindow.width * 0.30
             SplitView.minimumWidth: 250
-            currentEditor: appWindow.currentEditor
-            diffUtils: DiffUtils {}
-        }    }
+            color: appSettings.systemThemeIsDark ? "#252525" : "#D6DDE5"
+
+            // Etched left border
+            Rectangle {
+                anchors.left: parent.left
+                width: 1
+                height: parent.height
+                color: appSettings.systemThemeIsDark ? "#333333" : "#A6ABB2"
+            }
+
+            OutputPane {
+                id: aiOutputPane
+                anchors.fill: parent
+                anchors.leftMargin: 1 // Don't overlap the border
+                currentEditor: appWindow.currentEditor
+                diffUtils: DiffUtils {}
+            }
+        }
+    }
 
     PariDialogs {
         id: dialogs
