@@ -1,5 +1,5 @@
 import QtQuick
-import Qt.labs.settings 1.0
+import QtCore
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
