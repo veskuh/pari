@@ -1,11 +1,23 @@
 import QtQuick
 import QtTest
 import QtQuick.Controls
+import QtQuick.Layouts
 import "../qml"
 
 Item {
-    width: 450
-    height: 250
+    width: 600
+    height: 400
+
+    PariTheme {
+        id: pariTheme
+    }
+
+    // Mock appSettings
+    QtObject {
+        id: mockSettings
+        property bool systemThemeIsDark: false
+    }
+    property alias appSettings: mockSettings
 
     BuildConfigurationDialog {
         id: dialog
@@ -28,51 +40,27 @@ Item {
             dialog.cleanCommand = ""
         }
 
-        function findChildByText(parent, text) {
-            for (var i = 0; i < parent.children.length; ++i) {
-                var child = parent.children[i]
-                if (child.text === text)
-                    return child
-
-                var found = findChildByText(child, text)
-                if (found) return found
-            }
-            return null
-        }
-
-        function findTextFields(parent, results) {
-            // Check if it's actually a TextField by looking for common properties
-            if (parent.hasOwnProperty("placeholderText") && parent.hasOwnProperty("text")) {
-                // Ensure we don't count internal components of the TextField
-                results.push(parent)
-                return; // Don't look at children of TextField
-            }
-            for (var i = 0; i < parent.children.length; ++i) {
-                findTextFields(parent.children[i], results)
-            }
-        }
-
         function test_initial_state() {
             compare(dialog.title, "Configure Build")
         }
 
         function test_save() {
-            dialog.open()
-            var textFields = []
-            findTextFields(dialog.contentItem, textFields)
+            dialog.show()
+            verify(dialog.visible)
 
-            // Should find exactly 3 TextFields: build, run, clean
-            compare(textFields.length, 3, "Expected 3 text fields")
+            var buildField = findRecursively(dialog, (item) => item.id === "buildCommandField" || item.placeholderText === "cmake --build build")
+            var runField = findRecursively(dialog, (item) => item.id === "runCommandField" || item.placeholderText === "./build/app")
+            var cleanField = findRecursively(dialog, (item) => item.id === "cleanCommandField" || item.placeholderText === "rm -rf build")
+            
+            verify(buildField !== null, "Build field should exist")
+            verify(runField !== null, "Run field should exist")
+            verify(cleanField !== null, "Clean field should exist")
 
-            var buildCommandField = textFields[0]
-            var runCommandField = textFields[1]
-            var cleanCommandField = textFields[2]
+            buildField.text = "make all"
+            runField.text = "./app"
+            cleanField.text = "make clean"
 
-            buildCommandField.text = "make all"
-            runCommandField.text = "./app"
-            cleanCommandField.text = "make clean"
-
-            var saveBtn = findChild(dialog, "saveButton")
+            var saveBtn = findRecursively(dialog, (item) => item.objectName === "saveButton" || item.text === "Save")
             verify(saveBtn !== null, "Save button should exist")
 
             mouseClick(saveBtn)
@@ -82,17 +70,38 @@ Item {
             compare(args[0], "make all")
             compare(args[1], "./app")
             compare(args[2], "make clean")
+            verify(!dialog.visible)
         }
 
         function test_cancel() {
-            var cancelBtn = findChild(dialog, "cancelButton")
+            var cancelBtn = findRecursively(dialog, (item) => item.objectName === "cancelButton" || item.text === "Cancel")
             verify(cancelBtn !== null, "Cancel button should exist")
 
-            dialog.open()
+            dialog.show()
+            verify(dialog.visible)
             mouseClick(cancelBtn)
 
             compare(saveSpy.count, 0)
             verify(!dialog.visible)
+        }
+
+        function findRecursively(parent, checkFunc) {
+            if (!parent) return null;
+            if (checkFunc(parent)) return parent
+            
+            if (parent.children) {
+                for (var j = 0; j < parent.children.length; j++) {
+                    var res2 = findRecursively(parent.children[j], checkFunc)
+                    if (res2) return res2
+                }
+            }
+
+            if (parent.contentItem && parent.contentItem !== parent) {
+                var res3 = findRecursively(parent.contentItem, checkFunc)
+                if (res3) return res3
+            }
+            
+            return null
         }
     }
 }

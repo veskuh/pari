@@ -38,7 +38,7 @@ QtObject {
     readonly property real paddingSmall: 4
     readonly property real paddingMedium: 8
     readonly property real paddingLarge: 12
-    readonly property real marginStandard: 10
+    readonly property real marginStandard: 15
     readonly property real borderRadius: 4
     
     // --- Fonts ---

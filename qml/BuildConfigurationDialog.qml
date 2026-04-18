@@ -1,17 +1,18 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import QtQuick.Window
+import QtQuick.Dialogs
 
-Dialog {
+ApplicationWindow {
     id: buildConfigurationWindow
     title: qsTr("Configure Build")
-    modal: true
     width: 450
     height: 280
     
-    // Theme helper
-    readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
+    // Use pariTheme if available (global in app), otherwise fallback
+    readonly property var _pariTheme: (typeof pariTheme !== 'undefined') ? pariTheme : null
+    color: _pariTheme ? _pariTheme.windowBg : "#f0f0f0"
 
     property string buildCommand: ""
     property string runCommand: ""
@@ -19,15 +20,10 @@ Dialog {
 
     signal saveConfiguration(string buildCommand, string runCommand, string cleanCommand)
 
-    background: Rectangle {
-        color: isDark ? "#2d2d2d" : "#f5f5f5"
-        radius: 4
-        border.color: isDark ? "#444444" : "#cccccc"
-        border.width: 1
-    }
-
-    contentItem: ColumnLayout {
-        spacing: 10
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: _pariTheme ? _pariTheme.marginStandard : 15
+        spacing: _pariTheme ? _pariTheme.marginStandard : 10
         
         GridLayout {
             columns: 2
@@ -38,7 +34,7 @@ Dialog {
             Label {
                 text: qsTr("Build:")
                 font.bold: true
-                color: isDark ? "#e0e0e0" : "#333333"
+                color: _pariTheme ? _pariTheme.textColor : "#333333"
             }
             TextField {
                 id: buildCommandField
@@ -46,13 +42,12 @@ Dialog {
                 text: buildConfigurationWindow.buildCommand
                 Layout.fillWidth: true
                 selectByMouse: true
-                color: isDark ? "#ffffff" : "#000000"
             }
 
             Label {
                 text: qsTr("Run:")
                 font.bold: true
-                color: isDark ? "#e0e0e0" : "#333333"
+                color: _pariTheme ? _pariTheme.textColor : "#333333"
             }
             TextField {
                 id: runCommandField
@@ -60,13 +55,12 @@ Dialog {
                 text: buildConfigurationWindow.runCommand
                 Layout.fillWidth: true
                 selectByMouse: true
-                color: isDark ? "#ffffff" : "#000000"
             }
 
             Label {
                 text: qsTr("Clean:")
                 font.bold: true
-                color: isDark ? "#e0e0e0" : "#333333"
+                color: _pariTheme ? _pariTheme.textColor : "#333333"
             }
             TextField {
                 id: cleanCommandField
@@ -74,35 +68,29 @@ Dialog {
                 text: buildConfigurationWindow.cleanCommand
                 Layout.fillWidth: true
                 selectByMouse: true
-                color: isDark ? "#ffffff" : "#000000"
             }
         }
 
         Item {
             Layout.fillHeight: true
         }
-    }
 
-    footer: DialogButtonBox {
-        alignment: Qt.AlignRight
-        background: Rectangle {
-            color: "transparent"
+        RowLayout {
+            Layout.alignment: Qt.AlignRight
+            spacing: _pariTheme ? _pariTheme.paddingMedium : 10
+            
+            PariButton {
+                text: qsTr("Save")
+                highlighted: true
+                onClicked: {
+                    saveConfiguration(buildCommandField.text, runCommandField.text, cleanCommandField.text)
+                    buildConfigurationWindow.close()
+                }
+            }
+            PariButton {
+                text: qsTr("Cancel")
+                onClicked: buildConfigurationWindow.close()
+            }
         }
-        
-        PariButton {
-            objectName: "saveButton"
-            text: qsTr("Save")
-            DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
-            highlighted: true
-        }
-        PariButton {
-            objectName: "cancelButton"
-            text: qsTr("Cancel")
-            DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
-        }
-    }
-
-    onAccepted: {
-        saveConfiguration(buildCommandField.text, runCommandField.text, cleanCommandField.text)
     }
 }

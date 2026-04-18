@@ -34,6 +34,8 @@ Item {
                 }
             }
             dialogs.newFileDialog.folderPath = folder;
+            dialogs.newFileDialog.x = rootWindow.x + rootWindow.width / 2 - dialogs.newFileDialog.width / 2;
+            dialogs.newFileDialog.y = rootWindow.y + rootWindow.height / 2 - dialogs.newFileDialog.height / 2;
             dialogs.newFileDialog.open();
         }
     }
@@ -102,7 +104,7 @@ Item {
             dialogs.buildConfigurationWindow.cleanCommand = appSettings.getCleanCommand(fileSystem.rootPath);
             dialogs.buildConfigurationWindow.x = rootWindow.x + rootWindow.width / 2 - dialogs.buildConfigurationWindow.width / 2;
             dialogs.buildConfigurationWindow.y = rootWindow.y + rootWindow.height / 2 - dialogs.buildConfigurationWindow.height / 2;
-            dialogs.buildConfigurationWindow.open();
+            dialogs.buildConfigurationWindow.show();
         }
     }
 

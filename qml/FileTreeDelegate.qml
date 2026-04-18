@@ -181,6 +181,8 @@ Item {
             onTriggered: {
                 var dialog = dialogs.newFileDialog;
                 dialog.folderPath = root.filePath;
+                dialog.x = appWindow.x + appWindow.width / 2 - dialog.width / 2;
+                dialog.y = appWindow.y + appWindow.height / 2 - dialog.height / 2;
                 dialog.open();
             }
         }
@@ -203,6 +205,8 @@ Item {
                     fileSize: fileInfo.size,
                     fileModified: fileInfo.modified
                 });
+                dialog.x = appWindow.x + appWindow.width / 2 - dialog.width / 2;
+                dialog.y = appWindow.y + appWindow.height / 2 - dialog.height / 2;
                 dialog.show();
             }
         }
@@ -216,6 +220,8 @@ Item {
                         dialog.onClosed.connect(function() {
                             dialog.destroy();
                         });
+                        dialog.x = appWindow.x + appWindow.width / 2 - dialog.width / 2;
+                        dialog.y = appWindow.y + appWindow.height / 2 - dialog.height / 2;
                         dialog.open();
                     } else {
                         console.error("Failed to create Rename dialog object");

@@ -8,14 +8,15 @@ Dialog {
     title: qsTr("New File")
     modal: true
     width: 400
+    height: 200
     standardButtons: Dialog.NoButton
 
     property string folderPath
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 10
-        spacing: 15
+        anchors.margins: (typeof pariTheme !== 'undefined') ? pariTheme.marginStandard : 15
+        spacing: (typeof pariTheme !== 'undefined') ? pariTheme.paddingLarge : 15
 
         Label {
             text: qsTr("Create new file in: ") + newFileDialog.folderPath
@@ -40,6 +41,8 @@ Dialog {
 
         RowLayout {
             Layout.alignment: Qt.AlignRight
+            spacing: (typeof pariTheme !== 'undefined') ? pariTheme.paddingMedium : 10
+            Layout.topMargin: (typeof pariTheme !== 'undefined') ? pariTheme.paddingMedium : 10
             PariButton {
                 id: createButton
                 objectName: "createButton"
