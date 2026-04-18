@@ -1,7 +1,7 @@
 import QtQuick
 import QtTest
 import QtQuick.Controls
-import "../qml"
+import "../qml/editor"
 
 Item {
     width: 400

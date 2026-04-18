@@ -1,5 +1,5 @@
 import QtQuick
-import "FileUtils.js" as FileUtils
+import "../utils/FileUtils.js" as FileUtils
 
 QtObject {
     id: editorLogic

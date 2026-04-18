@@ -1,0 +1,6 @@
+module ai
+OutputPane 1.0 OutputPane.qml
+AiInputControl 1.0 AiInputControl.qml
+AiThinkingIndicator 1.0 AiThinkingIndicator.qml
+ChatLogWindow 1.0 ChatLogWindow.qml
+EmptyStateCard 1.0 EmptyStateCard.qml

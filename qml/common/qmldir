@@ -1,0 +1,7 @@
+module common
+PariButton 1.0 PariButton.qml
+PariToolButton 1.0 PariToolButton.qml
+PariPaperWell 1.0 PariPaperWell.qml
+PariReadOnlyTextArea 1.0 PariReadOnlyTextArea.qml
+PariTabBar 1.0 PariTabBar.qml
+ColorButton 1.0 ColorButton.qml

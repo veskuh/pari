@@ -1,0 +1,9 @@
+module editor
+CodeEditorPane 1.0 CodeEditorPane.qml
+EditorLogic 1.0 EditorLogic.qml
+LineNumberGutter 1.0 LineNumberGutter.qml
+FindOverlay 1.0 FindOverlay.qml
+CompletionPopup 1.0 CompletionPopup.qml
+EmptyEditorState 1.0 EmptyEditorState.qml
+GoToLineDialog 1.0 GoToLineDialog.qml
+SearchManager 1.0 SearchManager.qml

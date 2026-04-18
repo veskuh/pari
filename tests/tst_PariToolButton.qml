@@ -2,7 +2,7 @@ import QtQuick
 import QtTest
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../qml"
+import "../qml/common"
 
 Item {
     width: 200

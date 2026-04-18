@@ -1,6 +1,6 @@
 import QtQuick
 import QtTest
-import "../qml"
+import "../qml/common"
 
 Item {
     width: 200

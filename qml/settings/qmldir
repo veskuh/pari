@@ -1,0 +1,3 @@
+module settings
+SettingsWindow 1.0 SettingsWindow.qml
+SettingColorRow 1.0 SettingColorRow.qml

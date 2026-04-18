@@ -6,8 +6,12 @@ import QtQuick.Window
 import QtQuick.Dialogs
 
 import net.veskuh.pari 1.0
-import "FileUtils.js" as FileUtils
-import "FormattingUtils.js" as FormattingUtils
+import "../filetree"
+import "../editor"
+import "../common"
+import "../ai"
+import "../utils/FileUtils.js" as FileUtils
+import "../utils/FormattingUtils.js" as FormattingUtils
 
 ApplicationWindow {
     id: appWindow

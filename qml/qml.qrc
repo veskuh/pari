@@ -1,44 +1,62 @@
 <RCC>
     <qresource prefix="/qml">
-        <file>PariAppWindow.qml</file>
-        <file>CustomStatusBar.qml</file>
-        <file>SettingsWindow.qml</file>
-        <file>SettingColorRow.qml</file>
-        <file>AboutWindow.qml</file>
-        <file>ChatLogWindow.qml</file>
-        <file>FindOverlay.qml</file>
-        <file>ColorButton.qml</file>
-        <file>FileTreeDelegate.qml</file>
-        <file>FileIconProvider.qml</file>
-        <file>BuildConfigurationDialog.qml</file>
-        <file>GitOutputWindow.qml</file>
-        <file>GitLogDelegate.qml</file>
-        <file>CodeEditorPane.qml</file>
-        <file>LineNumberGutter.qml</file>
-        <file>SearchManager.qml</file>
-        <file>EditorLogic.qml</file>
-        <file>OutputPane.qml</file>
-        <file>AiThinkingIndicator.qml</file>
-        <file>AiInputControl.qml</file>
-        <file>EmptyEditorState.qml</file>
-        <file>EmptyStateCard.qml</file>
-        <file>CompletionPopup.qml</file>
-        <file>PariTabBar.qml</file>
-        <file>PariToolBar.qml</file>
-        <file>PariToolButton.qml</file>
-        <file>GoToLineDialog.qml</file>
-        <file>FileInfoDialog.qml</file>
-        <file>RenameDialog.qml</file>
-        <file>NewFileDialog.qml</file>
-        <file>PariTheme.qml</file>
-        <file>PariButton.qml</file>
-        <file>PariPaperWell.qml</file>
-        <file>PariReadOnlyTextArea.qml</file>
-        <file>AppLogic.qml</file>
-        <file>PariActions.qml</file>
-        <file>PariMenuBar.qml</file>
-        <file>PariDialogs.qml</file>
-        <file>FileUtils.js</file>
-        <file>FormattingUtils.js</file>
+        <file>app/PariAppWindow.qml</file>
+        <file>app/AppLogic.qml</file>
+        <file>app/PariTheme.qml</file>
+        <file>app/PariActions.qml</file>
+        <file>app/PariMenuBar.qml</file>
+        <file>app/PariToolBar.qml</file>
+        <file>app/PariDialogs.qml</file>
+        <file>app/CustomStatusBar.qml</file>
+        <file>app/AboutWindow.qml</file>
+        
+        <file>filetree/FileTreeDelegate.qml</file>
+        <file>filetree/FileIconProvider.qml</file>
+        <file>filetree/NewFileDialog.qml</file>
+        <file>filetree/RenameDialog.qml</file>
+        <file>filetree/FileInfoDialog.qml</file>
+        
+        <file>common/PariButton.qml</file>
+        <file>common/PariToolButton.qml</file>
+        <file>common/PariPaperWell.qml</file>
+        <file>common/PariReadOnlyTextArea.qml</file>
+        <file>common/PariTabBar.qml</file>
+        <file>common/ColorButton.qml</file>
+        
+        <file>editor/CodeEditorPane.qml</file>
+        <file>editor/EditorLogic.qml</file>
+        <file>editor/LineNumberGutter.qml</file>
+        <file>editor/FindOverlay.qml</file>
+        <file>editor/CompletionPopup.qml</file>
+        <file>editor/EmptyEditorState.qml</file>
+        <file>editor/GoToLineDialog.qml</file>
+        <file>editor/SearchManager.qml</file>
+        
+        <file>ai/OutputPane.qml</file>
+        <file>ai/AiInputControl.qml</file>
+        <file>ai/AiThinkingIndicator.qml</file>
+        <file>ai/ChatLogWindow.qml</file>
+        <file>ai/EmptyStateCard.qml</file>
+        
+        <file>git/GitOutputWindow.qml</file>
+        <file>git/GitLogDelegate.qml</file>
+        
+        <file>buildtools/BuildConfigurationDialog.qml</file>
+        
+        <file>settings/SettingsWindow.qml</file>
+        <file>settings/SettingColorRow.qml</file>
+        
+        <file>utils/FileUtils.js</file>
+        <file>utils/FormattingUtils.js</file>
+
+        <file>app/qmldir</file>
+        <file>filetree/qmldir</file>
+        <file>common/qmldir</file>
+        <file>editor/qmldir</file>
+        <file>ai/qmldir</file>
+        <file>git/qmldir</file>
+        <file>buildtools/qmldir</file>
+        <file>settings/qmldir</file>
+        <file>utils/qmldir</file>
     </qresource>
 </RCC>

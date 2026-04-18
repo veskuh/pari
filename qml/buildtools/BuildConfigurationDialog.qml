@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import QtQuick.Dialogs
+import "../common"
 
 ApplicationWindow {
     id: buildConfigurationWindow

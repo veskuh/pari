@@ -1,0 +1,6 @@
+module filetree
+FileTreeDelegate 1.0 FileTreeDelegate.qml
+FileIconProvider 1.0 FileIconProvider.qml
+NewFileDialog 1.0 NewFileDialog.qml
+RenameDialog 1.0 RenameDialog.qml
+FileInfoDialog 1.0 FileInfoDialog.qml

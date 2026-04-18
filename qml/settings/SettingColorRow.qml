@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../common"
 
 /**
  * A reusable row for the SettingsWindow that displays a label

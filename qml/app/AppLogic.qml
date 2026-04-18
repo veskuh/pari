@@ -1,5 +1,5 @@
 import QtQuick
-import "FormattingUtils.js" as FormattingUtils
+import "../utils/FormattingUtils.js" as FormattingUtils
 
 Item {
     id: root

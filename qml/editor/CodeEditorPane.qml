@@ -1,7 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "FileUtils.js" as FileUtils
+import "../common"
+import "../utils/FileUtils.js" as FileUtils
 
 ColumnLayout {
     id: root

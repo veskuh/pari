@@ -1,0 +1,2 @@
+module buildtools
+BuildConfigurationDialog 1.0 BuildConfigurationDialog.qml

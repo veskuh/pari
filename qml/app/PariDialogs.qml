@@ -2,6 +2,12 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import Qt.labs.platform 1.1 as Platform
+import "../settings"
+import "../ai"
+import "../buildtools"
+import "../editor"
+import "../git"
+import "../filetree"
 
 Item {
     id: root

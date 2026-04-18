@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(fileSystem, &FileSystem::projectOpened, lspClient, &LspClient::startServer);
 
-    const QUrl url("qrc:/qml/PariAppWindow.qml");
+    const QUrl url("qrc:/qml/app/PariAppWindow.qml");
 
     if (app.arguments().contains("--selfcheck")) {
         QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -1,0 +1,10 @@
+module app
+PariAppWindow 1.0 PariAppWindow.qml
+AppLogic 1.0 AppLogic.qml
+PariTheme 1.0 PariTheme.qml
+PariActions 1.0 PariActions.qml
+PariMenuBar 1.0 PariMenuBar.qml
+PariToolBar 1.0 PariToolBar.qml
+PariDialogs 1.0 PariDialogs.qml
+CustomStatusBar 1.0 CustomStatusBar.qml
+AboutWindow 1.0 AboutWindow.qml

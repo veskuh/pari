@@ -1,7 +1,9 @@
 import QtQuick
 import QtTest
 import QtQuick.Controls
-import "../qml"
+import "../qml/app"
+import "../qml/settings"
+import "../qml/common"
 
 Item {
     width: 800
