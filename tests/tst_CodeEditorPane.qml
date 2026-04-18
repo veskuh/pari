@@ -8,6 +8,10 @@ Item {
     width: 800
     height: 600
 
+    PariTheme {
+        id: pariTheme
+    }
+
     // Mock appSettings
     QtObject {
         id: mockAppSettings

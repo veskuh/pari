@@ -16,14 +16,17 @@ Item {
     QtObject {
         id: mockStatusBar
         property string text: ""
+        property string modelName: ""
+        property string branchName: ""
     }
 
     property alias fileSystem: mockFileSystem
-    property alias appSettings: mockAppSettings
+    property alias appSettings: mockSettings
     property alias documentManager: mockDocumentManager
     property alias buildManager: mockBuildManager
     property alias llm: mockLlm
     property alias toolManager: mockToolManager
+    property alias gitManager: mockGitManager
 
     QtObject {
         id: mockFileSystem
@@ -35,8 +38,9 @@ Item {
     }
 
     QtObject {
-        id: mockAppSettings
+        id: mockSettings
         property bool showHiddenFiles: false
+        property string ollamaModel: "test-model"
         function getBuildCommand(path) { return "make" }
     }
 
@@ -65,6 +69,11 @@ Item {
         signal gitLogReady(string log)
     }
 
+    QtObject {
+        id: mockGitManager
+        property string currentBranch: "main"
+    }
+
     AppLogic {
         id: appLogic
         rootWindow: mockRootWindow
@@ -72,6 +81,7 @@ Item {
         outputArea: QtObject { property string text: "" }
         aiOutputPane: QtObject { property string text: ""; function updateDiff(text) {} }
         gitLogModel: QtObject { function parseAndSetLog(log) {} }
+        injectedGitManager: mockGitManager
         stackLayout: QtObject { property int currentIndex: 0 }
         dialogs: QtObject {}
     }

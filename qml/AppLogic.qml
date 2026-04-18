@@ -10,6 +10,7 @@ Item {
     property var outputArea
     property var aiOutputPane
     property var gitLogModel
+    property var injectedGitManager
     property var stackLayout
     property var dialogs
 
@@ -18,6 +19,14 @@ Item {
         if (typeof fileSystem !== 'undefined' && typeof appSettings !== 'undefined') {
             fileSystem.showHiddenFiles = appSettings.showHiddenFiles;
         }
+        if (typeof customStatusBar !== 'undefined' && typeof appSettings !== 'undefined') {
+            customStatusBar.modelName = appSettings.ollamaModel;
+        }
+        
+        var gitM = root.injectedGitManager || (typeof gitManager !== 'undefined' ? gitManager : null);
+        if (typeof customStatusBar !== 'undefined' && gitM && gitM.currentBranch !== undefined) {
+            customStatusBar.branchName = gitM.currentBranch;
+        }
     }
 
     Connections {
@@ -25,6 +34,11 @@ Item {
         function onShowHiddenFilesChanged() {
             if (typeof fileSystem !== 'undefined') {
                 fileSystem.showHiddenFiles = appSettings.showHiddenFiles;
+            }
+        }
+        function onOllamaModelChanged() {
+            if (typeof customStatusBar !== 'undefined') {
+                customStatusBar.modelName = appSettings.ollamaModel;
             }
         }
     }
@@ -72,6 +86,18 @@ Item {
                 customStatusBar.text = qsTr("✨ Processing AI request...");
             } else {
                 customStatusBar.text = qsTr("✅ Ready");
+            }
+        }
+    }
+
+    Connections {
+        target: root.injectedGitManager || (typeof gitManager !== 'undefined' ? gitManager : null)
+        function onCurrentBranchChanged() {
+            if (typeof customStatusBar !== 'undefined') {
+                var gitM = root.injectedGitManager || (typeof gitManager !== 'undefined' ? gitManager : null);
+                if (gitM && gitM.currentBranch !== undefined) {
+                    customStatusBar.branchName = gitM.currentBranch;
+                }
             }
         }
     }

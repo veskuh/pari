@@ -8,10 +8,10 @@ Rectangle {
     width: parent.width
     
     property alias text: statusLabel.text
-    property alias modelName: modelLabel.text
-    property alias branchName: branchLabel.text
+    property string modelName: ""
+    property string branchName: ""
     
-    readonly property bool isDark: appSettings.systemThemeIsDark
+    readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
     
     gradient: Gradient {
         GradientStop { 
@@ -43,13 +43,14 @@ Rectangle {
         Rectangle {
             Layout.preferredHeight: 18
             Layout.preferredWidth: branchLabel.implicitWidth + 12
-            visible: branchLabel.text !== ""
+            visible: root.branchName !== ""
             radius: 2
             color: root.isDark ? "#1a1a1a" : "#fdfdfd"
             border.color: root.isDark ? "#121212" : "#bcbcbc"
             
             Label {
                 id: branchLabel
+                text: "🌿 " + root.branchName
                 anchors.centerIn: parent
                 font.family: "Menlo"
                 font.pixelSize: 10
@@ -69,13 +70,14 @@ Rectangle {
         Rectangle {
             Layout.preferredHeight: 18
             Layout.preferredWidth: modelLabel.implicitWidth + 12
-            visible: modelLabel.text !== ""
+            visible: root.modelName !== ""
             radius: 2
             color: root.isDark ? "#1a1a1a" : "#fdfdfd"
             border.color: root.isDark ? "#121212" : "#bcbcbc"
             
             Label {
                 id: modelLabel
+                text: "💡 " + root.modelName
                 anchors.centerIn: parent
                 font.family: "Menlo"
                 font.pixelSize: 10

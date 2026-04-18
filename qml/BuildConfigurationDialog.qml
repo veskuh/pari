@@ -47,12 +47,6 @@ Dialog {
                 Layout.fillWidth: true
                 selectByMouse: true
                 color: isDark ? "#ffffff" : "#000000"
-                background: Rectangle {
-                    implicitHeight: 28
-                    color: isDark ? "#1e1e1e" : "#ffffff"
-                    border.color: parent.activeFocus ? (isDark ? "#4a9eff" : "#0078d7") : (isDark ? "#444444" : "#cccccc")
-                    radius: 2
-                }
             }
 
             Label {
@@ -67,12 +61,6 @@ Dialog {
                 Layout.fillWidth: true
                 selectByMouse: true
                 color: isDark ? "#ffffff" : "#000000"
-                background: Rectangle {
-                    implicitHeight: 28
-                    color: isDark ? "#1e1e1e" : "#ffffff"
-                    border.color: parent.activeFocus ? (isDark ? "#4a9eff" : "#0078d7") : (isDark ? "#444444" : "#cccccc")
-                    radius: 2
-                }
             }
 
             Label {
@@ -87,12 +75,6 @@ Dialog {
                 Layout.fillWidth: true
                 selectByMouse: true
                 color: isDark ? "#ffffff" : "#000000"
-                background: Rectangle {
-                    implicitHeight: 28
-                    color: isDark ? "#1e1e1e" : "#ffffff"
-                    border.color: parent.activeFocus ? (isDark ? "#4a9eff" : "#0078d7") : (isDark ? "#444444" : "#cccccc")
-                    radius: 2
-                }
             }
         }
 

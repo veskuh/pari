@@ -7,6 +7,10 @@ Item {
     width: 800
     height: 600
 
+    PariTheme {
+        id: pariTheme
+    }
+
     // Mock appSettings
     QtObject {
         id: mockSettings
@@ -124,6 +128,11 @@ Item {
                     var res2 = findRecursively(parent.children[j], checkFunc)
                     if (res2) return res2
                 }
+            }
+
+            if (parent.contentItem && parent.contentItem !== parent) {
+                var res3 = findRecursively(parent.contentItem, checkFunc)
+                if (res3) return res3
             }
             
             return null

@@ -15,6 +15,7 @@ Rectangle {
 
     // Signal emitted when a tab is clicked
     signal tabClicked(int index)
+    signal closeTab(int index)
 
     SystemPalette {
         id: palette
@@ -114,8 +115,28 @@ Rectangle {
                     color: palette.text
                 }
 
+                Label {
+                    text: "✕"
+                    anchors.right: parent.right
+                    anchors.rightMargin: 8
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: 10
+                    color: closeMouseArea.containsMouse ? palette.highlight : palette.text
+                    opacity: 0.7
+
+                    MouseArea {
+                        id: closeMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            root.closeTab(index)
+                        }
+                    }
+                }
+
                 MouseArea {
                     anchors.fill: parent
+                    anchors.rightMargin: 25 // Don't cover the close button
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {

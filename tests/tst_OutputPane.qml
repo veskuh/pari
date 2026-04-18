@@ -9,6 +9,10 @@ Item {
     width: 400
     height: 600
 
+    PariTheme {
+        id: pariTheme
+    }
+
     property QtObject appSettings: QtObject {
         property bool systemThemeIsDark: false
         property string fontFamily: "Menlo"

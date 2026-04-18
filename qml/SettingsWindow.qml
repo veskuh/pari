@@ -8,13 +8,13 @@ ApplicationWindow {
     title: "Settings"
     width: 600
     height: 520
+    
+    // Use pariTheme if available (global in app), otherwise fallback (for tests)
+    readonly property var _pariTheme: (typeof pariTheme !== 'undefined') ? pariTheme : null
 
     // Use a local reference to the global objects to avoid repeated checks and make it safer for tests
     readonly property var _appSettings: (typeof appSettings !== 'undefined') ? appSettings : null
     readonly property var _llm: (typeof llm !== 'undefined') ? llm : null
-
-    property alias ollamaUrl: ollamaUrlField.text
-    property alias ollamaModel: ollamaModelComboBox.currentValue
 
     FontDialog {
         id: fontDialog
@@ -41,12 +41,13 @@ ApplicationWindow {
 
     ColumnLayout {
         anchors.fill: parent
+        anchors.margins: 15
         spacing: 10
-        anchors.margins: 10
 
         Label {
             text: "Ollama Settings"
             font.bold: true
+            color: _pariTheme ? _pariTheme.textColor : "black"
         }
 
         GridLayout {
@@ -55,6 +56,7 @@ ApplicationWindow {
 
             Label {
                 text: "API URL:"
+                color: _pariTheme ? _pariTheme.textColor : "black"
             }
             TextField {
                 id: ollamaUrlField
@@ -64,6 +66,7 @@ ApplicationWindow {
 
             Label {
                 text: "Model:"
+                color: _pariTheme ? _pariTheme.textColor : "black"
             }
             RowLayout {
                 ComboBox {
@@ -83,6 +86,7 @@ ApplicationWindow {
         Label {
             text: "Editor Settings"
             font.bold: true
+            color: _pariTheme ? _pariTheme.textColor : "black"
         }
 
         GridLayout {
@@ -91,12 +95,14 @@ ApplicationWindow {
 
             Label {
                 text: "Font:"
+                color: _pariTheme ? _pariTheme.textColor : "black"
             }
             RowLayout {
                 Label {
                     id: fontValue
                     text: _appSettings ? `${_appSettings.fontFamily}, ${_appSettings.fontSize}` : ""
                     Layout.fillWidth: true
+                    color: _pariTheme ? _pariTheme.textColor : "black"
                 }
                 PariButton {
                     text: "Select"
@@ -106,6 +112,7 @@ ApplicationWindow {
 
             Label {
                 text: "Indentation:"
+                color: _pariTheme ? _pariTheme.textColor : "black"
             }
             RowLayout {
                 spacing: 20
@@ -115,7 +122,7 @@ ApplicationWindow {
                     checked: _appSettings ? _appSettings.indentWithSpaces : true
                 }
                 RowLayout {
-                    Label { text: "Size:" }
+                    Label { text: "Size:"; color: _pariTheme ? _pariTheme.textColor : "black" }
                     SpinBox {
                         id: indentSizeSpinBox
                         from: 1
@@ -129,6 +136,7 @@ ApplicationWindow {
         Label {
             text: "Highlighting Settings"
             font.bold: true
+            color: _pariTheme ? _pariTheme.textColor : "black"
         }
 
         ColumnLayout {
@@ -142,11 +150,13 @@ ApplicationWindow {
                     text: "Dark:"
                     Layout.preferredWidth: 50
                     horizontalAlignment: Text.AlignHCenter
+                    color: _pariTheme ? _pariTheme.textColorDim : "gray"
                 }
                 Label {
                     text: "Light:"
                     Layout.preferredWidth: 50
                     horizontalAlignment: Text.AlignHCenter
+                    color: _pariTheme ? _pariTheme.textColorDim : "gray"
                 }
             }
 

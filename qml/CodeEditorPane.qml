@@ -123,11 +123,7 @@ ColumnLayout {
     PariPaperWell {
         isDark: root.isDark 
         Layout.fillHeight: true
-        
-        color: {
-            if (dirty) return root.isDark ? "#1e2538" : "#fffdf0";
-            return root.isDark ? "#1a1a1a" : "#ffffff";
-        }
+        isDirtyWell: root.dirty
         
         Behavior on color { ColorAnimation { duration: 300 } }
 

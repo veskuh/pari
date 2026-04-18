@@ -12,6 +12,19 @@ import "FormattingUtils.js" as FormattingUtils
 ApplicationWindow {
     id: appWindow
 
+    PariTheme {
+        id: pariTheme
+    }
+
+    Settings {
+        id: windowSettings
+        category: "window"
+        property alias x: appWindow.x
+        property alias y: appWindow.y
+        property alias width: appWindow.width
+        property alias height: appWindow.height
+    }
+
     GitLogModel {
         id: gitLogModel
     }
@@ -27,109 +40,6 @@ ApplicationWindow {
     minimumHeight: 480
 
     visible: true
-    title: qsTr("Pari") + " - " + fileSystem.rootPath
-
-    Settings {
-        property alias x: appWindow.x
-        property alias y: appWindow.y
-        property alias width: appWindow.width
-        property alias height: appWindow.height
-    }
-
-    PariActions {
-        id: actions
-        rootWindow: appWindow
-        dialogs: dialogs
-        stackLayout: stackLayout
-        outputPanel: outputPanel
-        outputArea: outputArea
-        gitLogModel: gitLogModel
-        hasBuildConfiguration: appWindow.hasBuildConfiguration
-        onCloseCurrentFile: appWindow.closeCurrentFile()
-    }
-
-    menuBar: PariMenuBar {
-        actions: actions
-        dialogs: dialogs
-        gitLogModel: gitLogModel
-    }
-
-    header: PariToolBar {
-        id: customToolBar
-        implicitHeight: 64
-        
-        Row {
-            id: leftButtons
-            spacing: 5
-            height: 56
-            anchors.verticalCenter: parent.verticalCenter
-            leftPadding: 5
-
-            PariToolButton {
-                text: qsTr("Build")
-                iconSource: "qrc:/assets/build.png"
-                action: actions.buildAction
-            }
-            PariToolButton {
-                text: qsTr("Run")
-                iconSource: "qrc:/assets/play.png"
-                action: actions.runAction
-            }
-            PariToolButton {
-                text: qsTr("Search")
-                iconSource: "qrc:/assets/search.png"
-                action: actions.findAction
-            }
-        }
-
-        PariTabBar {
-            id: tabBar
-            anchors.verticalCenter: parent.verticalCenter
-            height: parent.height
-            // Position based on the tree column width
-            x: treeColumn.width
-            width: codeColumn.width - 10
-
-            onTabClicked: function(index) { appWindow.setEditorIndex(index) }
-            model: documentManager.documents
-        }
-
-        Row {
-            id: rightButtons
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            height: 56
-            rightPadding: 5
-
-            PariToolButton {
-                text: qsTr("Diff")
-                iconSource: "qrc:/assets/diff.png"
-                enabled: aiOutputPane.text !== ""
-                checkable: true
-                checked: aiOutputPane.diffVisible
-                onClicked: aiOutputPane.diffVisible = !aiOutputPane.diffVisible
-            }
-        }
-    }
-
-    function setEditorIndex(index) {
-        tabBar.currentIndex = index
-        documentManager.setCurrentIndex(index);
-        
-        // Synchronize File Tree highlight with the active document
-        if (index >= 0 && index < documentManager.documents.length) {
-            var doc = documentManager.documents[index];
-            fileSystemView.selectedPath = doc.filePath;
-        } else if (documentManager.documents.length === 0) {
-            fileSystemView.selectedPath = "";
-        }
-    }
-
-    footer: CustomStatusBar {
-        id: customStatusBar
-        modelName: "💡" + appSettings.ollamaModel
-        branchName: gitManager.currentBranch !== "" ? "🌿 " + gitManager.currentBranch : ""
-    }
 
     // --- REFACTORED MAIN CONTENT AREA ---
     // A single SplitView manages the three main panes.
@@ -140,7 +50,7 @@ ApplicationWindow {
         handle: Rectangle {
             implicitWidth: 1
             implicitHeight: 1
-            color: appSettings.systemThemeIsDark ? "#333333" : "#A6ABB2"
+            color: pariTheme.sidebarBorder
         }
 
         // Pane 1: File System (20% width)
@@ -148,7 +58,7 @@ ApplicationWindow {
             id: treeColumn
             SplitView.preferredWidth: appWindow.width * 0.15
             SplitView.minimumWidth: 200
-            color: appSettings.systemThemeIsDark ? "#252525" : "#D6DDE5"
+            color: pariTheme.sidebarBg
 
             ColumnLayout {
                 anchors.fill: parent
@@ -160,7 +70,7 @@ ApplicationWindow {
                     Layout.leftMargin: 10
                     Layout.topMargin: 5
                     Layout.bottomMargin: 5
-                    color: appSettings.systemThemeIsDark ? "#ffffff" : "#000000"
+                    color: pariTheme.textColor
                 }
 
                 TreeView {
@@ -185,7 +95,7 @@ ApplicationWindow {
                 anchors.right: parent.right
                 width: 1
                 height: parent.height
-                color: appSettings.systemThemeIsDark ? "#333333" : "#A6ABB2"
+                color: pariTheme.sidebarBorder
             }
         }
 
@@ -199,7 +109,7 @@ ApplicationWindow {
             handle: Rectangle {
                 implicitWidth: 1
                 implicitHeight: 1
-                color: appSettings.systemThemeIsDark ? "#333333" : "#A6ABB2"
+                color: pariTheme.sidebarBorder
             }
 
             ColumnLayout {
@@ -272,6 +182,7 @@ ApplicationWindow {
                         Label {
                             text: "Build Output"
                             font.bold: true
+                            color: pariTheme.textColor
                         }
                         Item {
                             Layout.fillWidth: true
@@ -304,7 +215,7 @@ ApplicationWindow {
                             width: parent.width
                             Text {
                                 id: outputArea
-                                color: palette.text
+                                color: pariTheme.textColor
                                 width: parent.width
                                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 textFormat: Text.MarkdownText
@@ -342,14 +253,14 @@ ApplicationWindow {
             id: aiColumn
             SplitView.preferredWidth: appWindow.width * 0.30
             SplitView.minimumWidth: 250
-            color: appSettings.systemThemeIsDark ? "#252525" : "#D6DDE5"
+            color: pariTheme.sidebarBg
 
             // Etched left border
             Rectangle {
                 anchors.left: parent.left
                 width: 1
                 height: parent.height
-                color: appSettings.systemThemeIsDark ? "#333333" : "#A6ABB2"
+                color: pariTheme.sidebarBorder
             }
 
             OutputPane {
@@ -360,6 +271,94 @@ ApplicationWindow {
                 diffUtils: DiffUtils {}
             }
         }
+    }
+
+    PariActions {
+        id: actions
+        rootWindow: appWindow
+        dialogs: dialogs
+        stackLayout: stackLayout
+        outputPanel: outputPanel
+        outputArea: outputArea
+        gitLogModel: gitLogModel
+        hasBuildConfiguration: appWindow.hasBuildConfiguration
+        onCloseCurrentFile: appWindow.closeCurrentFile()
+    }
+
+    menuBar: PariMenuBar {
+        actions: actions
+        dialogs: dialogs
+        gitLogModel: gitLogModel
+    }
+
+    header: PariToolBar {
+        id: customToolBar
+        implicitHeight: 64
+        
+        Row {
+            id: leftButtons
+            spacing: 5
+            height: 56
+            anchors.verticalCenter: parent.verticalCenter
+            leftPadding: 5
+
+            PariToolButton {
+                text: qsTr("Build")
+                iconSource: "qrc:/assets/build.png"
+                action: actions.buildAction
+            }
+            PariToolButton {
+                text: qsTr("Run")
+                iconSource: "qrc:/assets/play.png"
+                action: actions.runAction
+            }
+            PariToolButton {
+                text: qsTr("Search")
+                iconSource: "qrc:/assets/search.png"
+                action: actions.findAction
+            }
+        }
+
+        PariTabBar {
+            id: tabBar
+            anchors.left: leftButtons.right
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 10
+            model: documentManager.documents
+            onTabClicked: (index) => setEditorIndex(index)
+            onCloseTab: (index) => {
+                var doc = documentManager.documents[index];
+                if (doc.isDirty) {
+                    dialogs.targetIndex = index;
+                    dialogs.unsavedChangesDialog.open();
+                } else {
+                    documentManager.closeFile(index);
+                    setEditorIndex(documentManager.currentIndex);
+                }
+            }
+        }
+    }
+
+    function setEditorIndex(index) {
+        tabBar.currentIndex = index
+        documentManager.setCurrentIndex(index);
+        
+        // Synchronize File Tree highlight with the active document
+        if (index >= 0 && index < documentManager.documents.length) {
+            var doc = documentManager.documents[index];
+            fileSystemView.selectedPath = doc.filePath;
+        } else if (documentManager.documents.length === 0) {
+            fileSystemView.selectedPath = "";
+        }
+    }
+
+    footer: CustomStatusBar {
+        id: customStatusBar
+        text: qsTr("✅ Ready")
+        modelName: (typeof appSettings !== 'undefined') ? appSettings.ollamaModel : ""
+        branchName: (typeof gitManager !== 'undefined') ? gitManager.currentBranch : ""
     }
 
     PariDialogs {
@@ -430,6 +429,7 @@ ApplicationWindow {
         outputArea: outputArea
         aiOutputPane: aiOutputPane
         gitLogModel: gitLogModel
+        injectedGitManager: gitManager
         stackLayout: stackLayout
         dialogs: dialogs
     }
