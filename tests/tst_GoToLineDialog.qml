@@ -63,12 +63,30 @@ Item {
 
             textInput.text = "42"
 
-            // StandardDialog OK button
-            goToLineDialog.accept()
+            var okBtn = findChild(goToLineDialog, "okButton")
+            verify(okBtn !== null, "OK button should exist")
+            mouseClick(okBtn)
 
             compare(spy.count, 1)
             var args = spy.signalArguments[0]
             compare(args[0], 42)
+        }
+
+        function findChild(parent, objectName) {
+            if (!parent) return null;
+            if (parent.objectName === objectName) return parent;
+
+            if (parent.children) {
+                for (var i = 0; i < parent.children.length; i++) {
+                    var found = findChild(parent.children[i], objectName);
+                    if (found) return found;
+                }
+            }
+            if (parent.contentItem && parent.contentItem !== parent) {
+                var foundInContent = findChild(parent.contentItem, objectName);
+                if (foundInContent) return foundInContent;
+            }
+            return null;
         }
     }
 }

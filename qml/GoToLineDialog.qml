@@ -6,7 +6,7 @@ Dialog {
     id: goToLineDialog
     title: qsTr("Go to Line")
     modal: true
-    standardButtons: Dialog.Ok | Dialog.Cancel
+    standardButtons: Dialog.NoButton
     padding: 10
 
     signal goToLine(int lineNumber)
@@ -23,6 +23,21 @@ Dialog {
             focus: true
             onAccepted: {
                 goToLineDialog.accept()
+            }
+        }
+
+        RowLayout {
+            Layout.alignment: Qt.AlignRight
+            PariButton {
+                objectName: "okButton"
+                text: qsTr("OK")
+                highlighted: true
+                onClicked: goToLineDialog.accept()
+            }
+            PariButton {
+                objectName: "cancelButton"
+                text: qsTr("Cancel")
+                onClicked: goToLineDialog.reject()
             }
         }
     }

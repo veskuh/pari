@@ -38,18 +38,21 @@ Dialog {
 
         RowLayout {
             Layout.alignment: Qt.AlignRight
-            Button {
-                id: okButton
-                text: "OK"
+            PariButton {
+                id: renameButton
+                objectName: "renameButton"
+                text: qsTr("Rename")
                 enabled: newNameField.acceptableInput && newNameField.text.trim().length > 0
+                highlighted: true
                 onClicked: {
                     if (renameDialog.doRename()) {
                         renameDialog.accept()
                     }
                 }
             }
-            Button {
-                text: "Cancel"
+            PariButton {
+                objectName: "cancelButton"
+                text: qsTr("Cancel")
                 onClicked: {
                     renameDialog.reject()
                 }

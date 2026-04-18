@@ -56,9 +56,10 @@ ApplicationWindow {
             }
         }
 
-        Button {
-            text: "Close"
-            Layout.alignment: Qt.AlignRight
+        PariButton {
+            objectName: "closeButton"
+            text: qsTr("Close")
+            Layout.alignment: Qt.AlignHCenter
             onClicked: aboutWindow.close()
         }
     }

@@ -69,6 +69,29 @@ Item {
             var outputArea = gitOutputWindow.outputArea
             verify(outputArea !== null, "outputArea found")
             verify(!outputArea.visible, "outputArea should be hidden")
+
+            var closeBtn = findChildRecursive(gitOutputWindow, "closeButton")
+            verify(closeBtn !== null, "closeButton not found")
+        }
+
+        function findChildRecursive(parent, objectName) {
+            if (!parent) return null;
+            if (parent.objectName === objectName) return parent;
+            
+            // Search in children
+            if (parent.children) {
+                for (var i = 0; i < parent.children.length; i++) {
+                    var found = findChildRecursive(parent.children[i], objectName);
+                    if (found) return found;
+                }
+            }
+            
+            // Search in contentItem (for Windows/Dialogs/Panes)
+            if (parent.contentItem) {
+                var foundInContent = findChildRecursive(parent.contentItem, objectName);
+                if (foundInContent) return foundInContent;
+            }
+            return null;
         }
     }
 }

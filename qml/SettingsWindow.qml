@@ -72,7 +72,7 @@ ApplicationWindow {
                     model: _appSettings ? _appSettings.availableModels : []
                     Layout.fillWidth: true
                 }
-                Button {
+                PariButton {
                     text: "Refresh"
                     objectName: "refreshButton"
                     onClicked: if (_llm) _llm.listModels()
@@ -98,7 +98,7 @@ ApplicationWindow {
                     text: _appSettings ? `${_appSettings.fontFamily}, ${_appSettings.fontSize}` : ""
                     Layout.fillWidth: true
                 }
-                Button {
+                PariButton {
                     text: "Select"
                     onClicked: fontDialog.open()
                 }
@@ -213,9 +213,10 @@ ApplicationWindow {
             Layout.alignment: Qt.AlignRight
             spacing: 10
 
-            Button {
+            PariButton {
                 text: "Apply"
                 objectName: "applyButton"
+                highlighted: true
                 onClicked: {
                     if (_appSettings) {
                         _appSettings.ollamaUrl = ollamaUrlField.text;
@@ -229,7 +230,7 @@ ApplicationWindow {
                     settingsWindow.close();
                 }
             }
-            Button {
+            PariButton {
                 text: "Cancel"
                 onClicked: {
                     settingsWindow.close();

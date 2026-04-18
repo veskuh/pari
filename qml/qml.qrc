@@ -30,6 +30,7 @@
         <file>FileInfoDialog.qml</file>
         <file>RenameDialog.qml</file>
         <file>NewFileDialog.qml</file>
+        <file>PariButton.qml</file>
         <file>PariPaperWell.qml</file>
         <file>PariReadOnlyTextArea.qml</file>
         <file>AppLogic.qml</file>

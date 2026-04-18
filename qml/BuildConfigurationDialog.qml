@@ -107,12 +107,14 @@ Dialog {
             color: "transparent"
         }
         
-        Button {
+        PariButton {
+            objectName: "saveButton"
             text: qsTr("Save")
             DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
             highlighted: true
         }
-        Button {
+        PariButton {
+            objectName: "cancelButton"
             text: qsTr("Cancel")
             DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
         }

@@ -98,7 +98,8 @@ Window {
                 }
             }
 
-            Button {
+            PariButton {
+                objectName: "closeButton"
                 text: qsTr("Close")
                 onClicked: gitOutputWindow.close()
                 Layout.alignment: Qt.AlignRight

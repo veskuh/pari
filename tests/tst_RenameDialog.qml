@@ -77,8 +77,8 @@ Item {
 
             textInput.text = "new_file.txt"
 
-            var okBtn = findChildByText(renameDialog.contentItem, "OK")
-            verify(okBtn !== null, "OK button should exist")
+            var okBtn = findChild(renameDialog, "renameButton")
+            verify(okBtn !== null, "Rename button should exist")
 
             // Should be enabled now
             verify(okBtn.enabled)
@@ -97,8 +97,8 @@ Item {
             var textInput = findChildByProperty(renameDialog.contentItem, "placeholderText", "New name")
             textInput.text = "   "
 
-            var okBtn = findChildByText(renameDialog.contentItem, "OK")
-            verify(!okBtn.enabled, "OK button should be disabled for empty text")
+            var okBtn = findChild(renameDialog, "renameButton")
+            verify(!okBtn.enabled, "Rename button should be disabled for empty text")
 
             renameDialog.reject()
         }
@@ -110,8 +110,8 @@ Item {
             var textInput = findChildByProperty(renameDialog.contentItem, "placeholderText", "New name")
             textInput.text = "folder/file.txt"
 
-            var okBtn = findChildByText(renameDialog.contentItem, "OK")
-            verify(!okBtn.enabled, "OK button should be disabled when text has slash")
+            var okBtn = findChild(renameDialog, "renameButton")
+            verify(!okBtn.enabled, "Rename button should be disabled when text has slash")
 
             renameDialog.reject()
         }
@@ -125,7 +125,7 @@ Item {
             var textInput = findChildByProperty(renameDialog.contentItem, "placeholderText", "New name")
             textInput.text = "new_file.txt"
 
-            var okBtn = findChildByText(renameDialog.contentItem, "OK")
+            var okBtn = findChild(renameDialog, "renameButton")
             mouseClick(okBtn)
 
             // Dialog should stay visible because it failed

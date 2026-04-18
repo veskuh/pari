@@ -40,17 +40,20 @@ Dialog {
 
         RowLayout {
             Layout.alignment: Qt.AlignRight
-            Button {
+            PariButton {
                 id: createButton
+                objectName: "createButton"
                 text: qsTr("Create")
                 enabled: fileNameField.acceptableInput && fileNameField.text.trim().length > 0
+                highlighted: true
                 onClicked: {
                     if (newFileDialog.doCreate()) {
                         newFileDialog.accept()
                     }
                 }
             }
-            Button {
+            PariButton {
+                objectName: "cancelButton"
                 text: qsTr("Cancel")
                 onClicked: {
                     newFileDialog.reject()
