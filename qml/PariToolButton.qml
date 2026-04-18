@@ -33,7 +33,7 @@ AbstractButton {
         Label {
             Layout.alignment: Qt.AlignHCenter
             text: control.text
-            font.pixelSize: 10
+            font.pixelSize: (typeof pariTheme !== 'undefined') ? pariTheme.fontToolbar : 11
             color: {
                 if (control.isPrimary) return "#ffffff";
                 if (control.checked) return control.isDark ? "#4aa9ff" : "#0051a6";

@@ -44,6 +44,10 @@ QtObject {
     // --- Fonts ---
     readonly property string monoFont: (typeof appSettings !== 'undefined' && appSettings && appSettings.fontFamily) ? appSettings.fontFamily : (Qt.platform.os === 'osx' ? "Menlo" : "monospace")
     readonly property int fontSize: (typeof appSettings !== 'undefined' && appSettings && appSettings.fontSize) ? appSettings.fontSize : 12
+    
+    // Classic macOS hierarchy: 11pt for toolbar/small, 13pt for standard buttons
+    readonly property int fontToolbar: 11
+    readonly property int fontButton: 13
     readonly property int fontSizeSmall: fontSize - 1
     readonly property int fontSizeLarge: fontSize + 2
 }

@@ -111,6 +111,7 @@ Rectangle {
                     text: modelData.isDirty? modelData.fileName +  "- ✏️ Edited" : modelData.fileName
                     anchors.centerIn: parent
                     font.bold: root.currentIndex === index
+                    font.pixelSize: (typeof pariTheme !== 'undefined') ? pariTheme.fontToolbar : 11
                     // Active text uses the system highlight color, inactive uses standard text color
                     color: palette.text
                 }

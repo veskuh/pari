@@ -15,7 +15,7 @@ AbstractButton {
 
     contentItem: Label {
         text: control.text
-        font.pixelSize: (typeof pariTheme !== 'undefined') ? pariTheme.fontSizeLarge : 13
+        font.pixelSize: (typeof pariTheme !== 'undefined') ? pariTheme.fontButton : 13
         color: {
             if (control.highlighted) return (typeof pariTheme !== 'undefined') ? pariTheme.textColorInverse : "#ffffff";
             return _isDark ? (typeof pariTheme !== 'undefined' ? pariTheme.textColorInverse : "#ffffff") : (typeof pariTheme !== 'undefined' ? pariTheme.textColor : "#000000");
