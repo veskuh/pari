@@ -10,7 +10,18 @@ The interface achieve this by contrasting "Machine" elements (gradients, recesse
 
 ## 2. Architecture: The Modular Atelier
 
-The UI is built using a highly modular component architecture to ensure maintainability and consistency.
+The UI is built using a highly modular component architecture to ensure maintainability and consistency. QML components are organized into feature-based subdirectories, each with its own `qmldir` for proper namespacing and resource management.
+
+### QML Directory Structure
+*   **`ai/`**: Components for AI interaction (Chat, Thinking indicators, Output panes).
+*   **`app/`**: High-level application shell, logic, and global dialogs.
+*   **`buildtools/`**: Build configuration and management interfaces.
+*   **`common/`**: Reusable UI primitives (Buttons, Wells, Tab bars).
+*   **`editor/`**: Core code editor logic and UI overlays.
+*   **`filetree/`**: Project navigation and file system interaction.
+*   **`git/`**: Git-specific views (Diffs, Logs).
+*   **`settings/`**: Application configuration windows.
+*   **`utils/`**: Shared JavaScript utility functions.
 
 ### Core Layout Orchestration
 *   **`PariAppWindow`**: The primary container that orchestrates the overall workspace.
@@ -24,15 +35,22 @@ A reusable container that implements the "recessed" skeuomorphic look. It automa
 *   `OutputPane` (AI Output & Diffs)
 *   The Build Output panel.
 
+### Custom UI Primitives
+*   **`PariButton`**: A skeuomorphic button component that supports raised/depressed states, custom icons, and theme-aware styling.
+*   **`PariToolButton`**: A compact version of the button optimized for toolbars.
+*   **`PariTabBar`**: A custom tab interface with sliding indicators for document navigation.
+
 ---
 
 ## 3. Colors & Surface Logic
 
 ### Theme-Aware Palette
-The system supports full **Light** and **Dark** modes with smooth transitions.
+The system supports full **Light** and **Dark** modes with smooth transitions. All windows, dialogs, and components must utilize the `PariTheme` constants (colors, metrics, and fonts) to ensure visual consistency across the entire application.
+
 *   **Paper Background:** `#ffffff` (Light) / `#1a1a1a` (Dark).
 *   **Dirty State (Drafting):** Transitions to `#fffdf0` (Cream) / `#1e2538` (Navy) to signal unsaved changes.
 *   **Bezels & Machine:** Neutral greys with metallic gradients.
+*   **Global Access:** Components should use the `pariTheme` instance (usually provided by the application shell) or a safe fallback pattern (e.g., `readonly property var _pariTheme: (typeof pariTheme !== 'undefined') ? pariTheme : null`) for testability.
 
 ---
 
