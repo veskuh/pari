@@ -122,7 +122,6 @@ ColumnLayout {
     }
 
     PariPaperWell {
-        isDark: root.isDark 
         Layout.fillHeight: true
         isDirtyWell: root.dirty
         

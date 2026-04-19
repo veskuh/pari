@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Basic
+import "../app"
 
 AbstractButton {
     id: control
@@ -10,15 +11,18 @@ AbstractButton {
     
     property bool highlighted: false
     
-    // Use pariTheme if available, otherwise fallback to appSettings (for tests)
-    readonly property bool _isDark: (typeof pariTheme !== 'undefined') ? pariTheme.isDark : ((typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false)
+    // Use pariTheme if available, otherwise fallback to a local PariTheme instance (for tests)
+    readonly property var _theme: (typeof pariTheme !== 'undefined') ? pariTheme : fallbackTheme
+    PariTheme { id: fallbackTheme }
+
+    readonly property bool _isDark: _theme.isDark
 
     contentItem: Label {
         text: control.text
-        font.pixelSize: (typeof pariTheme !== 'undefined') ? pariTheme.fontButton : 13
+        font.pixelSize: _theme.fontButton
         color: {
-            if (control.highlighted) return (typeof pariTheme !== 'undefined') ? pariTheme.textColorInverse : "#ffffff";
-            return _isDark ? (typeof pariTheme !== 'undefined' ? pariTheme.textColorInverse : "#ffffff") : (typeof pariTheme !== 'undefined' ? pariTheme.textColor : "#000000");
+            if (control.highlighted) return _theme.textColorInverse;
+            return _isDark ? _theme.textColorInverse : _theme.textColor;
         }
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -26,13 +30,13 @@ AbstractButton {
     }
 
     background: Rectangle {
-        radius: (typeof pariTheme !== 'undefined') ? pariTheme.borderRadius : 4
+        radius: _theme.borderRadius
         border.width: 1
         border.color: {
             if (control.highlighted) {
-                return _isDark ? (typeof pariTheme !== 'undefined' ? pariTheme.accentColor : "#0d4d92") : (typeof pariTheme !== 'undefined' ? pariTheme.accentColor : "#2a8bf2");
+                return _theme.accentColor;
             }
-            return (typeof pariTheme !== 'undefined') ? pariTheme.sidebarBorder : (_isDark ? "#111111" : "#9b9b9b");
+            return _theme.sidebarBorder;
         }
         
         gradient: Gradient {
@@ -44,10 +48,10 @@ AbstractButton {
                         return _isDark ? "#1a1a1a" : "#c0c0c0";
                     }
                     if (control.highlighted) {
-                        return (typeof pariTheme !== 'undefined') ? (_isDark ? pariTheme.btnDarkPrimaryTop : pariTheme.btnLightPrimaryTop) : (_isDark ? "#1a6ac3" : "#3b99fc");
+                        return _isDark ? _theme.btnDarkPrimaryTop : _theme.btnLightPrimaryTop;
                     }
                     if (control.hovered) return _isDark ? "#4a4a4a" : "#fdfdfd";
-                    return (typeof pariTheme !== 'undefined') ? (_isDark ? pariTheme.btnDarkTop : pariTheme.btnLightTop) : (_isDark ? "#3c3c3c" : "#f0f0f0");
+                    return _isDark ? _theme.btnDarkTop : _theme.btnLightTop;
                 }
             }
             GradientStop { 
@@ -58,10 +62,10 @@ AbstractButton {
                         return _isDark ? "#000000" : "#a0a0a0";
                     }
                     if (control.highlighted) {
-                        return (typeof pariTheme !== 'undefined') ? (_isDark ? pariTheme.btnDarkPrimaryBottom : pariTheme.btnLightPrimaryBottom) : (_isDark ? "#0d4d92" : "#0078d7");
+                        return _isDark ? _theme.btnDarkPrimaryBottom : _theme.btnLightPrimaryBottom;
                     }
                     if (control.hovered) return _isDark ? "#2a2a2a" : "#d0d0d0";
-                    return (typeof pariTheme !== 'undefined') ? (_isDark ? pariTheme.btnDarkBottom : pariTheme.btnLightBottom) : (_isDark ? "#252525" : "#cccccc");
+                    return _isDark ? _theme.btnDarkBottom : _theme.btnLightBottom;
                 }
             }
         }
