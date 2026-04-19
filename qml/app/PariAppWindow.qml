@@ -146,6 +146,8 @@ ApplicationWindow {
                                 if (isActivePane) {
                                     tabBar.currentIndex = index
                                     appWindow.currentEditor = editor
+                                    fileSystem.currentFilePath = filePath
+                                    fileSystemView.selectedPath = filePath
                                 }
                             }
 
@@ -353,8 +355,10 @@ ApplicationWindow {
         if (index >= 0 && index < documentManager.documents.length) {
             var doc = documentManager.documents[index];
             fileSystemView.selectedPath = doc.filePath;
+            fileSystem.currentFilePath = doc.filePath;
         } else if (documentManager.documents.length === 0) {
             fileSystemView.selectedPath = "";
+            fileSystem.currentFilePath = "";
         }
     }
 

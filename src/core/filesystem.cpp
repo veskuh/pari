@@ -144,6 +144,7 @@ void FileSystem::setRootPath(const QString &path)
 
         QDir dir(path);
         bool isGit = dir.exists(".git");
+
         if (m_isGitRepository != isGit) {
             m_isGitRepository = isGit;
             emit isGitRepositoryChanged();

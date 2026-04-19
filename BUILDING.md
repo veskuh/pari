@@ -8,7 +8,7 @@
 - **Ninja/Make:** Build system generator.
 - **Ollama:** Locally running instance for AI features.
 
-### Tools for Features
+### Tools for Features 
 - **clang-format:** For C++ code formatting.
 - **qmlformat:** For QML code formatting.
 
