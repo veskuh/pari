@@ -11,17 +11,21 @@ Dialog {
     width: 400
     standardButtons: Dialog.NoButton
 
+    // Use pariTheme if available (global in app), otherwise fallback (for tests)
+    readonly property var _pariTheme: (typeof pariTheme !== 'undefined') ? pariTheme : null
+
+    padding: _pariTheme ? _pariTheme.marginStandard : 15
+
     property string oldPath
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 10
-        spacing: 15
+    contentItem: ColumnLayout {
+        spacing: _pariTheme ? _pariTheme.paddingLarge : 15
 
         Label {
             text: "Enter new name for: " + (renameDialog.oldPath ? renameDialog.oldPath.substring(renameDialog.oldPath.lastIndexOf('/') + 1) : "")
             Layout.fillWidth: true
             elide: Text.ElideMiddle
+            color: _pariTheme ? _pariTheme.textColor : "black"
         }
 
         TextField {
@@ -30,15 +34,17 @@ Dialog {
             placeholderText: "New name"
             validator: RegularExpressionValidator { regularExpression: /[^\\/]+/ }
             focus: true
+            color: _pariTheme ? _pariTheme.textColor : "black"
             onAccepted: {
-                if (okButton.enabled) {
-                    okButton.clicked()
+                if (renameButton.enabled) {
+                    renameButton.clicked()
                 }
             }
         }
 
         RowLayout {
             Layout.alignment: Qt.AlignRight
+            spacing: _pariTheme ? _pariTheme.paddingMedium : 10
             PariButton {
                 id: renameButton
                 objectName: "renameButton"

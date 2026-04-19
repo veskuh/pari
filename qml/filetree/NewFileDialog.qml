@@ -9,22 +9,25 @@ Dialog {
     title: qsTr("New File")
     modal: true
     width: 400
-    height: 200
+    height: 220
     standardButtons: Dialog.NoButton
+
+    // Use pariTheme if available (global in app), otherwise fallback (for tests)
+    readonly property var _pariTheme: (typeof pariTheme !== 'undefined') ? pariTheme : null
+
+    padding: _pariTheme ? _pariTheme.marginStandard : 15
 
     property string folderPath
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: (typeof pariTheme !== 'undefined') ? pariTheme.marginStandard : 15
-        spacing: (typeof pariTheme !== 'undefined') ? pariTheme.paddingLarge : 15
+    contentItem: ColumnLayout {
+        spacing: _pariTheme ? _pariTheme.paddingLarge : 15
 
         Label {
             text: qsTr("Create new file in: ") + newFileDialog.folderPath
             Layout.fillWidth: true
             elide: Text.ElideMiddle
-            font.pixelSize: 11
-            color: "gray"
+            font.pixelSize: _pariTheme ? _pariTheme.fontSizeSmall : 11
+            color: _pariTheme ? _pariTheme.textColorDim : "gray"
         }
 
         TextField {
@@ -33,6 +36,7 @@ Dialog {
             placeholderText: qsTr("File name")
             validator: RegularExpressionValidator { regularExpression: /[^\\/]+/ }
             focus: true
+            color: _pariTheme ? _pariTheme.textColor : "black"
             onAccepted: {
                 if (createButton.enabled) {
                     createButton.clicked()
@@ -42,8 +46,7 @@ Dialog {
 
         RowLayout {
             Layout.alignment: Qt.AlignRight
-            spacing: (typeof pariTheme !== 'undefined') ? pariTheme.paddingMedium : 10
-            Layout.topMargin: (typeof pariTheme !== 'undefined') ? pariTheme.paddingMedium : 10
+            spacing: _pariTheme ? _pariTheme.paddingMedium : 10
             PariButton {
                 id: createButton
                 objectName: "createButton"

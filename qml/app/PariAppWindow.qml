@@ -84,7 +84,7 @@ ApplicationWindow {
                     model: fileSystem.model
                     property string selectedPath: ""
 
-                    delegate: FileTreeDelegate {}
+                    delegate: FileTreeDelegate { mainWindow: appWindow }
                 }
                 Connections {
                     target: fileSystemView

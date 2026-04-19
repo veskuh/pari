@@ -16,7 +16,7 @@ Item {
     required property int depth
     required property bool expanded
     
-    property var appWindow
+    property var mainWindow
     property bool isDirectory: fileSystem.isDirectory(root.filePath)
     property bool highlight: (typeof fileSystemView !== 'undefined') ? (root.filePath === fileSystemView.selectedPath) : false
     
@@ -181,8 +181,9 @@ Item {
             onTriggered: {
                 var dialog = dialogs.newFileDialog;
                 dialog.folderPath = root.filePath;
-                dialog.x = appWindow.x + appWindow.width / 2 - dialog.width / 2;
-                dialog.y = appWindow.y + appWindow.height / 2 - dialog.height / 2;
+                // Dialog (Popup) coordinates are relative to parent (window content area)
+                dialog.x = (mainWindow.width - dialog.width) / 2;
+                dialog.y = (mainWindow.height - dialog.height) / 2;
                 dialog.open();
             }
         }
@@ -205,9 +206,12 @@ Item {
                     fileSize: fileInfo.size,
                     fileModified: fileInfo.modified
                 });
-                dialog.x = appWindow.x + appWindow.width / 2 - dialog.width / 2;
-                dialog.y = appWindow.y + appWindow.height / 2 - dialog.height / 2;
-                dialog.show();
+                if (dialog) {
+                    // ApplicationWindow coordinates are screen-relative
+                    dialog.x = mainWindow.x + (mainWindow.width - dialog.width) / 2;
+                    dialog.y = mainWindow.y + (mainWindow.height - dialog.height) / 2;
+                    dialog.show();
+                }
             }
         }
         MenuItem {
@@ -215,13 +219,14 @@ Item {
             onTriggered: {
                 var component = Qt.createComponent("RenameDialog.qml");
                 if (component.status === Component.Ready) {
-                    var dialog = component.createObject(root, { oldPath: root.filePath });
+                    var dialog = component.createObject(mainWindow.contentItem, { oldPath: root.filePath });
                     if (dialog) {
                         dialog.onClosed.connect(function() {
                             dialog.destroy();
                         });
-                        dialog.x = appWindow.x + appWindow.width / 2 - dialog.width / 2;
-                        dialog.y = appWindow.y + appWindow.height / 2 - dialog.height / 2;
+                        // Dialog (Popup) coordinates are relative to parent (window content area)
+                        dialog.x = (mainWindow.width - dialog.width) / 2;
+                        dialog.y = (mainWindow.height - dialog.height) / 2;
                         dialog.open();
                     } else {
                         console.error("Failed to create Rename dialog object");
