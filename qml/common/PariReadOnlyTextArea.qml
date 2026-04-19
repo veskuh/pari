@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Basic
+import "../app"
 
 ScrollView {
     id: root
@@ -13,7 +14,11 @@ ScrollView {
     property alias textAreaFont: textArea.font
     property alias color: textArea.color
 
-    readonly property bool isDark: (typeof pariTheme !== 'undefined') ? pariTheme.isDark : ((typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false)
+    // Use pariTheme if available, otherwise fallback to a local PariTheme instance (for tests)
+    readonly property var _theme: (typeof pariTheme !== 'undefined') ? pariTheme : fallbackTheme
+    PariTheme { id: fallbackTheme }
+
+    readonly property bool isDark: _theme.isDark
 
     TextArea {
         id: textArea
@@ -21,10 +26,10 @@ ScrollView {
         readOnly: true
         wrapMode: Text.WordWrap
         textFormat: root.textFormat
-        font.family: (typeof pariTheme !== 'undefined') ? pariTheme.monoFont : ((typeof appSettings !== 'undefined' && appSettings && appSettings.fontFamily) ? appSettings.fontFamily : "Menlo")
-        font.pointSize: (typeof pariTheme !== 'undefined') ? pariTheme.fontSize : ((typeof appSettings !== 'undefined' && appSettings && appSettings.fontSize) ? appSettings.fontSize : 12)
-        color: (typeof pariTheme !== 'undefined') ? pariTheme.textColor : (isDark ? "#d0d0d0" : "#1a1c1c")
-        padding: (typeof pariTheme !== 'undefined') ? pariTheme.paddingLarge : 10
+        font.family: _theme.monoFont
+        font.pointSize: _theme.fontSize
+        color: _theme.textColor
+        padding: _theme.paddingLarge
         background: Rectangle {
             color: "transparent"
         }

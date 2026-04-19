@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "../app"
 
 AbstractButton {
     id: control
@@ -12,7 +13,11 @@ AbstractButton {
     text: action ? action.text : ""
     iconSource: action ? action.iconSource : ""
     
-    readonly property bool isDark: appSettings.systemThemeIsDark
+    // Use pariTheme if available, otherwise fallback to a local PariTheme instance (for tests)
+    readonly property var _theme: (typeof pariTheme !== 'undefined') ? pariTheme : fallbackTheme
+    PariTheme { id: fallbackTheme }
+
+    readonly property bool isDark: _theme.isDark
     
     implicitWidth: 56
     implicitHeight: 56
@@ -33,7 +38,7 @@ AbstractButton {
         Label {
             Layout.alignment: Qt.AlignHCenter
             text: control.text
-            font.pixelSize: (typeof pariTheme !== 'undefined') ? pariTheme.fontToolbar : 11
+            font.pixelSize: _theme.fontToolbar
             color: {
                 if (control.isPrimary) return "#ffffff";
                 if (control.checked) return control.isDark ? "#4aa9ff" : "#0051a6";

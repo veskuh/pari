@@ -2,6 +2,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import "../app"
 
 Rectangle {
     id: root
@@ -12,6 +13,10 @@ Rectangle {
     property int indicatorHeight: 3
     property double activeHeaderX : currentIndex * activeHeaderWidth
     property double activeHeaderWidth : 0.0
+
+    // Use pariTheme if available, otherwise fallback to a local PariTheme instance (for tests)
+    readonly property var _theme: (typeof pariTheme !== 'undefined') ? pariTheme : fallbackTheme
+    PariTheme { id: fallbackTheme }
 
     // Signal emitted when a tab is clicked
     signal tabClicked(int index)
@@ -111,7 +116,7 @@ Rectangle {
                     text: modelData.isDirty? modelData.fileName +  "- ✏️ Edited" : modelData.fileName
                     anchors.centerIn: parent
                     font.bold: root.currentIndex === index
-                    font.pixelSize: (typeof pariTheme !== 'undefined') ? pariTheme.fontToolbar : 11
+                    font.pixelSize: _theme.fontToolbar
                     // Active text uses the system highlight color, inactive uses standard text color
                     color: palette.text
                 }

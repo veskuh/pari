@@ -1,21 +1,23 @@
 import QtQuick
 import QtQuick.Layouts
+import "../app"
 
 Rectangle {
     id: root
     
-    // Fallback to appSettings only if pariTheme is not available (e.g. in standalone tests)
-    readonly property bool _isDark: (typeof pariTheme !== 'undefined') ? pariTheme.isDark : ((typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false)
-    
-    property bool isDark: _isDark
+    // Use pariTheme if available, otherwise fallback to a local PariTheme instance (for tests)
+    readonly property var _theme: (typeof pariTheme !== 'undefined') ? pariTheme : fallbackTheme
+    PariTheme { id: fallbackTheme }
+
+    readonly property bool isDark: _theme.isDark
     property alias content: container.data
 
     Layout.fillWidth: true
-    Layout.margins: (typeof pariTheme !== 'undefined') ? pariTheme.paddingSmall : 4
-    radius: (typeof pariTheme !== 'undefined') ? pariTheme.borderRadius : 2
+    Layout.margins: _theme.paddingSmall
+    radius: _theme.borderRadius
     
-    color: (typeof pariTheme !== 'undefined') ? (isDirtyWell ? pariTheme.editorBgDirty : pariTheme.editorBg) : (isDark ? "#1a1a1a" : "#ffffff")
-    border.color: (typeof pariTheme !== 'undefined') ? pariTheme.editorBorder : (isDark ? "#121212" : "#bcbcbc")
+    color: isDirtyWell ? _theme.editorBgDirty : _theme.editorBg
+    border.color: _theme.editorBorder
     border.width: 1
 
     property bool isDirtyWell: false

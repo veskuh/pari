@@ -56,7 +56,6 @@ Window {
 
             PariPaperWell {
                 id: well
-                isDark: gitOutputWindow.isDark
                 Layout.fillHeight: true
                 
                 StackLayout {
