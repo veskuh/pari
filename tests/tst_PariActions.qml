@@ -15,12 +15,12 @@ Item {
             function saveCursorPosition() {}
             function format() {}
         }
-        property alias aiOutputPane: mockAiPane
+        property alias aiColumn: mockAiColumn
         property alias treeColumn: mockTreeColumn
     }
 
     QtObject {
-        id: mockAiPane
+        id: mockAiColumn
         property bool visible: false
     }
 
@@ -101,9 +101,9 @@ Item {
 
         function test_toggle_ai_pane() {
             actions.showAiPaneAction.trigger()
-            verify(mockAiPane.visible)
+            verify(mockAiColumn.visible)
             actions.showAiPaneAction.trigger()
-            verify(!mockAiPane.visible)
+            verify(!mockAiColumn.visible)
         }
 
         function test_toggle_tree_pane() {

@@ -38,6 +38,7 @@ ApplicationWindow {
     property int goToLineNumber: -1
     property alias fileSystemView: fileSystemView
     property alias aiOutputPane: aiOutputPane
+    property alias aiColumn: aiColumn
     property alias treeColumn: treeColumn
 
     minimumWidth: 800

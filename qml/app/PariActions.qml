@@ -158,7 +158,7 @@ Item {
         text: qsTr("Show AI Pane")
         shortcut: "Ctrl+shift+0"
         onTriggered: {
-            rootWindow.aiOutputPane.visible = !rootWindow.aiOutputPane.visible;
+            rootWindow.aiColumn.visible = !rootWindow.aiColumn.visible;
         }
     }
 
