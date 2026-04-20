@@ -10,6 +10,7 @@ Item {
     property var outputArea
     property var aiOutputPane
     property var gitLogModel
+    property var blameModelBackend
     property var injectedGitManager
     property var stackLayout
     property var dialogs
@@ -105,6 +106,11 @@ Item {
     Connections {
         target: (typeof toolManager !== 'undefined') ? toolManager : null
         function onOutputReady(command, output, branchName) {
+            if (command.includes("git blame")) {
+                blameModelBackend.parseRawOutput(output);
+            } else if (command.startsWith("git ")) {
+                blameModelBackend.clear();
+            }
             rootWindow.showGitOutput(command, output, branchName);
         }
         function onQmlFileIndented(formattedContent) {

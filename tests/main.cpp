@@ -12,12 +12,14 @@
 #include "test_buildmanager.h"
 #include "test_toolmanager.h"
 #include "test_gitlogmodel.h"
+#include "test_gitblamemodel.h"
 #include "test_gitmanager.h"
 #include "test_documentmanager.h"
 #include "test_syntaxtheme.h"
 #include "test_cppsyntaxhighlighter.h"
 #include "test_textdocumentsearcher.h"
 
+#include "diffutils.h"
 #include "textdocumentsearcher.h"
 #include "gitlogmodel.h"
 #include "gitmanager.h"
@@ -29,8 +31,10 @@ int main(int argc, char *argv[])
     app.setOrganizationName("veskuh.net");
     app.setApplicationName("PariTests");
     
+    qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
     qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
     qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");
+    qmlRegisterType<GitBlameModel>("net.veskuh.pari", 1, 0, "GitBlameModel");
     qmlRegisterType<GitManager>("net.veskuh.pari", 1, 0, "GitManager");
     qmlRegisterType<DocumentManager>("net.veskuh.pari", 1, 0, "DocumentManager");
 
@@ -68,6 +72,9 @@ int main(int argc, char *argv[])
 
     TestGitLogModel tc_git;
     status |= QTest::qExec(&tc_git, argc, argv);
+
+    TestGitBlameModel tc_blame;
+    status |= QTest::qExec(&tc_blame, argc, argv);
 
     TestGitManager tc_git_manager;
     status |= QTest::qExec(&tc_git_manager, argc, argv);

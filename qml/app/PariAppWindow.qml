@@ -438,6 +438,7 @@ ApplicationWindow {
         outputArea: outputArea
         aiOutputPane: aiOutputPane
         gitLogModel: gitLogModel
+        blameModelBackend: gitBlameModel
         injectedGitManager: gitManager
         stackLayout: stackLayout
         dialogs: dialogs

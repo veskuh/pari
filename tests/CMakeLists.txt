@@ -22,7 +22,10 @@ add_executable(tst_all
     test_toolmanager.h
     test_gitlogmodel.cpp
     test_gitlogmodel.h
+    test_gitblamemodel.cpp
+    test_gitblamemodel.h
     test_gitmanager.cpp
+    test_documentmanager.cpp
     test_gitmanager.h
     test_documentmanager.cpp
     test_documentmanager.h
@@ -60,6 +63,8 @@ add_executable(tst_all
     ../src/integrations/toolmanager.h
     ../src/integrations/gitlogmodel.cpp
     ../src/integrations/gitlogmodel.h
+    ../src/integrations/gitblamemodel.cpp
+    ../src/integrations/gitblamemodel.h
     ../src/integrations/gitmanager.cpp
     ../src/integrations/gitmanager.h
     ../src/editor/documentmanager.cpp
@@ -100,6 +105,8 @@ add_executable(tst_ui
     ../src/integrations/buildmanager.cpp
     ../src/integrations/toolmanager.cpp
     ../src/integrations/gitlogmodel.cpp
+    ../src/integrations/gitblamemodel.cpp
+    ../src/integrations/gitblamemodel.h
     ../src/integrations/gitmanager.cpp
     ../src/editor/documentmanager.cpp
     ../src/editor/textdocument.cpp

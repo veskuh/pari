@@ -13,6 +13,7 @@
 #include "buildmanager.h"
 #include "toolmanager.h"
 #include "gitlogmodel.h"
+#include "gitblamemodel.h"
 #include "lspclient.h"
 #include "gitmanager.h"
 #include "documentmanager.h"
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
     qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
     qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");
+    qmlRegisterType<GitBlameModel>("net.veskuh.pari", 1, 0, "GitBlameModel");
     qmlRegisterType<GitManager>("net.veskuh.pari", 1, 0, "GitManager");
     qmlRegisterType<DocumentManager>("net.veskuh.pari", 1, 0, "DocumentManager");
 
@@ -59,6 +61,9 @@ int main(int argc, char *argv[])
 
     GitManager *gitManager = new GitManager(&app);
     engine.rootContext()->setContextProperty("gitManager", gitManager);
+
+    GitBlameModel *gitBlameModel = new GitBlameModel(&app);
+    engine.rootContext()->setContextProperty("gitBlameModel", gitBlameModel);
 
     DocumentManager *documentManager = new DocumentManager(&app);
     engine.rootContext()->setContextProperty("documentManager", documentManager);

@@ -121,7 +121,7 @@ MenuBar {
         MenuItem {
             text: "git blame"
             enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
-            onTriggered: toolManager.runCommand("git blame " + fileSystem.currentFilePath, fileSystem.rootPath)
+            onTriggered: toolManager.runCommand("git blame --line-porcelain " + fileSystem.currentFilePath, fileSystem.rootPath)
         }
     }
 }

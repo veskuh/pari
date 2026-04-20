@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import Qt.labs.platform 1.1 as Platform
+import net.veskuh.pari 1.0
 import "../settings"
 import "../ai"
 import "../buildtools"
