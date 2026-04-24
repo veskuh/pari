@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
     qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
+    qmlRegisterType<MarkdownFormatter>("net.veskuh.pari", 1, 0, "MarkdownFormatter");
     qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");
     qmlRegisterType<GitBlameModel>("net.veskuh.pari", 1, 0, "GitBlameModel");
     qmlRegisterType<GitManager>("net.veskuh.pari", 1, 0, "GitManager");
@@ -45,6 +46,9 @@ int main(int argc, char *argv[])
 
     Llm *llm = new Llm(appSettings, &app);
     engine.rootContext()->setContextProperty("llm", static_cast<QObject*>(llm));
+
+    MarkdownFormatter *markdownFormatter = new MarkdownFormatter(&app);
+    engine.rootContext()->setContextProperty("markdownFormatter", markdownFormatter);
 
     SyntaxHighlighterProvider *syntaxHighlighterProvider = new SyntaxHighlighterProvider(&app);
     engine.rootContext()->setContextProperty("syntaxHighlighterProvider", syntaxHighlighterProvider);

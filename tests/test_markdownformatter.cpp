@@ -53,7 +53,7 @@ void TestMarkdownFormatter::testBlockQuotes()
 void TestMarkdownFormatter::testCodeBlocks()
 {
     QString markdown = "```\ncode block\n```";
-    QString expected = "<pre><code>code block\n</code></pre>\n";
+    QString expected = "<pre style=\"background-color: #f5f5f5; padding: 10px; border-radius: 4px;\"><code>code block\n</code></pre>\n";
     QCOMPARE(formatter.toHtml(markdown), expected);
 }
 
@@ -75,5 +75,12 @@ void TestMarkdownFormatter::testUnorderedListsWithDash()
 {
     QString markdown = "- item 1\n- item 2";
     QString expected = "<ul>\n<li>item 1</li>\n<li>item 2</li>\n</ul>\n";
+    QCOMPARE(formatter.toHtml(markdown), expected);
+}
+
+void TestMarkdownFormatter::testLineBreaks()
+{
+    QString markdown = "line 1\nline 2";
+    QString expected = "<p>line 1<br>\nline 2</p>\n";
     QCOMPARE(formatter.toHtml(markdown), expected);
 }

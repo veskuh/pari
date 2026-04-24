@@ -24,6 +24,7 @@ private slots:
     void testCodeBlocks();
     void testMixedContent();
     void testEscapeHtml();
+    void testLineBreaks();
     void testUnorderedListsWithDash();
 };
 

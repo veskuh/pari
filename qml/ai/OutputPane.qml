@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import net.veskuh.pari 1.0
 import "../common"
 
 ColumnLayout {
@@ -8,6 +9,7 @@ ColumnLayout {
     property var currentEditor: null
     property bool isThinking: false
     property string thinkingText: ""
+    property string fullAiText: ""
     property bool diffVisible: false
 
     property alias text: aiOutputPane.text
@@ -18,15 +20,15 @@ ColumnLayout {
     readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
 
     function updateDiff(code) {
-        if (diffUtils && code.length > 0 && aiOutputPane.text.length > 0) {
-            aiPane.diff = diffUtils.createDiff(code, aiOutputPane.text);
+        if (diffUtils && code.length > 0 && fullAiText.length > 0) {
+            aiPane.diff = diffUtils.createDiff(code, fullAiText);
         } else {
             aiPane.diff = "";
         }
     }
 
     function sendPrompt() {
-        aiOutputPane.text = "";
+        fullAiText = "";
         diffView.text = "";
         var prompt = aiInput.messageText;
         if (currentEditor && currentEditor.selection != "" ) {
@@ -50,6 +52,8 @@ Follow the instructions by user. You will get a full file content and user selec
             PariReadOnlyTextArea {
                 id: aiOutputPane
                 objectName: "aiOutputPane"
+                text: markdownFormatter.toHtml(aiPane.fullAiText)
+                textFormat: Text.RichText
                 placeholderText: qsTr("✨ AI assistant output...")
             }
 
@@ -91,7 +95,8 @@ Follow the instructions by user. You will get a full file content and user selec
         target: llm
         function onNewLineReceived(line) {
             var currentLine = line;
-            while (currentLine.length > 0) {
+
+            do {
                 if (aiPane.isThinking) {
                     var endThinkIndex = currentLine.indexOf("</think>");
                     if (endThinkIndex !== -1) {
@@ -107,16 +112,20 @@ Follow the instructions by user. You will get a full file content and user selec
                 } else {
                     var startThinkIndex = currentLine.indexOf("<think>");
                     if (startThinkIndex !== -1) {
-                        aiOutputPane.text += currentLine.substring(0, startThinkIndex);
+                        aiPane.fullAiText += currentLine.substring(0, startThinkIndex);
                         aiPane.isThinking = true;
                         aiPane.thinkingText = "";
                         currentLine = currentLine.substring(startThinkIndex + 7);
                     } else {
-                        aiOutputPane.text += currentLine;
+                        aiPane.fullAiText += currentLine;
+                        // Only add newline if the chunk doesn't end with one
+                        if (currentLine.length === 0 || !currentLine.endsWith('\n')) {
+                            aiPane.fullAiText += "\n";
+                        }
                         currentLine = "";
                     }
                 }
-            }
+            } while (currentLine.length > 0);
         }
     }
 }

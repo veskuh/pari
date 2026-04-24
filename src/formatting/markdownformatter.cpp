@@ -2,8 +2,9 @@
 #include <QStringList>
 #include <QRegularExpression>
 
-// Private helper function to process inline markdown formatting
-QString processInlineMarkdown(QString text) {
+MarkdownFormatter::MarkdownFormatter(QObject *parent) : QObject(parent) {}
+
+QString MarkdownFormatter::processInlineMarkdown(QString text) const {
     // code
     text.replace(QRegularExpression("`(.*?)`"), "<code>\\1</code>");
     // Bold
@@ -17,9 +18,9 @@ QString processInlineMarkdown(QString text) {
     return text;
 }
 
-MarkdownFormatter::MarkdownFormatter() {}
+QString MarkdownFormatter::toHtml(const QString &markdown) const {
+    if (markdown.isEmpty()) return "";
 
-QString MarkdownFormatter::toHtml(const QString &markdown) {
     QString result;
     QStringList lines = markdown.split('\n');
     bool in_list_ul = false;
@@ -30,7 +31,10 @@ QString MarkdownFormatter::toHtml(const QString &markdown) {
 
     auto close_paragraph = [&]() {
         if (!paragraph.isEmpty()) {
-            result += "<p>" + processInlineMarkdown(escapeHtml(paragraph)) + "</p>\n";
+            QString escaped = escapeHtml(paragraph);
+            // Convert internal newlines to HTML breaks
+            escaped.replace('\n', "<br>\n");
+            result += "<p>" + processInlineMarkdown(escaped) + "</p>\n";
             paragraph.clear();
         }
     };
@@ -48,7 +52,7 @@ QString MarkdownFormatter::toHtml(const QString &markdown) {
             if (in_code_block) {
                 result += "</code></pre>\n";
             } else {
-                result += "<pre><code>";
+                result += "<pre style=\"background-color: #f5f5f5; padding: 10px; border-radius: 4px;\"><code>";
             }
             in_code_block = !in_code_block;
             continue;
@@ -95,22 +99,27 @@ QString MarkdownFormatter::toHtml(const QString &markdown) {
         } else {
             close_lists_and_quotes();
             if (!paragraph.isEmpty()) {
-                paragraph += " ";
+                paragraph += "\n";
             }
             paragraph += line;
         }
     }
 
-    close_paragraph();
-    close_lists_and_quotes();
-    if (in_code_block) {
-        result += "</code></pre>\n";
+    // Handle any remaining open tags for streaming support
+    if (!paragraph.isEmpty()) {
+        QString escaped = escapeHtml(paragraph);
+        escaped.replace('\n', "<br>\n");
+        result += "<p>" + processInlineMarkdown(escaped) + "</p>\n";
     }
+    if (in_list_ul) result += "</ul>\n";
+    if (in_list_ol) result += "</ol>\n";
+    if (in_blockquote) result += "</blockquote>\n";
+    if (in_code_block) result += "</code></pre>\n";
 
     return result;
 }
 
-QString MarkdownFormatter::escapeHtml(const QString &text)
+QString MarkdownFormatter::escapeHtml(const QString &text) const
 {
     QString escaped = text;
     escaped.replace('&', "&amp;");

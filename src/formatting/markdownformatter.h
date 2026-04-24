@@ -1,16 +1,19 @@
 #ifndef MARKDOWNFORMATTER_H
 #define MARKDOWNFORMATTER_H
 
+#include <QObject>
 #include <QString>
 
-class MarkdownFormatter
+class MarkdownFormatter : public QObject
 {
+    Q_OBJECT
 public:
-    MarkdownFormatter();
-    QString toHtml(const QString &markdown);
+    explicit MarkdownFormatter(QObject *parent = nullptr);
+    Q_INVOKABLE QString toHtml(const QString &markdown) const;
 
 private:
-    QString escapeHtml(const QString &text);
+    QString escapeHtml(const QString &text) const;
+    QString processInlineMarkdown(QString text) const;
 };
 
 #endif // MARKDOWNFORMATTER_H

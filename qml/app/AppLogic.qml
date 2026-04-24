@@ -76,7 +76,7 @@ Item {
     Connections {
         target: (typeof llm !== 'undefined') ? llm : null
         function onResponseReady(response) {
-            aiOutputPane.text = response;
+            aiOutputPane.fullAiText = response;
             customStatusBar.text = qsTr("💬 AI response received.");
             if (stackLayout.currentIndex !== -1) {
                 aiOutputPane.updateDiff(rootWindow.currentEditor.text);
