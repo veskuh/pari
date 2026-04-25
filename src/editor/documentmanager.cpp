@@ -33,6 +33,7 @@ void DocumentManager::openFile(const QString &filePath, bool newTab)
         for (int i = 0; i < m_documents.size(); ++i) {
             if (m_documents[i]->filePath() == filePath) {
                 setCurrentIndex(i);
+                emit fileOpened(QUrl::fromLocalFile(filePath), content);
                 return;
             }
         }
@@ -51,6 +52,7 @@ void DocumentManager::openFile(const QString &filePath, bool newTab)
             m_documents[m_currentIndex] = doc;
         }
         emit documentsChanged();
+        emit fileOpened(QUrl::fromLocalFile(filePath), content);
         emit currentIndexChanged();
         emit dirtyStatusChanged();
 

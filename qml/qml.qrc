@@ -33,6 +33,7 @@
         <file>editor/SearchManager.qml</file>
         
         <file>ai/OutputPane.qml</file>
+        <file>ai/InvestigationPane.qml</file>
         <file>ai/AiInputControl.qml</file>
         <file>ai/AiThinkingIndicator.qml</file>
         <file>ai/ChatLogWindow.qml</file>

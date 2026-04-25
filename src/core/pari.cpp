@@ -17,6 +17,7 @@
 #include "lspclient.h"
 #include "gitmanager.h"
 #include "documentmanager.h"
+#include "projectsearchmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -75,7 +76,9 @@ int main(int argc, char *argv[])
     DocumentManager *documentManager = new DocumentManager(&app);
     engine.rootContext()->setContextProperty("documentManager", documentManager);
 
-
+    ProjectSearchModel *projectSearchModel = new ProjectSearchModel(&app);
+    projectSearchModel->setDocumentManager(documentManager);
+    engine.rootContext()->setContextProperty("projectSearchModel", projectSearchModel);
 
     QObject::connect(fileSystem, &FileSystem::projectOpened, gitManager, [gitManager, fileSystem](){
         gitManager->setWorkingDirectory(fileSystem->rootPath());

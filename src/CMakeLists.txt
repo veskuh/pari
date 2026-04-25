@@ -1,4 +1,4 @@
-find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test LabsSettings QuickDialogs2 REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test LabsSettings QuickDialogs2 Concurrent REQUIRED)
 qt_standard_project_setup(REQUIRES 6.5)
 
 qt_add_executable(pari
@@ -9,6 +9,8 @@ qt_add_executable(pari
     core/filesystem.h
     core/settings.cpp
     core/settings.h
+    core/projectsearchmodel.cpp
+    core/projectsearchmodel.h
     formatting/markdownformatter.cpp
     formatting/markdownformatter.h
     formatting/cppsyntaxhighlighter.cpp
@@ -66,6 +68,7 @@ target_link_libraries(pari PRIVATE
     Qt6::Widgets
     Qt6::LabsSettings
     Qt6::QuickDialogs2
+    Qt6::Concurrent
 )
 
 if(APPLE)

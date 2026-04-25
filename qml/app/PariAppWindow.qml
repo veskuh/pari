@@ -40,6 +40,7 @@ ApplicationWindow {
     property alias aiOutputPane: aiOutputPane
     property alias aiColumn: aiColumn
     property alias treeColumn: treeColumn
+    property alias sidebarStack: sidebarStack
 
     minimumWidth: 800
     minimumHeight: 480
@@ -47,7 +48,6 @@ ApplicationWindow {
     visible: true
 
     // --- REFACTORED MAIN CONTENT AREA ---
-    // A single SplitView manages the three main panes.
     SplitView {
         anchors.fill: parent
         orientation: Qt.Horizontal
@@ -58,44 +58,233 @@ ApplicationWindow {
             color: pariTheme.sidebarBorder
         }
 
-        // Pane 1: File System (20% width)
+        // Pane 1: Sidebar
         Rectangle {
             id: treeColumn
-            SplitView.preferredWidth: appWindow.width * 0.15
-            SplitView.minimumWidth: 200
+            SplitView.preferredWidth: appWindow.width * 0.18
+            SplitView.minimumWidth: 250
             color: pariTheme.sidebarBg
 
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
-                Label {
-                    text: "💻 " + fileSystem.rootName
-                    font.bold: true
-                    Layout.leftMargin: 10
-                    Layout.topMargin: 5
-                    Layout.bottomMargin: 5
-                    color: pariTheme.textColor
-                }
-
-                TreeView {
-                    id: fileSystemView
-                    Layout.fillHeight: true
+                // 1. Machine Bezel Tab Strip
+                Rectangle {
+                    id: tabStrip
                     Layout.fillWidth: true
-                    model: fileSystem.model
-                    property string selectedPath: ""
+                    Layout.preferredHeight: 42
+                    
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: pariTheme.isDark ? "#2a2a2a" : "#e0e4e9" }
+                        GradientStop { position: 0.5; color: pariTheme.isDark ? "#323232" : "#edf1f5" }
+                        GradientStop { position: 1.0; color: pariTheme.isDark ? "#2a2a2a" : "#e0e4e9" }
+                    }
+                    z: 5
+                    
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: 1
+                        color: pariTheme.sidebarBorder
+                    }
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: -1
+                        width: parent.width
+                        height: 1
+                        color: pariTheme.isDark ? "#ffffff" : "#ffffff"
+                        opacity: pariTheme.isDark ? 0.05 : 0.6
+                        visible: !pariTheme.isDark
+                    }
 
-                    delegate: FileTreeDelegate { mainWindow: appWindow }
+                    // Sliding Recessed Well (Increased width for Label)
+                    Rectangle {
+                        id: recessedWell
+                        y: 6
+                        height: 30
+                        width: 100
+                        radius: 6
+                        x: (sidebarStack.currentIndex === 0 ? explorerTabItem.x : searchTabItem.x) + 12
+                        
+                        color: pariTheme.isDark ? "#1a1a1a" : "#d0d6db"
+                        border.color: pariTheme.isDark ? "#000000" : "#b0b7be"
+                        border.width: 1
+                        
+                        Behavior on x { 
+                            SmoothedAnimation { duration: 250; easing.type: Easing.InOutQuad } 
+                        }
+
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 1
+                            radius: 5
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "#20000000" }
+                                GradientStop { position: 1.0; color: "transparent" }
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        spacing: 8
+
+                        Item {
+                            id: explorerTabItem
+                            Layout.preferredWidth: 100
+                            Layout.preferredHeight: 30
+                            
+                            AbstractButton {
+                                id: explorerTabBtn
+                                anchors.fill: parent
+                                checkable: true
+                                checked: sidebarStack.currentIndex === 0
+                                onClicked: sidebarStack.currentIndex = 0
+                                ToolTip.visible: hovered
+                                ToolTip.text: qsTr("Explorer")
+                                
+                                padding: 0
+                                
+                                contentItem: Item {
+                                    anchors.fill: parent
+                                    RowLayout {
+                                        anchors.centerIn: parent
+                                        spacing: 6
+                                        Image {
+                                            source: "qrc:/assets/folder.png"
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            fillMode: Image.PreserveAspectFit
+                                            Layout.alignment: Qt.AlignVCenter
+                                            opacity: explorerTabBtn.checked ? 1.0 : 0.7
+                                        }
+                                        Label {
+                                            text: qsTr("Explorer")
+                                            font.pixelSize: 11
+                                            font.bold: explorerTabBtn.checked
+                                            color: pariTheme.textColor
+                                            opacity: explorerTabBtn.checked ? 1.0 : 0.7
+                                            Layout.alignment: Qt.AlignVCenter
+                                        }
+                                    }
+                                }
+                                
+                                background: Item {}
+                                scale: pressed ? 0.95 : 1.0
+                            }
+                        }
+
+                        Item {
+                            id: searchTabItem
+                            Layout.preferredWidth: 100
+                            Layout.preferredHeight: 30
+                            
+                            AbstractButton {
+                                id: searchTabBtn
+                                anchors.fill: parent
+                                checkable: true
+                                checked: sidebarStack.currentIndex === 1
+                                onClicked: sidebarStack.currentIndex = 1
+                                ToolTip.visible: hovered
+                                ToolTip.text: qsTr("Project Search")
+                                
+                                padding: 0
+                                
+                                contentItem: Item {
+                                    anchors.fill: parent
+                                    RowLayout {
+                                        anchors.centerIn: parent
+                                        spacing: 6
+                                        Image {
+                                            source: "qrc:/assets/search.png"
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            fillMode: Image.PreserveAspectFit
+                                            Layout.alignment: Qt.AlignVCenter
+                                            opacity: searchTabBtn.checked ? 1.0 : 0.7
+                                        }
+                                        Label {
+                                            text: qsTr("Search")
+                                            font.pixelSize: 11
+                                            font.bold: searchTabBtn.checked
+                                            color: pariTheme.textColor
+                                            opacity: searchTabBtn.checked ? 1.0 : 0.7
+                                            Layout.alignment: Qt.AlignVCenter
+                                        }
+                                    }
+                                }
+                                
+                                background: Item {}
+                                scale: pressed ? 0.95 : 1.0
+                            }
+                        }
+                        
+                        Item { Layout.fillWidth: true }
+                    }
                 }
-                Connections {
-                    target: fileSystemView
-                    function onModelChanged() {
-                        fileSystemView.rootIndex = fileSystem.currentRootIndex;
+
+                // 2. Main Sidebar Content
+                StackLayout {
+                    id: sidebarStack
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    currentIndex: 0
+
+                    // Explorer View
+                    ColumnLayout {
+                        spacing: 0
+                        Label {
+                            text: qsTr("EXPLORER")
+                            font.pixelSize: 10
+                            font.bold: true
+                            Layout.leftMargin: 10
+                            Layout.topMargin: 10
+                            Layout.bottomMargin: 4
+                            color: pariTheme.textColor
+                            opacity: 0.6
+                        }
+                        Label {
+                            text: "💻 " + fileSystem.rootName
+                            font.bold: true
+                            Layout.leftMargin: 10
+                            Layout.bottomMargin: 8
+                            color: pariTheme.textColor
+                            elide: Text.ElideRight
+                            Layout.fillWidth: true
+                        }
+
+                        TreeView {
+                            id: fileSystemView
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            model: fileSystem.model
+                            property string selectedPath: ""
+                            delegate: FileTreeDelegate { mainWindow: appWindow }
+                        }
+                        Connections {
+                            target: fileSystemView
+                            function onModelChanged() {
+                                fileSystemView.rootIndex = fileSystem.currentRootIndex;
+                            }
+                        }
+                    }
+
+                    // Search View
+                    InvestigationPane {
+                        id: searchPane
+                        onResultClicked: (path, line) => {
+                            appWindow.goToLineNumber = line;
+                            documentManager.openFile(path, false);
+                        }
                     }
                 }
             }
 
-            // Etched right border
+            // Etched right border for the whole sidebar
             Rectangle {
                 anchors.right: parent.right
                 width: 1
@@ -237,7 +426,7 @@ ApplicationWindow {
                                         if (fileSystem.fileExistsInProject(filePath)) {
                                             var absolutePath = fileSystem.getAbsolutePath(filePath);
                                             appWindow.goToLineNumber = lineNumber;
-                                            fileSystem.loadFileContent(absolutePath);
+                                            documentManager.openFile(absolutePath, false);
                                         }
                                     }
                                 }
@@ -272,7 +461,7 @@ ApplicationWindow {
             OutputPane {
                 id: aiOutputPane
                 anchors.fill: parent
-                anchors.leftMargin: 1 // Don't overlap the border
+                anchors.leftMargin: 1 
                 currentEditor: appWindow.currentEditor
                 diffUtils: DiffUtils {}
             }
@@ -351,7 +540,6 @@ ApplicationWindow {
         tabBar.currentIndex = index
         documentManager.setCurrentIndex(index);
         
-        // Synchronize File Tree highlight with the active document
         if (index >= 0 && index < documentManager.documents.length) {
             var doc = documentManager.documents[index];
             fileSystemView.selectedPath = doc.filePath;
@@ -409,7 +597,6 @@ ApplicationWindow {
         var targetIndex = (typeof index !== 'undefined' && index !== -1) ? index : stackLayout.currentIndex;
         if (targetIndex !== -1) {
             documentManager.closeFile(targetIndex);
-            // Synchronize selection with the new current document
             setEditorIndex(documentManager.currentIndex);
         }
     }
@@ -427,6 +614,9 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        console.log("DEBUG-APP: PariAppWindow Component.onCompleted");
+        console.log("DEBUG-APP: treeColumn exists:", !!treeColumn);
+        console.log("DEBUG-APP: sidebarStack exists:", !!sidebarStack);
         fileSystem.setRootPath(fileSystem.homePath);
     }
 

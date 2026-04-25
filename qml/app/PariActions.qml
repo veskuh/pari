@@ -15,6 +15,11 @@ Item {
     // Signals to communicate with the main window
     signal closeCurrentFile()
 
+    Component.onCompleted: {
+        console.log("DEBUG-ACTIONS: PariActions Component.onCompleted");
+        console.log("DEBUG-ACTIONS: showGlobalSearchAction exists:", !!showGlobalSearchAction);
+    }
+
     Action {
         id: newAction
         text: qsTr("New")
@@ -116,6 +121,22 @@ Item {
     }
 
     Action {
+        id: showGlobalSearchAction
+        text: qsTr("Global Search")
+        shortcut: "Ctrl+Shift+F"
+        onTriggered: {
+            console.log("DEBUG-ACTIONS: showGlobalSearchAction triggered");
+            rootWindow.treeColumn.visible = true;
+            if (rootWindow.sidebarStack) {
+                rootWindow.sidebarStack.currentIndex = 1;
+                console.log("DEBUG-ACTIONS: sidebarStack index set to 1");
+            } else {
+                console.error("DEBUG-ACTIONS: sidebarStack reference is MISSING on rootWindow");
+            }
+        }
+    }
+
+    Action {
         id: configureBuildAction
         text: "Build setup..."
         onTriggered: {
@@ -211,6 +232,7 @@ Item {
     property alias closeAction: closeAction
     property alias findAction: findAction
     property alias filterLinesAction: filterLinesAction
+    property alias showGlobalSearchAction: showGlobalSearchAction
     property alias configureBuildAction: configureBuildAction
     property alias buildAction: buildAction
     property alias runAction: runAction

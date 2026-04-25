@@ -8,6 +8,14 @@ MenuBar {
     property var dialogs
     property var gitLogModel
 
+    Component.onCompleted: {
+        console.log("DEBUG-MENU: PariMenuBar Component.onCompleted");
+        console.log("DEBUG-MENU: actions object exists:", !!actions);
+        if (actions) {
+            console.log("DEBUG-MENU: showGlobalSearchAction exists on actions:", !!actions.showGlobalSearchAction);
+        }
+    }
+
     Menu {
         title: qsTr("File")
         MenuItem { action: actions.newAction }
@@ -60,14 +68,22 @@ MenuBar {
             text: qsTr("Show Files")
             action: actions.showTreePaneAction
             checkable: true
-            checked: actions.showTreePaneAction.checked
+            checked: actions.showTreePaneAction ? actions.showTreePaneAction.checked : true
+        }
+
+        MenuItem {
+            text: qsTr("Global Search")
+            onTriggered: {
+                console.log("DEBUG-MENU: Global Search manually triggered");
+                actions.showGlobalSearchAction.trigger();
+            }
         }
 
         MenuItem {
             text: qsTr("Show AI")
             action: actions.showAiPaneAction
             checkable: true
-            checked: actions.showAiPaneAction.checked
+            checked: actions.showAiPaneAction ? actions.showAiPaneAction.checked : true
         }
 
         MenuSeparator {}
@@ -76,7 +92,7 @@ MenuBar {
             text: qsTr("Show Hidden Files")
             action: actions.toggleHiddenFilesAction
             checkable: true
-            checked: actions.toggleHiddenFilesAction.checked
+            checked: actions.toggleHiddenFilesAction ? actions.toggleHiddenFilesAction.checked : false
         }
     }
     Menu {
