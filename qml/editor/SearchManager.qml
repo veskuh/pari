@@ -99,6 +99,18 @@ Item {
             searchManager.sessionStartPosition = 0;
             if (editor) editor.deselect();
         }
+        function onFindNext(isIncremental) {
+            searchManager.findNext(isIncremental);
+        }
+        function onFindPrevious() {
+            searchManager.findPrevious();
+        }
+        function onReplaceNext() {
+            searchManager.replaceNext();
+        }
+        function onReplaceAll() {
+            searchManager.replaceAll();
+        }
     }
 
     function findNext(isIncremental) {
@@ -152,8 +164,61 @@ Item {
             editor.cursorPosition = end;
             editor.select(start, end);
             if (positionCallback) positionCallback(start);
+            
             sessionStartPosition = start;
         }
+    }
+
+    function replaceNext() {
+        if (!editor || !overlay || filterActive) return;
+        var searchText = overlay.searchText;
+        var replaceText = overlay.replaceText;
+        if (searchText === "") return;
+
+        if (editor.selectionStart !== editor.selectionEnd) {
+            var selectedText = editor.text.substring(editor.selectionStart, editor.selectionEnd);
+            var match = overlay.matchCase ? (selectedText === searchText) : (selectedText.toLowerCase() === searchText.toLowerCase());
+            
+            if (match) {
+                var start = editor.selectionStart;
+                editor.remove(editor.selectionStart, editor.selectionEnd);
+                editor.insert(start, replaceText);
+                
+                if (pane && typeof pane.textChangedByUser === 'function') {
+                    pane.textChangedByUser();
+                }
+            }
+        }
+        findNext(false);
+    }
+
+    function replaceAll() {
+        if (!editor || !overlay || filterActive) return;
+        var searchText = overlay.searchText;
+        var replaceText = overlay.replaceText;
+        if (searchText === "") return;
+
+        var content = editor.text;
+        var newContent;
+        if (overlay.matchCase) {
+            newContent = content.split(searchText).join(replaceText);
+        } else {
+            var escapedSearch = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var re = new RegExp(escapedSearch, "gi");
+            newContent = content.replace(re, replaceText);
+        }
+
+        if (content !== newContent) {
+            editor.text = newContent;
+            if (originalText !== "") {
+                originalText = newContent;
+            }
+            
+            if (pane && typeof pane.textChangedByUser === 'function') {
+                pane.textChangedByUser();
+            }
+        }
+        updateResults();
     }
 
     function updateResults() {

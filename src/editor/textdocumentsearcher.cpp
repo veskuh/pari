@@ -13,7 +13,6 @@ int TextDocumentSearcher::find(QObject *doc, const QString &subString, int from,
     if (!doc) return -1;
 
     QTextDocument *textDocument = qobject_cast<QTextDocument*>(doc);
-
     if (!textDocument) {
         QQuickTextDocument *qquickTextDocument = qobject_cast<QQuickTextDocument*>(doc);
         if (qquickTextDocument) {
@@ -28,6 +27,7 @@ int TextDocumentSearcher::find(QObject *doc, const QString &subString, int from,
     if (!textDocument) return -1;
 
     QTextCursor cursor = textDocument->find(subString, from, QTextDocument::FindFlags(options));
+    
     if (cursor.isNull()) return -1;
 
     return cursor.position();

@@ -116,8 +116,6 @@ ColumnLayout {
         id: findOverlay
         z: 10
         width: parent.width
-        onFindNext: (isInc) => searchManager.findNext(isInc)
-        onFindPrevious: searchManager.findPrevious()
         onCloseOverlay: close()
     }
 
