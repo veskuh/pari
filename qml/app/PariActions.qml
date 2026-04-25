@@ -53,7 +53,13 @@ Item {
         shortcut: StandardKey.Save
         enabled: stackLayout.currentIndex !== -1
         onTriggered: {
-            documentManager.saveFile(stackLayout.currentIndex, rootWindow.currentEditor.text);
+            var editor = rootWindow.currentEditor;
+            var textToSave = editor.text;
+            // CRITICAL: If filtering is active, save the original buffer
+            if (editor.searchManager && editor.searchManager.filterActive) {
+                textToSave = editor.searchManager.originalText;
+            }
+            documentManager.saveFile(stackLayout.currentIndex, textToSave);
         }
     }
 
@@ -92,6 +98,20 @@ Item {
         enabled: stackLayout.currentIndex !== -1
         onTriggered: {
             rootWindow.currentEditor.find();
+        }
+    }
+
+    Action {
+        id: filterLinesAction
+        text: qsTr("Filter Lines...")
+        shortcut: "Ctrl+Shift+G"
+        enabled: stackLayout.currentIndex !== -1
+        onTriggered: {
+            rootWindow.currentEditor.find();
+            var searchManager = rootWindow.currentEditor.searchManager;
+            if (searchManager) {
+                searchManager.filterActive = true;
+            }
         }
     }
 
@@ -190,6 +210,7 @@ Item {
     property alias saveAsAction: saveAsAction
     property alias closeAction: closeAction
     property alias findAction: findAction
+    property alias filterLinesAction: filterLinesAction
     property alias configureBuildAction: configureBuildAction
     property alias buildAction: buildAction
     property alias runAction: runAction

@@ -1,52 +1,159 @@
 import QtQuick
 
-QtObject {
+Item {
     id: searchManager
     
     property var editor: null
+    property var pane: null
     property var overlay: null
 
     // Callback for positioning the view (optional)
     property var positionCallback: null
 
-    function findNext() {
+    property bool filterActive: overlay ? overlay.filterActive : false
+    property string originalText: ""
+    property var filteredLineNumbers: []
+    
+    // THE SESSION ANCHOR: Stays stable during typing refinements
+    property int sessionStartPosition: 0
+
+    function applyFilter() {
         if (!editor || !overlay) return;
         
-        var searchText = overlay.searchText;
-        if (searchText === "") return;
-
-        var newPos = editor.text.indexOf(searchText, editor.cursorPosition);
-
-        if (newPos !== -1) {
-            editor.cursorPosition = newPos + searchText.length;
-            editor.select(newPos, newPos + searchText.length);
-            if (positionCallback) {
-                positionCallback(newPos);
+        if (filterActive) {
+            if (originalText === "") {
+                originalText = editor.text;
             }
+            
+            var pattern = overlay.searchText;
+            if (pattern === "") {
+                filteredLineNumbers = [];
+                if (editor.text !== originalText) {
+                    editor.text = originalText;
+                }
+                editor.readOnly = false;
+            } else {
+                var lines = originalText.split('\n');
+                var result = [];
+                var lineNums = [];
+                var matchCase = overlay.matchCase;
+                
+                var searchPattern = matchCase ? pattern : pattern.toLowerCase();
+
+                for (var i = 0; i < lines.length; i++) {
+                    var line = lines[i];
+                    var textToMatch = matchCase ? line : line.toLowerCase();
+                    if (textToMatch.indexOf(searchPattern) !== -1) {
+                        result.push(line);
+                        lineNums.push(i + 1);
+                    }
+                }
+                
+                filteredLineNumbers = lineNums;
+                var filteredText = result.join('\n');
+                if (editor.text !== filteredText) {
+                    editor.text = filteredText;
+                }
+                editor.readOnly = true;
+            }
+        } else {
+            if (originalText !== "") {
+                var restoreText = originalText;
+                originalText = "";
+                filteredLineNumbers = [];
+                editor.text = restoreText;
+            }
+            editor.readOnly = false;
+        }
+        
+        if (pane && typeof pane.refreshLineNumbers === 'function') {
+            pane.refreshLineNumbers();
         }
         updateResults();
     }
 
+    onFilterActiveChanged: applyFilter()
+    
+    Connections {
+        target: overlay || null
+        ignoreUnknownSignals: true
+        function onSearchTextChanged() {
+            if (searchManager.filterActive) {
+                searchManager.applyFilter();
+            } else {
+                searchManager.findNext(true);
+                searchManager.updateResults();
+            }
+        }
+        function onMatchCaseChanged() {
+            if (searchManager.filterActive) {
+                searchManager.applyFilter();
+            } else {
+                searchManager.findNext(true);
+                searchManager.updateResults();
+            }
+        }
+        function onClosed() {
+            if (overlay) overlay.filterActive = false;
+            searchManager.applyFilter();
+            searchManager.sessionStartPosition = 0;
+            if (editor) editor.deselect();
+        }
+    }
+
+    function findNext(isIncremental) {
+        if (!editor || !overlay) return;
+        if (filterActive) return;
+        
+        var searchText = overlay.searchText;
+        if (searchText === "") {
+            sessionStartPosition = 0;
+            if (editor) editor.deselect();
+            return;
+        }
+        
+        if (typeof textDocumentSearcher === 'undefined') return;
+
+        var startPos = isIncremental ? sessionStartPosition : editor.cursorPosition;
+        var options = overlay.matchCase ? 2 : 0; 
+        
+        var pos = textDocumentSearcher.find(editor.textDocument, searchText, startPos, options);
+        
+        if (pos !== -1) {
+            var start = pos - searchText.length;
+            var end = pos;
+            editor.cursorPosition = end;
+            editor.select(start, end);
+            if (positionCallback) positionCallback(pos);
+            
+            if (!isIncremental) {
+                sessionStartPosition = start;
+            }
+        }
+    }
+
     function findPrevious() {
         if (!editor || !overlay) return;
+        if (filterActive) return;
         
         var searchText = overlay.searchText;
         if (searchText === "") return;
+        
+        if (typeof textDocumentSearcher === 'undefined') return;
 
-        var newPos = editor.text.lastIndexOf(searchText, editor.cursorPosition - (searchText.length + 1));
-
-        if (editor.cursorPosition === newPos) {
-            newPos = editor.text.lastIndexOf(searchText, editor.cursorPosition - (searchText.length + 1));
+        var startPos = editor.selectionStart;
+        var options = (overlay.matchCase ? 2 : 0) | 1; 
+        
+        var pos = textDocumentSearcher.find(editor.textDocument, searchText, startPos, options);
+        
+        if (pos !== -1) {
+            var start = pos - searchText.length;
+            var end = pos;
+            editor.cursorPosition = end;
+            editor.select(start, end);
+            if (positionCallback) positionCallback(start);
+            sessionStartPosition = start;
         }
-
-        if (newPos !== -1) {
-            editor.cursorPosition = newPos + searchText.length;
-            editor.select(newPos, newPos + searchText.length);
-            if (positionCallback) {
-                positionCallback(newPos);
-            }
-        }
-        updateResults();
     }
 
     function updateResults() {
@@ -56,7 +163,21 @@ QtObject {
             overlay.updateResults(0);
             return;
         }
-        var occurrences = editor.text.split(searchText).length - 1;
-        overlay.updateResults(occurrences);
+        
+        if (filterActive) {
+            overlay.updateResults(filteredLineNumbers.length);
+        } else {
+            var count = 0;
+            var pos = 0;
+            var text = editor.text;
+            var searchPattern = overlay.matchCase ? searchText : searchText.toLowerCase();
+            var textToSearch = overlay.matchCase ? text : text.toLowerCase();
+            
+            while ((pos = textToSearch.indexOf(searchPattern, pos)) !== -1) {
+                count++;
+                pos += searchPattern.length;
+            }
+            overlay.updateResults(count);
+        }
     }
 }

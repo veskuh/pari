@@ -16,6 +16,7 @@ Item {
         property var saveAsAction: Action { text: "Save As..." }
         property var closeAction: Action { text: "Close" }
         property var findAction: Action { text: "Find" }
+        property var filterLinesAction: Action { text: "Filter" }
         property var indentAction: Action { text: "Indent" }
         property var goToAction: Action { text: "Go to line..." }
         property var buildAction: Action { text: "Build" }

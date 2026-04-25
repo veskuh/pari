@@ -1,6 +1,6 @@
 #include <QtTest>
+#include <QApplication>
 #include <QQmlEngine>
-#include <QCoreApplication>
 #include "test_settings.h"
 #include "test_filesystem.h"
 #include "test_markdownformatter.h"
@@ -22,12 +22,13 @@
 #include "diffutils.h"
 #include "textdocumentsearcher.h"
 #include "gitlogmodel.h"
+#include "gitblamemodel.h"
 #include "gitmanager.h"
 #include "documentmanager.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication app(argc, argv);
+    QApplication app(argc, argv);
     app.setOrganizationName("veskuh.net");
     app.setApplicationName("PariTests");
     
@@ -46,23 +47,23 @@ int main(int argc, char *argv[])
     TestFileSystem tc_fs;
     status |= QTest::qExec(&tc_fs, argc, argv);
 
-    TestMarkdownFormatter tc_md;
-    status |= QTest::qExec(&tc_md, argc, argv);
+    TestMarkdownFormatter tc_markdown;
+    status |= QTest::qExec(&tc_markdown, argc, argv);
 
     TestLlm tc_llm;
     status |= QTest::qExec(&tc_llm, argc, argv);
 
-    TestMarkdownSyntaxHighlighter tc_md_syntax;
-    status |= QTest::qExec(&tc_md_syntax, argc, argv);
+    TestMarkdownSyntaxHighlighter tc_markdown_highlighter;
+    status |= QTest::qExec(&tc_markdown_highlighter, argc, argv);
 
-    TestQmlSyntaxHighlighter tc_qml;
-    status |= QTest::qExec(&tc_qml, argc, argv);
+    TestQmlSyntaxHighlighter tc_qml_highlighter;
+    status |= QTest::qExec(&tc_qml_highlighter, argc, argv);
 
     TestDiffUtils tc_diff;
     status |= QTest::qExec(&tc_diff, argc, argv);
 
-    TestShellSyntaxHighlighter tc_shell;
-    status |= QTest::qExec(&tc_shell, argc, argv);
+    TestShellSyntaxHighlighter tc_shell_highlighter;
+    status |= QTest::qExec(&tc_shell_highlighter, argc, argv);
 
     TestBuildManager tc_build;
     status |= QTest::qExec(&tc_build, argc, argv);

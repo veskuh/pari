@@ -50,6 +50,11 @@ Item {
             rootWindow.fileSystemView.model = fileSystem.model;
             var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
             rootWindow.hasBuildConfiguration = buildCommand !== "";
+            
+            // Recents logic
+            if (typeof appSettings !== 'undefined' && fileSystem.rootPath !== "") {
+                appSettings.addRecentFolder(fileSystem.rootPath);
+            }
         }
         function onFileSaved(filePath) {
             customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);

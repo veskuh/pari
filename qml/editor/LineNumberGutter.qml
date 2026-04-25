@@ -9,6 +9,9 @@ Item {
     property bool isDark: false
     property font editorFont
     property alias lineCoordinates: lineNumberRepeater.model
+    
+    // Reference to SearchManager for filtered line numbers
+    property var searchManager: null
 
     // Background (Subtle Metallic)
     Rectangle {
@@ -33,10 +36,10 @@ Item {
         model: []
 
         delegate: Text {
-            y: modelData
+            y: modelData.y
             x: 0
             width: gutter.width - 5
-            text: index + 1
+            text: modelData.number // Shows the mapped document line number
             color: gutter.currentLineIndex === index ? (isDark ? "#4aa9ff" : "#0051a6") : (isDark ? "#555555" : "#888888")
             font.pixelSize: gutter.editorFont.pixelSize * 0.9
             font.family: gutter.editorFont.family
@@ -52,17 +55,40 @@ Item {
         const coordinates = [];
         const textContent = editor.text;
         let searchIndex = 0;
-        let newlineIndex;
+        let lineIdx = 0;
+        
+        const isFiltered = !!(searchManager && searchManager.filterActive && searchManager.filteredLineNumbers && searchManager.filteredLineNumbers.length > 0);
+        const lineNums = isFiltered ? searchManager.filteredLineNumbers : [];
+
+        function getLineNumber(idx) {
+            if (isFiltered && idx < lineNums.length) {
+                return lineNums[idx];
+            }
+            return idx + 1;
+        }
+
+        let lastY = -1;
 
         // First line
-        const rect = editor.positionToRectangle(0);
-        coordinates.push(rect.y);
+        const rect0 = editor.positionToRectangle(0);
+        if (rect0.height > 0) {
+            var num0 = getLineNumber(lineIdx);
+            coordinates.push({y: rect0.y, number: num0});
+            lastY = rect0.y;
+            lineIdx++;
+        }
 
-        // Subsequent lines
+        let newlineIndex;
         while ((newlineIndex = textContent.indexOf('\n', searchIndex)) !== -1) {
             const nextCharIndex = newlineIndex + 1;
             const lineRect = editor.positionToRectangle(nextCharIndex);
-            coordinates.push(lineRect.y);
+            
+            if (lineRect.y !== lastY) {
+                var num = getLineNumber(lineIdx);
+                coordinates.push({y: lineRect.y, number: num});
+                lastY = lineRect.y;
+            }
+            lineIdx++;
             searchIndex = nextCharIndex;
         }
         return coordinates;

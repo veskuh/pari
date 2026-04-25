@@ -50,6 +50,9 @@ int main(int argc, char *argv[])
     MarkdownFormatter *markdownFormatter = new MarkdownFormatter(&app);
     engine.rootContext()->setContextProperty("markdownFormatter", markdownFormatter);
 
+    TextDocumentSearcher *textDocumentSearcher = new TextDocumentSearcher(&app);
+    engine.rootContext()->setContextProperty("textDocumentSearcher", textDocumentSearcher);
+
     SyntaxHighlighterProvider *syntaxHighlighterProvider = new SyntaxHighlighterProvider(&app);
     engine.rootContext()->setContextProperty("syntaxHighlighterProvider", syntaxHighlighterProvider);
     syntaxHighlighterProvider->setSettings(appSettings);

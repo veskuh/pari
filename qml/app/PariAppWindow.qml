@@ -140,7 +140,6 @@ ApplicationWindow {
                             dirty: model.isDirty
                             filePath: model.filePath
                             isActivePane: stackLayout.currentIndex === index
-                            textDocumentSearcher: TextDocumentSearcher {}
                             injectedLspClient: lspClient
 
                             onIsActivePaneChanged: {

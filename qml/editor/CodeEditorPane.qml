@@ -21,12 +21,12 @@ ColumnLayout {
     readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
 
     // Dependency injection
-    property var textDocumentSearcher: null
     property var injectedLspClient: null
 
     SearchManager {
         id: searchManager
         editor: codeEditor
+        pane: root
         overlay: findOverlay
         positionCallback: (pos) => root.goToPosition(pos)
     }
@@ -116,7 +116,7 @@ ColumnLayout {
         id: findOverlay
         z: 10
         width: parent.width
-        onFindNext: searchManager.findNext()
+        onFindNext: (isInc) => searchManager.findNext(isInc)
         onFindPrevious: searchManager.findPrevious()
         onCloseOverlay: close()
     }
@@ -144,6 +144,7 @@ ColumnLayout {
                     isDark: root.isDark
                     editorFont: codeEditor.font
                     currentLineIndex: codeEditor.currentLineIndex
+                    searchManager: searchManager
                     z: 1
                 }
 

@@ -12,6 +12,8 @@ public:
     explicit TextDocumentSearcher(QObject *parent = nullptr);
 
     Q_INVOKABLE int find(QObject *doc, const QString &subString, int from, int options = 0);
+    Q_INVOKABLE void applyFilter(QObject *doc, const QString &pattern, bool isRegex, bool matchCase);
+    Q_INVOKABLE void clearFilter(QObject *doc);
 
 signals:
 

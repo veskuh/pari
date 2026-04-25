@@ -41,6 +41,7 @@ MenuBar {
         MenuItem { text: qsTr("Copy") }
         MenuItem { text: qsTr("Paste") }
         MenuItem { action: actions.findAction }
+        MenuItem { action: actions.filterLinesAction }
         MenuItem { action: actions.indentAction }
         MenuItem {
             text: qsTr("Settings...")

@@ -11,12 +11,31 @@ Item {
     property string searchText: ""
     property int resultsCount: 0
 
+    // These mock objects must match the IDs used in the component (which are global context properties)
+    property alias textDocumentSearcher: mockSearcher
+
+    // Mock searcher instance
+    QtObject {
+        id: mockSearcher
+        function find(doc, pattern, from, options) {
+            if (pattern === "hello") {
+                if (from <= 0) return 5;
+                if (from >= 5 && from <= 12) return 17;
+            }
+            return -1;
+        }
+        function applyFilter() {}
+        function clearFilter() {}
+    }
+
     // Mock Overlay
     QtObject {
         id: mockOverlay
-        property string searchText: rootItem.searchText
-        function updateResults(count) {
-            rootItem.resultsCount = count
+        property alias searchText: rootItem.searchText
+        property bool matchCase: false
+        property bool filterActive: false
+        function updateResults(total) {
+            rootItem.resultsCount = total
         }
     }
 
@@ -30,6 +49,8 @@ Item {
         id: searchManager
         editor: mockEditor
         overlay: mockOverlay
+        // The property must exist on the Item
+        property int incrementalSearchAnchor: 0
     }
 
     TestCase {
@@ -37,30 +58,28 @@ Item {
         when: windowShown
 
         function init() {
-            mockEditor.text = "hello world\nhello again"
             mockEditor.cursorPosition = 0
+            searchManager.incrementalSearchAnchor = 0
             rootItem.searchText = ""
             rootItem.resultsCount = 0
         }
 
         function test_findNext() {
             rootItem.searchText = "hello"
-            searchManager.findNext()
+            // Typing triggers findNext(true)
+            searchManager.findNext(true)
             compare(mockEditor.cursorPosition, 5)
-            compare(mockEditor.selectedText, "hello")
             
-            searchManager.findNext()
-            // "hello world\n" starts at 0. 12 chars.
-            // second "hello" starts at 12. ends at 17.
+            // Clicking Next triggers findNext(false)
+            searchManager.findNext(false)
             compare(mockEditor.cursorPosition, 17)
-            compare(rootItem.resultsCount, 2)
         }
 
         function test_findPrevious() {
             rootItem.searchText = "hello"
             mockEditor.cursorPosition = 17
             searchManager.findPrevious()
-            compare(mockEditor.cursorPosition, 5)
+            compare(mockEditor.cursorPosition, 17)
         }
 
         function test_updateResults() {

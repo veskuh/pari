@@ -15,10 +15,17 @@ Item {
         font.family: "Menlo"
     }
 
+    QtObject {
+        id: mockSearchManager
+        property bool filterActive: false
+        property var filteredLineNumbers: []
+    }
+
     LineNumberGutter {
         id: gutter
         editorFont: mockEditor.font
         isDark: false
+        searchManager: mockSearchManager
     }
 
     TestCase {
@@ -29,13 +36,18 @@ Item {
             var coords = gutter.calculateLineCoordinates(mockEditor)
             compare(coords.length, 3)
             // Coordinates should be increasing
-            verify(coords[1] > coords[0])
-            verify(coords[2] > coords[1])
+            verify(coords[1].y > coords[0].y)
+            verify(coords[2].y > coords[1].y)
+            // Line numbers should be correct
+            compare(coords[0].number, 1)
+            compare(coords[1].number, 2)
+            compare(coords[2].number, 3)
         }
 
         function test_refresh() {
             gutter.refresh(mockEditor)
             compare(gutter.lineCoordinates.length, 3)
+            compare(gutter.lineCoordinates[0].number, 1)
             
             mockEditor.text = "One line"
             gutter.refresh(mockEditor)
