@@ -15,6 +15,8 @@ qt_add_executable(pari
     formatting/cppsyntaxhighlighter.h
     formatting/swiftsyntaxhighlighter.cpp
     formatting/swiftsyntaxhighlighter.h
+    formatting/jssyntaxhighlighter.cpp
+    formatting/jssyntaxhighlighter.h
     formatting/syntaxhighlighterprovider.cpp
     formatting/syntaxhighlighterprovider.h
     formatting/qmlsyntaxhighlighter.cpp

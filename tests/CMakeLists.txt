@@ -35,6 +35,8 @@ add_executable(tst_all
     test_cppsyntaxhighlighter.h
     test_swiftsyntaxhighlighter.cpp
     test_swiftsyntaxhighlighter.h
+    test_jssyntaxhighlighter.cpp
+    test_jssyntaxhighlighter.h
     test_textdocumentsearcher.cpp
     test_textdocumentsearcher.h
     mocktextdocument.cpp
@@ -51,6 +53,8 @@ add_executable(tst_all
     ../src/formatting/cppsyntaxhighlighter.h
     ../src/formatting/swiftsyntaxhighlighter.cpp
     ../src/formatting/swiftsyntaxhighlighter.h
+    ../src/formatting/jssyntaxhighlighter.cpp
+    ../src/formatting/jssyntaxhighlighter.h
     ../src/formatting/qmlsyntaxhighlighter.cpp
     ../src/formatting/qmlsyntaxhighlighter.h
     ../src/formatting/shellsyntaxhighlighter.cpp
@@ -102,6 +106,7 @@ add_executable(tst_ui
     ../src/integrations/llm.cpp
     ../src/formatting/cppsyntaxhighlighter.cpp
     ../src/formatting/swiftsyntaxhighlighter.cpp
+    ../src/formatting/jssyntaxhighlighter.cpp
     ../src/formatting/qmlsyntaxhighlighter.cpp
     ../src/formatting/shellsyntaxhighlighter.cpp
     ../src/core/diffutils.cpp

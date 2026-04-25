@@ -1,6 +1,7 @@
 #include "syntaxhighlighterprovider.h"
 #include "cppsyntaxhighlighter.h"
 #include "swiftsyntaxhighlighter.h"
+#include "jssyntaxhighlighter.h"
 #include "qmlsyntaxhighlighter.h"
 #include "shellsyntaxhighlighter.h"
 #include "markdownsyntaxhighlighter.h"
@@ -47,6 +48,8 @@ void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const
         higlighter = new MarkdownSyntaxHighlighter(doc->textDocument(), currentTheme);
     } else if (extension == "swift") {
         higlighter = new SwiftSyntaxHighlighter(doc->textDocument(), currentTheme);
+    } else if (extension == "js") {
+        higlighter = new JsSyntaxHighlighter(doc->textDocument(), currentTheme);
     }
 }
 
