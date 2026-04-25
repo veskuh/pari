@@ -58,8 +58,9 @@ The system supports full **Light** and **Dark** modes with smooth transitions. A
 
 ### Inkwell Editor (`CodeEditorPane`)
 *   **Tactile Feedback:** The background color shifts based on the "Dirty" state.
-*   **Line Navigation:** Integrated `LineNumberGutter` with active line highlighting.
-*   **Search:** Integrated `FindOverlay` for compact, incremental search.
+*   **Line Navigation:** Integrated `LineNumberGutter` with active line highlighting and support for non-sequential mapping.
+*   **Search & Filter:** Integrated `FindOverlay` for compact, incremental search and **Grep Mode** (⏳) for isolating lines while preserving original document numbering.
+*   **Extended Syntax Support:** High-fidelity highlighting for C++, QML, Markdown, Shell, Swift, and JavaScript.
 
 ### Integrated Git & AI Diffs
 *   **Git Console (`GitOutputWindow`):** A specialized view for rich-text diffs and commit logs.
