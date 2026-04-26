@@ -41,6 +41,7 @@
         
         <file>git/GitOutputWindow.qml</file>
         <file>git/GitLogDelegate.qml</file>
+        <file>git/GitDiffView.qml</file>
         
         <file>buildtools/BuildConfigurationDialog.qml</file>
         

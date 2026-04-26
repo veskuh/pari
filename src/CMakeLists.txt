@@ -45,6 +45,8 @@ qt_add_executable(pari
     integrations/gitlogmodel.h
     integrations/gitblamemodel.cpp
     integrations/gitblamemodel.h
+    integrations/gitdiffmodel.cpp
+    integrations/gitdiffmodel.h
     integrations/lspclient.cpp
     integrations/lspclient.h
     integrations/gitmanager.cpp

@@ -114,12 +114,12 @@ MenuBar {
         MenuItem {
             text: "git diff"
             enabled: fileSystem.isGitRepository
-            onTriggered: toolManager.runCommand("git diff", fileSystem.rootPath)
+            onTriggered: toolManager.runCommand("git status --porcelain && git diff", fileSystem.rootPath)
         }
         MenuItem {
             text: "git diff current file"
             enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
-            onTriggered: toolManager.runCommand("git diff " + fileSystem.currentFilePath, fileSystem.rootPath)
+            onTriggered: toolManager.runCommand("git status --porcelain " + fileSystem.currentFilePath + " && git diff " + fileSystem.currentFilePath, fileSystem.rootPath)
         }
         MenuItem {
             enabled: fileSystem.isGitRepository

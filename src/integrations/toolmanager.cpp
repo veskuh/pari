@@ -75,6 +75,9 @@ void ToolManager::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
 
     if (m_command.startsWith("git log")) {
         emit gitLogReady(m_outputBuffer);
+    } else if (m_command.contains("git diff")) {
+        emit gitDiffReady(m_outputBuffer);
+        emit outputReady(m_command, formatDiffOutput(m_outputBuffer), m_branchName);
     } else if (m_command.contains("git blame")) {
         emit outputReady(m_command, m_outputBuffer, m_branchName);
     } else {

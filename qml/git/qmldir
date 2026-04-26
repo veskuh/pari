@@ -1,3 +1,4 @@
 module git
 GitOutputWindow 1.0 GitOutputWindow.qml
 GitLogDelegate 1.0 GitLogDelegate.qml
+GitDiffView 1.0 GitDiffView.qml

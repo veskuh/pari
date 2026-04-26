@@ -1,4 +1,5 @@
 import QtQuick
+import QtCore
 import QtQuick.Controls
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
@@ -22,7 +23,42 @@ Window {
     property alias blameView: blameView
 
     // Theme helper
-    readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
+    readonly property bool isDark: (typeof appSettings !== 'undefined') ? appSettings.systemThemeIsDark : false
+
+    Settings {
+        id: gitWindowSettings
+        category: "gitWindow"
+        property alias x: gitOutputWindow.x
+        property alias y: gitOutputWindow.y
+        property alias width: gitOutputWindow.width
+        property alias height: gitOutputWindow.height
+    }
+
+    Connections {
+        target: (typeof toolManager !== 'undefined') ? toolManager : null
+        function onGitDiffReady(diff) {
+            if (typeof gitDiffModel !== 'undefined') {
+                gitDiffModel.parseRawDiff(diff);
+            }
+            
+            // Check if we need to position relatively (if first time or no valid settings)
+            if (gitOutputWindow.x === 0 && gitOutputWindow.y === 0) {
+                 var mainX = (typeof appWindow !== 'undefined') ? appWindow.x : 0;
+                 var mainY = (typeof appWindow !== 'undefined') ? appWindow.y : 0;
+                 var mainW = (typeof appWindow !== 'undefined') ? appWindow.width : Screen.width;
+                 var mainH = (typeof appWindow !== 'undefined') ? appWindow.height : Screen.height;
+                 
+                 gitOutputWindow.width = mainW * 0.9;
+                 gitOutputWindow.height = mainH * 0.9;
+                 gitOutputWindow.x = mainX + 40;
+                 gitOutputWindow.y = mainY + 40;
+            }
+            
+            gitOutputWindow.show();
+            gitOutputWindow.raise();
+            gitOutputWindow.requestActivate();
+        }
+    }
 
     onClosing: {
         gitLogModel = null;
@@ -73,6 +109,9 @@ Window {
                         if (command.includes("git blame")) {
                             return 3; // Blame View
                         }
+                        if (command.includes("git diff")) {
+                            return 4; // High-Fidelity Diff View
+                        }
                         return 2; // Output Area
                     }
 
@@ -119,14 +158,12 @@ Window {
                                 anchors.fill: parent
                                 spacing: 0
 
-                                // Commit grouping sidebar
                                 Rectangle {
                                     Layout.fillHeight: true
                                     Layout.preferredWidth: 4
                                     color: model.color
                                 }
 
-                                // Metadata Column
                                 Item {
                                     Layout.preferredWidth: 280
                                     Layout.fillHeight: true
@@ -177,14 +214,12 @@ Window {
                                     }
                                 }
 
-                                // Empty space for lines without metadata (keeps code aligned)
                                 Item {
                                     Layout.preferredWidth: 280
                                     Layout.fillHeight: true
                                     visible: !model.showMetadata
                                 }
 
-                                // Code Content
                                 Label {
                                     id: codeLabel
                                     text: model.content
@@ -198,6 +233,13 @@ Window {
                                 }
                             }
                         }
+                    }
+
+                    // Slot 4: High-Fidelity Diff View
+                    GitDiffView {
+                        id: diffView
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                     }
                 }
             }
