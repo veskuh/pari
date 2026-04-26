@@ -9,8 +9,8 @@ ColumnLayout {
     property bool llmBusy: false
     property var currentEditor: null
     property alias messageText: aiMessagePane.text
-    
-    signal sendClicked()
+
+    signal sendClicked
 
     spacing: 8
 
@@ -44,7 +44,7 @@ ColumnLayout {
                 color: isDark ? "#4aa9ff" : "#0051a6"
                 background: null
                 padding: 8
-                
+
                 onTextChanged: {
                     if (text !== promptComboBox.prompt) {
                         promptComboBox.currentIndex = 4;
@@ -63,22 +63,25 @@ ColumnLayout {
             objectName: "promptComboBox"
             Layout.fillWidth: true
             property string prompt: "Add comments to the following code."
-            model: [
-                qsTr("Comment code"), 
-                qsTr("Explain code"), 
-                qsTr("Refactor code"), 
-                qsTr("Write tests"), 
-                qsTr("Custom prompt")
-            ]
-            
+            model: [qsTr("Comment code"), qsTr("Explain code"), qsTr("Refactor code"), qsTr("Write tests"), qsTr("Custom prompt")]
+
             onCurrentIndexChanged: {
                 switch (currentIndex) {
-                case 0: prompt = "Add comments to the following code. Do not add any other text, just the commented code."; break;
-                case 1: prompt = "Explain the following code in a clear and concise way."; break;
-                case 2: prompt = "Refactor the following code to improve its readability."; break;
-                case 3: prompt = "Write unit tests for the following code using Qt Test."; break;
+                case 0:
+                    prompt = "Add comments to the following code. Do not add any other text, just the commented code.";
+                    break;
+                case 1:
+                    prompt = "Explain the following code in a clear and concise way.";
+                    break;
+                case 2:
+                    prompt = "Refactor the following code to improve its readability.";
+                    break;
+                case 3:
+                    prompt = "Write unit tests for the following code using Qt Test.";
+                    break;
                 }
-                if (currentIndex < 4) aiMessagePane.text = prompt;
+                if (currentIndex < 4)
+                    aiMessagePane.text = prompt;
             }
         }
 

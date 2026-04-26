@@ -10,13 +10,18 @@ struct GitCommit {
     QString authorName;
     QString authorEmail;
     QDateTime authorDate;
+    QString date;
+    QString time;
     QString messageHeader;
     QString messageBody;
+    QString details; // The "Refactoring Dossier" (lazy loaded)
+    bool detailsLoading = false;
 };
 
 class GitLogModel : public QAbstractListModel
 {
     Q_OBJECT
+
 public:
     enum GitLogRoles {
         ShaRole = Qt::UserRole + 1,
@@ -25,7 +30,9 @@ public:
         DateRole,
         TimeRole,
         MessageHeaderRole,
-        MessageBodyRole
+        MessageBodyRole,
+        DetailsRole,
+        DetailsLoadingRole
     };
 
     explicit GitLogModel(QObject *parent = nullptr);
@@ -34,6 +41,9 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
     Q_INVOKABLE void parseAndSetLog(const QString &log);
+    Q_INVOKABLE void updateDetails(const QString &sha, const QString &details);
+    Q_INVOKABLE void setDetailsLoading(const QString &sha, bool loading);
+    Q_INVOKABLE QString shaAt(int index) const;
 
 protected:
     QHash<int, QByteArray> roleNames() const override;

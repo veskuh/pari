@@ -3,6 +3,7 @@
 #include "textdocumentsearcher.h"
 #include "gitlogmodel.h"
 #include "gitblamemodel.h"
+#include "gitdiffmodel.h"
 #include "gitmanager.h"
 #include "documentmanager.h"
 #include "diffutils.h"
@@ -20,6 +21,7 @@ public slots:
         qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
         qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");
         qmlRegisterType<GitBlameModel>("net.veskuh.pari", 1, 0, "GitBlameModel");
+        qmlRegisterType<GitDiffModel>("net.veskuh.pari", 1, 0, "GitDiffModel");
         qmlRegisterType<GitManager>("net.veskuh.pari", 1, 0, "GitManager");
         qmlRegisterType<DocumentManager>("net.veskuh.pari", 1, 0, "DocumentManager");
     }

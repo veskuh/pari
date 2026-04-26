@@ -14,12 +14,14 @@ public:
 
     Q_INVOKABLE void runCommand(const QString &command, const QString &workingDirectory);
     Q_INVOKABLE void indentQmlFile(const QString &filePath, const QString &content);
+    Q_INVOKABLE void getBranchName(const QString &workingDirectory);
 
 signals:
     void outputReady(const QString &command, const QString &output, const QString &branchName);
     void qmlFileIndented(const QString &formattedContent);
     void gitLogReady(const QString &log);
     void gitDiffReady(const QString &diff);
+    void commitDetailsReady(const QString &sha, const QString &details);
 
 private slots:
     void onBranchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);

@@ -9,7 +9,7 @@ Item {
     signal resultClicked(string filePath, int lineNumber)
 
     readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
-    readonly property var _model: (typeof gitDiffModel !== 'undefined') ? gitDiffModel : null
+    property var _model: (typeof gitDiffModel !== 'undefined') ? gitDiffModel : null
 
     ListView {
         id: diffList

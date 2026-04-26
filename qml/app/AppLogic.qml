@@ -16,6 +16,7 @@ Item {
     property var dialogs
 
     Component.onCompleted: {
+        console.log("AppLogic completed. fileSystem available:", typeof fileSystem !== 'undefined');
         if (typeof fileSystem !== 'undefined' && typeof appSettings !== 'undefined') {
             fileSystem.showHiddenFiles = appSettings.showHiddenFiles;
         }
@@ -101,6 +102,7 @@ Item {
         }
         function onFinished() {
             outputArea.text += "\n✅ Ready.\n";
+            console.log("Ready");
         }
     }
 
@@ -142,15 +144,18 @@ Item {
             } else if (command.startsWith("git ")) {
                 blameModelBackend.clear();
             }
-            rootWindow.showGitOutput(command, output, branchName);
+            // showGitOutput is now handled solely by the trigger points
         }
         function onQmlFileIndented(formattedContent) {
             rootWindow.currentEditor.text = formattedContent;
             rootWindow.currentEditor.restoreCursorPosition();
         }
         function onGitLogReady(log) {
+            // Global log model updated, but windows will catch their own iftaskId is matched
             gitLogModel.parseAndSetLog(log);
-            rootWindow.showGitOutput("git log", "", "");
+        }
+        function onCommitDetailsReady(sha, details) {
+            gitLogModel.updateDetails(sha, details);
         }
     }
 }

@@ -585,16 +585,55 @@ ApplicationWindow {
         }
     }
 
+    property var gitWindows: []
+    property int lastWindowOffset: 0
+
     function showGitOutput(command, output, branch) {
-        dialogs.gitOutputWindow.command = command;
-        dialogs.gitOutputWindow.branchName = branch;
-        dialogs.gitOutputWindow.output = output !== "" ? output : qsTr("No output (empty diff or no changes).");
-        if (command.startsWith("git log")) {
-            dialogs.gitOutputWindow.gitLogModel = gitLogModel;
+        var component = Qt.createComponent("qrc:/qml/git/GitOutputWindow.qml");
+        if (component.status === Component.Ready) {
+            var win = component.createObject(appWindow, {
+                "command": command,
+                "output": output,
+                "branchName": branch,
+                "gitLogModel": command.startsWith("git log") ? gitLogModel : null
+            });
+            
+            if (win) {
+                // If we don't have output yet, trigger the command now
+                if (output === "" && command !== "") {
+                    toolManager.runCommand(command, fileSystem.rootPath);
+                } else if (output !== "" && (command.includes("git diff") || command.includes("git show"))) {
+                    win.setDiff(output);
+                }
+                
+                // Connect navigation back to main window
+                win.resultClicked.connect((path, line) => {
+                    appWindow.goToLineNumber = line;
+                    var fullPath = path;
+                    if (path !== "" && !path.startsWith("/")) {
+                        fullPath = fileSystem.rootPath + "/" + path;
+                    }
+                    documentManager.openFile(fullPath, false);
+                });
+                
+                // Cascading positioning
+                win.x = appWindow.x + 40 + lastWindowOffset;
+                win.y = appWindow.y + 40 + lastWindowOffset;
+                lastWindowOffset = (lastWindowOffset + 20) % 100;
+                
+                win.show();
+                gitWindows.push(win);
+                
+                // Cleanup on close
+                win.closing.connect(() => {
+                    var idx = gitWindows.indexOf(win);
+                    if (idx !== -1) gitWindows.splice(idx, 1);
+                    win.destroy();
+                });
+            }
         } else {
-            dialogs.gitOutputWindow.gitLogModel = null;
+            console.error("Error loading GitOutputWindow component:", component.errorString());
         }
-        dialogs.gitOutputWindow.show();
     }
 
     Component.onCompleted: {

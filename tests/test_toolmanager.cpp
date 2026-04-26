@@ -7,9 +7,6 @@
 #include <QFile>
 #include <QTextStream>
 
-// Helper to expose private members for testing if needed
-// Or just test through public signals.
-
 void TestToolManager::initTestCase()
 {
 }
@@ -30,8 +27,9 @@ void TestToolManager::testRunCommand()
     QCOMPARE(spy.count(), 1);
     QList<QVariant> arguments = spy.takeFirst();
     QCOMPARE(arguments.at(0).toString(), "echo hello");
-    // toolmanager adds <br> for every line, and wraps in div. echo hello outputs "hello\n"
-    QString expected = "<div style=\"white-space: pre; font-family: monospace;\">hello<br><br></div>";
+    
+    // toolmanager emits raw output for non-diff commands. echo hello outputs "hello\n"
+    QString expected = "hello\n";
     QCOMPARE(arguments.at(1).toString(), expected);
 }
 
@@ -44,29 +42,20 @@ void TestToolManager::testFormatDiffOutput()
     QFile file("test_diff.txt");
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&file);
-        out << "+added\n-removed\nnormal\n";
+        out << "+added\n-removed\n@@ hunk\n";
         file.close();
     }
     
-    toolManager.runCommand("cat test_diff.txt", QDir::currentPath());
+    // We force the command to contain 'git diff' so formatDiffOutput is triggered
+    toolManager.runCommand("echo 'git diff' && cat test_diff.txt", QDir::currentPath());
     
-    // Process chain takes time
-    bool signaled = false;
-    for (int i = 0; i < 50; ++i) {
-        if (spy.count() > 0) {
-            signaled = true;
-            break;
-        }
-        QTest::qWait(100);
-    }
-    
-    QVERIFY(signaled);
+    QVERIFY(spy.wait());
     QList<QVariant> arguments = spy.first();
     QString output = arguments.at(1).toString();
     
     QVERIFY(output.contains("<font color=\"#228b22\">+added</font><br>"));
     QVERIFY(output.contains("<font color=\"#cc0000\">-removed</font><br>"));
-    QVERIFY(output.contains("normal<br>"));
+    QVERIFY(output.contains("<font color=\"#0000ff\">@@ hunk</font><br>"));
     QVERIFY(output.startsWith("<div"));
 }
 

@@ -38,7 +38,7 @@ void GitDiffModel::parseRawDiff(const QString &rawDiff)
     int newLine = 0;
 
     QList<GitDiffLine> untrackedLines;
-    QList<GitDiffLine> statusLines; // For modified, etc.
+    QList<GitDiffLine> statusLines;
     QList<GitDiffLine> actualDiffLines;
     bool inDiffPhase = false;
 
@@ -74,14 +74,15 @@ void GitDiffModel::parseRawDiff(const QString &rawDiff)
                 else statusLines.append(sl);
                 continue;
             }
+            continue; 
         }
 
-        // --- DIFF PHASE ---
         if (line.startsWith("index ") || line.startsWith("--- ") || line.startsWith("+++ ")) {
             continue;
         }
 
         GitDiffLine diffLine;
+        diffLine.type = GitDiffLine::Context; 
         diffLine.content = line;
         diffLine.filePath = currentFilePath;
         diffLine.oldLineNumber = -1;
@@ -126,28 +127,15 @@ void GitDiffModel::parseRawDiff(const QString &rawDiff)
             } else if (line.startsWith("rename ") || line.startsWith("similarity ") || line.startsWith("new file ") || line.startsWith("deleted file ")) {
                 diffLine.type = GitDiffLine::FileHeader;
                 actualDiffLines.append(diffLine);
+            } else {
+                actualDiffLines.append(diffLine);
             }
         }
     }
 
-    // --- CONSTRUCT FINAL MODEL ---
-    if (!untrackedLines.isEmpty()) {
-        GitDiffLine h;
-        h.type = GitDiffLine::FileHeader;
-        h.content = QString("Untracked Files (%1)").arg(untrackedLines.size());
-        m_lines.append(h);
-        m_lines.append(untrackedLines);
-    }
-
-    if (!statusLines.isEmpty() || !actualDiffLines.isEmpty()) {
-        GitDiffLine spacer;
-        spacer.type = GitDiffLine::HunkHeader;
-        spacer.content = "--- Workspace Changes ---";
-        m_lines.append(spacer);
-        
-        m_lines.append(statusLines);
-        m_lines.append(actualDiffLines);
-    }
+    m_lines.append(untrackedLines);
+    m_lines.append(statusLines);
+    m_lines.append(actualDiffLines);
 
     endResetModel();
     emit countChanged();

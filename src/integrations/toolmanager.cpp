@@ -18,22 +18,35 @@ ToolManager::ToolManager(QObject *parent)
 
 void ToolManager::runCommand(const QString &command, const QString &workingDirectory)
 {
-    if (m_branchProcess->state() == QProcess::NotRunning && m_process->state() == QProcess::NotRunning) {
-        m_command = command;
-        m_workingDirectory = workingDirectory;
-        m_outputBuffer.clear();
-        m_errorBuffer.clear();
-        m_branchProcess->setWorkingDirectory(workingDirectory);
-        m_branchProcess->start("/bin/sh", QStringList() << "-c" << "git branch --show-current");
+    m_command = command;
+    m_workingDirectory = workingDirectory;
+    m_outputBuffer.clear();
+    m_errorBuffer.clear();
+
+    if (m_process->state() != QProcess::NotRunning) {
+        m_process->kill();
     }
+
+    m_process->setWorkingDirectory(workingDirectory);
+    m_process->start("sh", QStringList() << "-c" << command);
+}
+
+void ToolManager::getBranchName(const QString &workingDirectory)
+{
+    if (m_branchProcess->state() != QProcess::NotRunning) {
+        m_branchProcess->kill();
+    }
+    m_branchProcess->setWorkingDirectory(workingDirectory);
+    m_branchProcess->start("git", QStringList() << "rev-parse" << "--abbrev-ref" << "HEAD");
 }
 
 void ToolManager::indentQmlFile(const QString &filePath, const QString &content)
 {
+    Q_UNUSED(filePath);
     m_originalQmlContent = content;
 
     if (m_tempQmlFile) {
-        m_tempQmlFile->deleteLater(); // Delete any previous temporary file
+        m_tempQmlFile->deleteLater();
     }
     m_tempQmlFile = new QTemporaryFile(QDir::temp().filePath("tempfile.XXXXXX.qml"));
 
@@ -51,55 +64,35 @@ void ToolManager::indentQmlFile(const QString &filePath, const QString &content)
     }
 }
 
-void ToolManager::onBranchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
-{
-    if (exitCode == 0 && exitStatus == QProcess::NormalExit) {
-        m_branchName = m_branchProcess->readAllStandardOutput().trimmed();
-        m_process->setWorkingDirectory(m_workingDirectory);
-        m_process->start("/bin/sh", QStringList() << "-c" << m_command);
-    } else {
-        qDebug() << "Failed to get branch name";
-        m_branchName = "unknown";
-        m_process->setWorkingDirectory(m_workingDirectory);
-        m_process->start("/bin/sh", QStringList() << "-c" << m_command);
-    }
-}
-
 void ToolManager::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    // Read any remaining data
-    m_outputBuffer.append(m_process->readAllStandardOutput());
-    m_errorBuffer.append(m_process->readAllStandardError());
+    Q_UNUSED(exitCode);
+    Q_UNUSED(exitStatus);
 
     qDebug() << "ToolManager: Process finished. Command:" << m_command << "Output size:" << m_outputBuffer.size();
 
     if (m_command.startsWith("git log")) {
         emit gitLogReady(m_outputBuffer);
-    } else if (m_command.contains("git diff")) {
+    } else if (m_command.contains("git show --stat")) {
+        QString sha = m_command.split(" ").last();
+        emit commitDetailsReady(sha, m_outputBuffer);
+    } else if (m_command.contains("git diff") || m_command.contains("git show")) {
         emit gitDiffReady(m_outputBuffer);
         emit outputReady(m_command, formatDiffOutput(m_outputBuffer), m_branchName);
     } else if (m_command.contains("git blame")) {
         emit outputReady(m_command, m_outputBuffer, m_branchName);
     } else {
-        if (!m_errorBuffer.isEmpty()) {
-            emit outputReady(m_command, m_errorBuffer, m_branchName);
-        } else {
-            emit outputReady(m_command, formatDiffOutput(m_outputBuffer), m_branchName);
-        }
+        emit outputReady(m_command, m_outputBuffer.isEmpty() ? m_errorBuffer : m_outputBuffer, m_branchName);
     }
-    m_outputBuffer.clear();
-    m_errorBuffer.clear();
-    qDebug() << "Tool command" << m_command << "finished with exit code" << exitCode << "and exit status" << exitStatus;
 }
 
-void ToolManager::onReadyReadStandardOutput()
+void ToolManager::onBranchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    m_outputBuffer.append(m_process->readAllStandardOutput());
-}
-
-void ToolManager::onReadyReadStandardError()
-{
-    m_errorBuffer.append(m_process->readAllStandardError());
+    if (exitCode == 0 && exitStatus == QProcess::NormalExit) {
+        m_branchName = m_branchProcess->readAllStandardOutput().trimmed();
+    } else {
+        m_branchName = "";
+    }
 }
 
 void ToolManager::onQmlFormatProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -108,22 +101,25 @@ void ToolManager::onQmlFormatProcessFinished(int exitCode, QProcess::ExitStatus 
         if (exitCode == 0 && exitStatus == QProcess::NormalExit) {
             emit qmlFileIndented(m_qmlFormatProcess->readAllStandardOutput());
         } else {
-            qDebug() << "qmlformat failed with exit code" << exitCode << "and exit status" << exitStatus;
-            qDebug() << m_qmlFormatProcess->readAllStandardError();
-            emit qmlFileIndented(m_originalQmlContent); // Emit original content on error
+            emit qmlFileIndented(m_originalQmlContent);
         }
-        m_tempQmlFile->deleteLater(); // Schedule for deletion
+        m_tempQmlFile->deleteLater();
         m_tempQmlFile = nullptr;
-    } else {
-        qDebug() << "Temporary QML file object is null.";
-        emit qmlFileIndented(m_originalQmlContent); // Emit original content if temp file is null
     }
+}
+
+void ToolManager::onReadyReadStandardOutput()
+{
+    m_outputBuffer += m_process->readAllStandardOutput();
+}
+
+void ToolManager::onReadyReadStandardError()
+{
+    m_errorBuffer += m_process->readAllStandardError();
 }
 
 QString ToolManager::formatDiffOutput(const QString &output) const
 {
-    if (output.isEmpty()) return QString();
-
     QString escaped = output;
     escaped.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
     
@@ -135,7 +131,7 @@ QString ToolManager::formatDiffOutput(const QString &output) const
             formattedOutput += "<font color=\"#228b22\">" + line + "</font><br>";
         } else if (line.startsWith('-')) {
             formattedOutput += "<font color=\"#cc0000\">" + line + "</font><br>";
-        } else if (line.startsWith('@')) {
+        } else if (line.startsWith("@")) {
             formattedOutput += "<font color=\"#0000ff\">" + line + "</font><br>";
         } else {
             formattedOutput += line + "<br>";

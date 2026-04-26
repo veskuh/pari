@@ -17,9 +17,16 @@ Window {
     property string command: ""
     property string output: ""
     property string branchName: ""
-    property var gitLogModel: null
-    property var blameModel: (typeof gitBlameModel !== 'undefined') ? gitBlameModel : fallbackBlameModel
-    GitBlameModel { id: fallbackBlameModel }
+    
+    // To allow UI tests to inject mock models, we use a writeable property.
+    // In the live app, it defaults to our self-contained internal model.
+    property var gitLogModel: internalLogModel
+    property var blameModel: (typeof gitBlameModel !== 'undefined') ? gitBlameModel : internalBlameModel
+    
+    // Self-contained models for multi-window support
+    GitLogModel { id: internalLogModel }
+    GitBlameModel { id: internalBlameModel }
+    GitDiffModel { id: internalDiffModel }
 
     property alias logView: logView
     property alias outputArea: outputArea
@@ -37,34 +44,34 @@ Window {
         property alias height: gitOutputWindow.height
     }
 
-    Connections {
-        target: (typeof toolManager !== 'undefined') ? toolManager : null
-        function onGitDiffReady(diff) {
-            if (typeof gitDiffModel !== 'undefined') {
-                gitDiffModel.parseRawDiff(diff);
-            }
-            
-            // Check if we need to position relatively (if first time or no valid settings)
-            if (gitOutputWindow.x === 0 && gitOutputWindow.y === 0) {
-                 var mainX = (typeof appWindow !== 'undefined') ? appWindow.x : 0;
-                 var mainY = (typeof appWindow !== 'undefined') ? appWindow.y : 0;
-                 var mainW = (typeof appWindow !== 'undefined') ? appWindow.width : Screen.width;
-                 var mainH = (typeof appWindow !== 'undefined') ? appWindow.height : Screen.height;
-                 
-                 gitOutputWindow.width = mainW * 0.9;
-                 gitOutputWindow.height = mainH * 0.9;
-                 gitOutputWindow.x = mainX + 40;
-                 gitOutputWindow.y = mainY + 40;
-            }
-            
-            gitOutputWindow.show();
-            gitOutputWindow.raise();
-            gitOutputWindow.requestActivate();
-        }
+    // Helper function to populate diff
+    function setDiff(rawDiff) {
+        internalDiffModel.parseRawDiff(rawDiff);
     }
 
-    onClosing: {
-        gitLogModel = null;
+    Connections {
+        target: (typeof toolManager !== 'undefined') ? toolManager : null
+        
+        function onGitDiffReady(diff) {
+            // Only update if this specific window's command matches a diff or show operation.
+            if (command.includes("git diff") || command.includes("git show")) {
+                 if (typeof internalDiffModel !== 'undefined' && internalDiffModel !== null) {
+                    internalDiffModel.parseRawDiff(diff);
+                 }
+            }
+        }
+        
+        function onGitLogReady(log) {
+            // Only update if this window is currently displaying the log
+            if (command.includes("git log")) {
+                internalLogModel.parseAndSetLog(log);
+            }
+        }
+
+        function onCommitDetailsReady(sha, details) {
+            // Forward dossier data to our internal log model
+            internalLogModel.updateDetails(sha, details);
+        }
     }
 
     Pane {
@@ -87,8 +94,10 @@ Window {
                     text: command
                     font.family: "Menlo"
                     color: isDark ? "#ffffff" : "#000000"
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
                 }
-                Item { Layout.fillWidth: true }
+                Item { Layout.preferredWidth: 20 }
                 Label {
                     text: "🌿 " + branchName
                     font.bold: true
@@ -106,14 +115,14 @@ Window {
                     anchors.fill: parent
                     anchors.margins: 5
                     currentIndex: {
-                        if (gitLogModel !== null) {
+                        if (command.includes("git diff") || command.includes("git show")) {
+                            return 4; // High-Fidelity Diff View
+                        }
+                        if (gitLogModel !== null && command.includes("git log")) {
                             return 0; // Log View
                         }
                         if (command.includes("git blame")) {
                             return 3; // Blame View
-                        }
-                        if (command.includes("git diff")) {
-                            return 4; // High-Fidelity Diff View
                         }
                         return 2; // Output Area
                     }
@@ -243,6 +252,7 @@ Window {
                         id: diffView
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        _model: internalDiffModel
                         onResultClicked: (path, line) => gitOutputWindow.resultClicked(path, line)
                     }
                 }

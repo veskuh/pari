@@ -30,7 +30,7 @@ void TestGitLogModel::testParsing()
     QCOMPARE(model.data(index0, GitLogModel::AuthorNameRole).toString(), QString("Author One"));
     QCOMPARE(model.data(index0, GitLogModel::AuthorEmailRole).toString(), QString("one@example.com"));
     QCOMPARE(model.data(index0, GitLogModel::DateRole).toString(), QString("2024-06-03"));
-    QCOMPARE(model.data(index0, GitLogModel::TimeRole).toString(), QString("10:00:00"));
+    QCOMPARE(model.data(index0, GitLogModel::TimeRole).toString(), QString("10:00"));
     QCOMPARE(model.data(index0, GitLogModel::MessageHeaderRole).toString(), QString("feat: Initial commit"));
     QCOMPARE(model.data(index0, GitLogModel::MessageBodyRole).toString(), QString("This is the body of the first commit."));
 

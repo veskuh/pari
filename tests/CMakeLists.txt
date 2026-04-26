@@ -115,6 +115,7 @@ add_executable(tst_ui
     ../src/integrations/buildmanager.cpp
     ../src/integrations/toolmanager.cpp
     ../src/integrations/gitlogmodel.cpp
+    ../src/integrations/gitdiffmodel.cpp
     ../src/integrations/gitblamemodel.cpp
     ../src/integrations/gitblamemodel.h
     ../src/integrations/gitmanager.cpp

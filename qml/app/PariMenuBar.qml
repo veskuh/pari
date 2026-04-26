@@ -114,22 +114,30 @@ MenuBar {
         MenuItem {
             text: "git diff"
             enabled: fileSystem.isGitRepository
-            onTriggered: toolManager.runCommand("git status --porcelain && git diff", fileSystem.rootPath)
+            onTriggered: {
+                actions.rootWindow.showGitOutput("git status --porcelain && git diff", "", "");
+            }
         }
         MenuItem {
             text: "git diff current file"
             enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
-            onTriggered: toolManager.runCommand("git status --porcelain " + fileSystem.currentFilePath + " && git diff " + fileSystem.currentFilePath, fileSystem.rootPath)
+            onTriggered: {
+                actions.rootWindow.showGitOutput("git status --porcelain " + fileSystem.currentFilePath + " && git diff " + fileSystem.currentFilePath, "", "");
+            }
         }
         MenuItem {
             enabled: fileSystem.isGitRepository
             text: "git log"
-            onTriggered: toolManager.runCommand("git log --pretty=format:\"%H%x1f%an%x1f%ae%x1f%ad%x1f%s%n%b%x1e\" --date=rfc", fileSystem.rootPath)
+            onTriggered: {
+                actions.rootWindow.showGitOutput("git log --pretty=format:\"%H%x1f%an%x1f%ae%x1f%ad%x1f%s%n%b%x1e\" --date=rfc", "", "");
+            }
         }
         MenuItem {
             text: "git blame"
             enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
-            onTriggered: toolManager.runCommand("git blame --line-porcelain " + fileSystem.currentFilePath, fileSystem.rootPath)
+            onTriggered: {
+                actions.rootWindow.showGitOutput("git blame --line-porcelain " + fileSystem.currentFilePath, "", "");
+            }
         }
     }
 }
