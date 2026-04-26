@@ -8,14 +8,6 @@ MenuBar {
     property var dialogs
     property var gitLogModel
 
-    Component.onCompleted: {
-        console.log("DEBUG-MENU: PariMenuBar Component.onCompleted");
-        console.log("DEBUG-MENU: actions object exists:", !!actions);
-        if (actions) {
-            console.log("DEBUG-MENU: showGlobalSearchAction exists on actions:", !!actions.showGlobalSearchAction);
-        }
-    }
-
     Menu {
         title: qsTr("File")
         MenuItem { action: actions.newAction }
@@ -74,7 +66,6 @@ MenuBar {
         MenuItem {
             text: qsTr("Global Search")
             onTriggered: {
-                console.log("DEBUG-MENU: Global Search manually triggered");
                 actions.showGlobalSearchAction.trigger();
             }
         }

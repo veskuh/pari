@@ -18,8 +18,8 @@ AbstractButton {
 
     readonly property bool isDark: _theme.isDark
     
-    implicitWidth: 110
-    implicitHeight: 34
+    implicitWidth: 56
+    implicitHeight: 56
     
     padding: 0
     hoverEnabled: true
@@ -27,8 +27,8 @@ AbstractButton {
     contentItem: Item {}
 
     background: Rectangle {
-        implicitWidth: 110
-        implicitHeight: 34
+        implicitWidth: 56
+        implicitHeight: 56
         radius: 4
         
         // --- 1. HOVER GLOW ---
@@ -76,31 +76,30 @@ AbstractButton {
         }
         border.width: 1
         
-        // --- 3. THE ACTUAL CONTENT (Horizontal RowLayout) ---
-        RowLayout {
+        // --- 3. THE ACTUAL CONTENT (Reverted to Vertical) ---
+        ColumnLayout {
             anchors.centerIn: parent
-            spacing: 6
+            spacing: 1
             
             Image {
                 id: iconImage
-                Layout.alignment: Qt.AlignVCenter
-                sourceSize.width: 18
-                sourceSize.height: 18
+                Layout.alignment: Qt.AlignHCenter
+                sourceSize.width: 28
+                sourceSize.height: 28
                 fillMode: Image.PreserveAspectFit
                 opacity: control.enabled ? 1.0 : 0.4
             }
             
             Label {
-                Layout.alignment: Qt.AlignVCenter
+                Layout.alignment: Qt.AlignHCenter
                 text: control.text
                 font.pixelSize: _theme.fontToolbar
-                font.bold: control.isPrimary
                 color: {
                     if (control.isPrimary) return "#ffffff";
                     if (control.checked) return control.isDark ? "#4aa9ff" : "#0051a6";
                     return control.isDark ? "#b0b0b0" : "#646464";
                 }
-                opacity: control.enabled ? 1.0 : 0.8
+                opacity: control.enabled ? 1.0 : 0.5
             }
         }
 

@@ -92,7 +92,6 @@ ColumnLayout {
     }
 
     function goToLine(lineNumber) {
-        console.log("DEBUG-EDITOR: goToLine called for line:", lineNumber);
         var line = Math.max(0, lineNumber - 1);
         var text = codeEditor.text;
         var lines = text.split('\n');

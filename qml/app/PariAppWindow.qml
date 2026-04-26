@@ -69,161 +69,137 @@ ApplicationWindow {
                 anchors.fill: parent
                 spacing: 0
 
-                // 1. Machine Bezel Tab Strip
+                // 1. Classic OS Tab Strip
                 Rectangle {
                     id: tabStrip
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 42
-                    
-                    gradient: Gradient {
-                        orientation: Gradient.Horizontal
-                        GradientStop { position: 0.0; color: pariTheme.isDark ? "#2a2a2a" : "#e0e4e9" }
-                        GradientStop { position: 0.5; color: pariTheme.isDark ? "#323232" : "#edf1f5" }
-                        GradientStop { position: 1.0; color: pariTheme.isDark ? "#2a2a2a" : "#e0e4e9" }
-                    }
+                    Layout.preferredHeight: 38
+                    color: "transparent"
                     z: 5
                     
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 10
+                        anchors.rightMargin: 10
+                        anchors.topMargin: 6
+                        spacing: 2
+
+                        // TAB 1: Explorer
+                        AbstractButton {
+                            id: explorerTabBtn
+                            Layout.preferredWidth: 100
+                            Layout.fillHeight: true
+                            checkable: true
+                            autoExclusive: true
+                            checked: sidebarStack.currentIndex === 0
+                            onClicked: sidebarStack.currentIndex = 0
+                            
+                            contentItem: RowLayout {
+                                spacing: 6
+                                Image {
+                                    source: "qrc:/assets/folder.png"
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    fillMode: Image.PreserveAspectFit
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.leftMargin: 10
+                                    opacity: explorerTabBtn.checked ? 1.0 : 0.6
+                                }
+                                Label {
+                                    text: qsTr("Explorer")
+                                    font.pixelSize: 11
+                                    font.bold: explorerTabBtn.checked
+                                    color: pariTheme.textColor
+                                    opacity: explorerTabBtn.checked ? 1.0 : 0.7
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+                            }
+
+                            background: Rectangle {
+                                color: explorerTabBtn.checked ? pariTheme.sidebarBg : (pariTheme.isDark ? "#333333" : "#dcdcdc")
+                                topLeftRadius: 6
+                                topRightRadius: 6
+                                border.color: pariTheme.sidebarBorder
+                                border.width: 1
+                                
+                                // Hide bottom border when active to merge with content
+                                Rectangle {
+                                    anchors.bottom: parent.bottom
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.leftMargin: 1
+                                    anchors.rightMargin: 1
+                                    height: 1
+                                    color: parent.color
+                                    visible: explorerTabBtn.checked
+                                    z: 10
+                                }
+                            }
+                        }
+
+                        // TAB 2: Search
+                        AbstractButton {
+                            id: searchTabBtn
+                            Layout.preferredWidth: 100
+                            Layout.fillHeight: true
+                            checkable: true
+                            autoExclusive: true
+                            checked: sidebarStack.currentIndex === 1
+                            onClicked: sidebarStack.currentIndex = 1
+                            
+                            contentItem: RowLayout {
+                                spacing: 6
+                                Image {
+                                    source: "qrc:/assets/search.png"
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    fillMode: Image.PreserveAspectFit
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.leftMargin: 10
+                                    opacity: searchTabBtn.checked ? 1.0 : 0.6
+                                }
+                                Label {
+                                    text: qsTr("Search")
+                                    font.pixelSize: 11
+                                    font.bold: searchTabBtn.checked
+                                    color: pariTheme.textColor
+                                    opacity: searchTabBtn.checked ? 1.0 : 0.7
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+                            }
+
+                            background: Rectangle {
+                                color: searchTabBtn.checked ? pariTheme.sidebarBg : (pariTheme.isDark ? "#333333" : "#dcdcdc")
+                                topLeftRadius: 6
+                                topRightRadius: 6
+                                border.color: pariTheme.sidebarBorder
+                                border.width: 1
+                                
+                                // Hide bottom border when active to merge with content
+                                Rectangle {
+                                    anchors.bottom: parent.bottom
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.leftMargin: 1
+                                    anchors.rightMargin: 1
+                                    height: 1
+                                    color: parent.color
+                                    visible: searchTabBtn.checked
+                                    z: 10
+                                }
+                            }
+                        }
+                        
+                        Item { Layout.fillWidth: true }
+                    }
+                    
+                    // The main divider line that the active tab "sits" on
                     Rectangle {
                         anchors.bottom: parent.bottom
                         width: parent.width
                         height: 1
                         color: pariTheme.sidebarBorder
-                    }
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: -1
-                        width: parent.width
-                        height: 1
-                        color: pariTheme.isDark ? "#ffffff" : "#ffffff"
-                        opacity: pariTheme.isDark ? 0.05 : 0.6
-                        visible: !pariTheme.isDark
-                    }
-
-                    // Sliding Recessed Well (Increased width for Label)
-                    Rectangle {
-                        id: recessedWell
-                        y: 6
-                        height: 30
-                        width: 100
-                        radius: 6
-                        x: (sidebarStack.currentIndex === 0 ? explorerTabItem.x : searchTabItem.x) + 12
-                        
-                        color: pariTheme.isDark ? "#1a1a1a" : "#d0d6db"
-                        border.color: pariTheme.isDark ? "#000000" : "#b0b7be"
-                        border.width: 1
-                        
-                        Behavior on x { 
-                            SmoothedAnimation { duration: 250; easing.type: Easing.InOutQuad } 
-                        }
-
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: 1
-                            radius: 5
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: "#20000000" }
-                                GradientStop { position: 1.0; color: "transparent" }
-                            }
-                        }
-                    }
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
-                        spacing: 8
-
-                        Item {
-                            id: explorerTabItem
-                            Layout.preferredWidth: 100
-                            Layout.preferredHeight: 30
-                            
-                            AbstractButton {
-                                id: explorerTabBtn
-                                anchors.fill: parent
-                                checkable: true
-                                checked: sidebarStack.currentIndex === 0
-                                onClicked: sidebarStack.currentIndex = 0
-                                ToolTip.visible: hovered
-                                ToolTip.text: qsTr("Explorer")
-                                
-                                padding: 0
-                                
-                                contentItem: Item {
-                                    anchors.fill: parent
-                                    RowLayout {
-                                        anchors.centerIn: parent
-                                        spacing: 6
-                                        Image {
-                                            source: "qrc:/assets/folder.png"
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            fillMode: Image.PreserveAspectFit
-                                            Layout.alignment: Qt.AlignVCenter
-                                            opacity: explorerTabBtn.checked ? 1.0 : 0.7
-                                        }
-                                        Label {
-                                            text: qsTr("Explorer")
-                                            font.pixelSize: 11
-                                            font.bold: explorerTabBtn.checked
-                                            color: pariTheme.textColor
-                                            opacity: explorerTabBtn.checked ? 1.0 : 0.7
-                                            Layout.alignment: Qt.AlignVCenter
-                                        }
-                                    }
-                                }
-                                
-                                background: Item {}
-                                scale: pressed ? 0.95 : 1.0
-                            }
-                        }
-
-                        Item {
-                            id: searchTabItem
-                            Layout.preferredWidth: 100
-                            Layout.preferredHeight: 30
-                            
-                            AbstractButton {
-                                id: searchTabBtn
-                                anchors.fill: parent
-                                checkable: true
-                                checked: sidebarStack.currentIndex === 1
-                                onClicked: sidebarStack.currentIndex = 1
-                                ToolTip.visible: hovered
-                                ToolTip.text: qsTr("Project Search")
-                                
-                                padding: 0
-                                
-                                contentItem: Item {
-                                    anchors.fill: parent
-                                    RowLayout {
-                                        anchors.centerIn: parent
-                                        spacing: 6
-                                        Image {
-                                            source: "qrc:/assets/search.png"
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            fillMode: Image.PreserveAspectFit
-                                            Layout.alignment: Qt.AlignVCenter
-                                            opacity: searchTabBtn.checked ? 1.0 : 0.7
-                                        }
-                                        Label {
-                                            text: qsTr("Search")
-                                            font.pixelSize: 11
-                                            font.bold: searchTabBtn.checked
-                                            color: pariTheme.textColor
-                                            opacity: searchTabBtn.checked ? 1.0 : 0.7
-                                            Layout.alignment: Qt.AlignVCenter
-                                        }
-                                    }
-                                }
-                                
-                                background: Item {}
-                                scale: pressed ? 0.95 : 1.0
-                            }
-                        }
-                        
-                        Item { Layout.fillWidth: true }
+                        z: 1
                     }
                 }
 
@@ -614,9 +590,6 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        console.log("DEBUG-APP: PariAppWindow Component.onCompleted");
-        console.log("DEBUG-APP: treeColumn exists:", !!treeColumn);
-        console.log("DEBUG-APP: sidebarStack exists:", !!sidebarStack);
         fileSystem.setRootPath(fileSystem.homePath);
     }
 

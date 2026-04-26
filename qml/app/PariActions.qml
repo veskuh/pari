@@ -15,11 +15,6 @@ Item {
     // Signals to communicate with the main window
     signal closeCurrentFile()
 
-    Component.onCompleted: {
-        console.log("DEBUG-ACTIONS: PariActions Component.onCompleted");
-        console.log("DEBUG-ACTIONS: showGlobalSearchAction exists:", !!showGlobalSearchAction);
-    }
-
     Action {
         id: newAction
         text: qsTr("New")
@@ -125,13 +120,9 @@ Item {
         text: qsTr("Global Search")
         shortcut: "Ctrl+Shift+F"
         onTriggered: {
-            console.log("DEBUG-ACTIONS: showGlobalSearchAction triggered");
             rootWindow.treeColumn.visible = true;
             if (rootWindow.sidebarStack) {
                 rootWindow.sidebarStack.currentIndex = 1;
-                console.log("DEBUG-ACTIONS: sidebarStack index set to 1");
-            } else {
-                console.error("DEBUG-ACTIONS: sidebarStack reference is MISSING on rootWindow");
             }
         }
     }

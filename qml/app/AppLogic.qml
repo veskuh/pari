@@ -16,7 +16,6 @@ Item {
     property var dialogs
 
     Component.onCompleted: {
-        console.log("AppLogic completed. fileSystem available:", typeof fileSystem !== 'undefined');
         if (typeof fileSystem !== 'undefined' && typeof appSettings !== 'undefined') {
             fileSystem.showHiddenFiles = appSettings.showHiddenFiles;
         }
@@ -36,16 +35,11 @@ Item {
             var line = rootWindow.goToLineNumber;
             rootWindow.goToLineNumber = -1; // Consume
             
-            console.log("DEBUG-LOGIC: handlePendingNavigation triggered for line:", line);
-            
             // Wait for QML layout and editor population
             var timer = Qt.createQmlObject('import QtQuick; Timer { interval: 150; repeat: false; running: true; }', root);
             timer.triggered.connect(function() {
                 if (rootWindow.currentEditor) {
-                    console.log("DEBUG-LOGIC: Navigating current editor to line:", line);
                     rootWindow.currentEditor.goToLine(line);
-                } else {
-                    console.warn("DEBUG-LOGIC: No current editor found for navigation.");
                 }
                 timer.destroy();
             });
@@ -89,12 +83,10 @@ Item {
         target: (typeof documentManager !== 'undefined') ? documentManager : null
         // PATH 1: Newly opened file
         function onFileOpened(filePath, content) {
-            console.log("DEBUG-LOGIC: Path 1 (onFileOpened) for:", filePath);
             root.handlePendingNavigation();
         }
         // PATH 2: Already open file (just switching tabs)
         function onCurrentIndexChanged() {
-            console.log("DEBUG-LOGIC: Path 2 (onCurrentIndexChanged)");
             root.handlePendingNavigation();
         }
     }
@@ -109,7 +101,6 @@ Item {
         }
         function onFinished() {
             outputArea.text += "\n✅ Ready.\n";
-            console.log("Ready");
         }
     }
 
