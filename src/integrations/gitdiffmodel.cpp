@@ -38,26 +38,45 @@ void GitDiffModel::parseRawDiff(const QString &rawDiff)
     int newLine = 0;
 
     QList<GitDiffLine> untrackedLines;
+    QList<GitDiffLine> statusLines; // For modified, etc.
     QList<GitDiffLine> actualDiffLines;
+    bool inDiffPhase = false;
 
     QRegularExpression hunkHeader(R"(^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@)");
+    QRegularExpression porcelainStatus(R"(^([ MADRCU?][ MADRCU?])\s+(.+)$)");
 
     for (const QString &line : rawLines) {
         if (line.isEmpty()) continue;
 
-        // --- 1. HANDLE UNTRACKED FILES (?? marker) ---
-        if (line.startsWith("?? ")) {
-            GitDiffLine untracked;
-            untracked.type = GitDiffLine::UntrackedFile;
-            untracked.content = line.mid(3); // Just the path
-            untracked.filePath = untracked.content;
-            untracked.oldLineNumber = -1;
-            untracked.newLineNumber = -1;
-            untrackedLines.append(untracked);
-            continue;
+        if (line.startsWith("diff --git")) {
+            inDiffPhase = true;
         }
 
-        // SKIP NOISY HEADERS
+        if (!inDiffPhase) {
+            auto match = porcelainStatus.match(line);
+            if (match.hasMatch()) {
+                GitDiffLine sl;
+                QString code = match.captured(1);
+                QString path = match.captured(2);
+                
+                if (code == "??") {
+                    sl.type = GitDiffLine::UntrackedFile;
+                    sl.content = path;
+                } else {
+                    sl.type = GitDiffLine::StatusFile;
+                    sl.content = QString("[%1] %2").arg(code.trimmed()).arg(path);
+                }
+                sl.filePath = path;
+                sl.oldLineNumber = -1;
+                sl.newLineNumber = -1;
+                
+                if (code == "??") untrackedLines.append(sl);
+                else statusLines.append(sl);
+                continue;
+            }
+        }
+
+        // --- DIFF PHASE ---
         if (line.startsWith("index ") || line.startsWith("--- ") || line.startsWith("+++ ")) {
             continue;
         }
@@ -72,9 +91,8 @@ void GitDiffModel::parseRawDiff(const QString &rawDiff)
             diffLine.type = GitDiffLine::FileHeader;
             QStringList parts = line.split(" ");
             if (parts.size() >= 4) {
-                QString pathA = parts[2].mid(2); // Remove "a/"
-                QString pathB = parts[3].mid(2); // Remove "b/"
-                
+                QString pathA = parts[2].mid(2);
+                QString pathB = parts[3].mid(2);
                 if (pathA == pathB) {
                     currentFilePath = pathA;
                     diffLine.content = pathA;
@@ -112,23 +130,24 @@ void GitDiffModel::parseRawDiff(const QString &rawDiff)
         }
     }
 
-    // Combine: Header for Untracked (if any) + Untracked Files + Actual Diff
+    // --- CONSTRUCT FINAL MODEL ---
     if (!untrackedLines.isEmpty()) {
-        GitDiffLine header;
-        header.type = GitDiffLine::FileHeader;
-        header.content = QString("Untracked Files (%1)").arg(untrackedLines.size());
-        m_lines.append(header);
+        GitDiffLine h;
+        h.type = GitDiffLine::FileHeader;
+        h.content = QString("Untracked Files (%1)").arg(untrackedLines.size());
+        m_lines.append(h);
         m_lines.append(untrackedLines);
-        
-        // Add a spacer hunk header if we have actual diffs coming up
-        if (!actualDiffLines.isEmpty()) {
-             GitDiffLine spacer;
-             spacer.type = GitDiffLine::HunkHeader;
-             spacer.content = "--- Workspace Changes ---";
-             m_lines.append(spacer);
-        }
     }
-    m_lines.append(actualDiffLines);
+
+    if (!statusLines.isEmpty() || !actualDiffLines.isEmpty()) {
+        GitDiffLine spacer;
+        spacer.type = GitDiffLine::HunkHeader;
+        spacer.content = "--- Workspace Changes ---";
+        m_lines.append(spacer);
+        
+        m_lines.append(statusLines);
+        m_lines.append(actualDiffLines);
+    }
 
     endResetModel();
     emit countChanged();

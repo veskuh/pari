@@ -553,6 +553,14 @@ ApplicationWindow {
             }
             closeCurrentFile(index);
         }
+        onResultClicked: (path, line) => {
+            appWindow.goToLineNumber = line;
+            var fullPath = path;
+            if (path !== "" && !path.startsWith("/")) {
+                fullPath = fileSystem.rootPath + "/" + path;
+            }
+            documentManager.openFile(fullPath, false);
+        }
 
         fileDialog.onAccepted: {
             if (dialogs.fileDialog.folder) {

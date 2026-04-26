@@ -11,7 +11,8 @@ struct GitDiffLine {
         Deletion,
         FileHeader,
         HunkHeader,
-        UntrackedFile
+        UntrackedFile,
+        StatusFile
     };
 
     Type type;

@@ -11,6 +11,9 @@ Window {
     width: 800
     height: 600
     title: qsTr("Git Output")
+    
+    signal resultClicked(string filePath, int lineNumber)
+
     property string command: ""
     property string output: ""
     property string branchName: ""
@@ -240,6 +243,7 @@ Window {
                         id: diffView
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        onResultClicked: (path, line) => gitOutputWindow.resultClicked(path, line)
                     }
                 }
             }

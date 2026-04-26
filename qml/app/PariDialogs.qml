@@ -32,6 +32,7 @@ Item {
     signal goToLine(int lineNumber)
     signal discardChanges(int index)
     signal saveAndClose(int index)
+    signal resultClicked(string filePath, int lineNumber)
 
     SettingsWindow {
         id: settingsDialog
@@ -56,6 +57,7 @@ Item {
 
     GitOutputWindow {
         id: gitOutputWindow
+        onResultClicked: (path, line) => root.resultClicked(path, line)
     }
 
     Platform.MessageDialog {
