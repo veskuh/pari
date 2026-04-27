@@ -39,7 +39,7 @@ PariPaperWell {
             width: parent.width
             height: 26
 
-            ToolButton {
+            PariIconButton {
                 id: expandToggle
                 anchors.left: parent.left
                 width: 26; height: 26
@@ -53,29 +53,24 @@ PariPaperWell {
                 spacing: 2
                 height: 26
 
-                ToolButton {
+                PariIconButton {
                     text: "⏳"; checkable: true; checked: findOverlay.filterActive
                     onCheckedChanged: findOverlay.filterActive = checked
-                    width: 26; height: 26
                 }
-                ToolButton {
+                PariIconButton {
                     text: "Aa"; checkable: true; checked: findOverlay.matchCase
                     onCheckedChanged: findOverlay.matchCase = checked
-                    width: 26; height: 26
                 }
-                ToolButton {
+                PariIconButton {
                     enabled: searchInput.text !== "" && !findOverlay.filterActive
                     text: "▲"; onClicked: findOverlay.findPrevious()
-                    width: 26; height: 26
                 }
-                ToolButton {
+                PariIconButton {
                     enabled: searchInput.text !== "" && !findOverlay.filterActive
                     text: "▼"; onClicked: findOverlay.findNext(false)
-                    width: 26; height: 26
                 }
-                ToolButton {
+                PariIconButton {
                     text: "✕"; onClicked: findOverlay.closeOverlay()
-                    width: 26; height: 26
                 }
             }
 

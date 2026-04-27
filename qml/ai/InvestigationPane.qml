@@ -55,12 +55,11 @@ Rectangle {
                     Layout.fillWidth: true
                     spacing: 12
 
-                    ToolButton {
+                    PariIconButton {
                         text: root.replaceMode ? "▼" : "▶"
                         onClicked: root.replaceMode = !root.replaceMode
                         Layout.preferredWidth: 24
                         Layout.preferredHeight: 24
-                        font.pixelSize: 10
                     }
 
                     CheckBox {

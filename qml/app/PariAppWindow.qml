@@ -360,13 +360,13 @@ ApplicationWindow {
                         }
                         RowLayout {
                             Layout.alignment: Qt.AlignRight
-                             ToolButton {
+                             PariIconButton {
                                 text: outputPanel.expanded? "➖" : "➕"
                                 onClicked: {
                                     outputPanel.expanded = !outputPanel.expanded;
                                 }
                             }
-                            ToolButton {
+                            PariIconButton {
                                 text: "✖️"
                                 onClicked: {
                                     outputPanel.visible = false;
