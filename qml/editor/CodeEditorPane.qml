@@ -115,7 +115,7 @@ ColumnLayout {
     FindOverlay {
         id: findOverlay
         z: 10
-        width: parent.width
+        Layout.fillWidth: true
         onCloseOverlay: close()
     }
 

@@ -2,17 +2,16 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import net.veskuh.pari 1.0
 import "../common"
 
 PariPaperWell {
     id: findOverlay
-    height: replaceMode ? 76 : 40
-    width: 480
     visible: false
     
-    Layout.fillHeight: false
-    Layout.preferredHeight: height
-
+    // Auto-adjust height based on content
+    Layout.preferredHeight: contentColumn.implicitHeight + 16
+    
     property alias searchText: searchInput.text
     property alias replaceText: replaceInput.text
     property bool matchCase: false
@@ -26,149 +25,118 @@ PariPaperWell {
     signal closeOverlay()
     signal closed()
 
-    // Animation for height change
-    Behavior on height {
-        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-    }
+    content: Column {
+        id: contentColumn
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 8
+        spacing: 8
 
-    content: ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 6
-        spacing: 6
-
-        // Top Row: Search
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 28
-            spacing: 8
+        // --- ROW 1: SEARCH ---
+        Item {
+            id: searchRow
+            width: parent.width
+            height: 26
 
             ToolButton {
                 id: expandToggle
+                anchors.left: parent.left
+                width: 26; height: 26
                 text: findOverlay.replaceMode ? "▼" : "▶"
-                ToolTip.visible: hovered
-                ToolTip.text: findOverlay.replaceMode ? qsTr("Hide Replace") : qsTr("Show Replace")
                 onClicked: findOverlay.replaceMode = !findOverlay.replaceMode
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
             }
 
-            TextField {
-                id: searchInput
-                Layout.fillWidth: true
-                Layout.minimumWidth: 150
-                Layout.preferredHeight: 26
-                placeholderText: filterActive ? qsTr("Filter lines...") : qsTr("Search...")
-                onAccepted: findOverlay.findNext(false)
-                
-                color: findOverlay.isDark ? "#ffffff" : "#000000"
-                selectionColor: findOverlay.isDark ? "#4a9eff" : "#0078d7"
-                
-                leftPadding: 30
-                
-                background: Rectangle {
-                    color: findOverlay.isDark ? "#1e1e1e" : "#fdfdfd"
-                    border.color: searchInput.activeFocus ? (findOverlay.isDark ? "#4a9eff" : "#0078d7") : (findOverlay.isDark ? "#333333" : "#cccccc")
-                    border.width: 1
-                    radius: 3
-                    
-                    Label {
-                        text: filterActive ? "⏳" : "🔍"
-                        anchors.left: parent.left
-                        anchors.leftMargin: 8
-                        anchors.verticalCenter: parent.verticalCenter
-                        opacity: 0.5
-                    }
+            Row {
+                id: searchActionGroup
+                anchors.right: parent.right
+                spacing: 2
+                height: 26
+
+                ToolButton {
+                    text: "⏳"; checkable: true; checked: findOverlay.filterActive
+                    onCheckedChanged: findOverlay.filterActive = checked
+                    width: 26; height: 26
+                }
+                ToolButton {
+                    text: "Aa"; checkable: true; checked: findOverlay.matchCase
+                    onCheckedChanged: findOverlay.matchCase = checked
+                    width: 26; height: 26
+                }
+                ToolButton {
+                    enabled: searchInput.text !== "" && !findOverlay.filterActive
+                    text: "▲"; onClicked: findOverlay.findPrevious()
+                    width: 26; height: 26
+                }
+                ToolButton {
+                    enabled: searchInput.text !== "" && !findOverlay.filterActive
+                    text: "▼"; onClicked: findOverlay.findNext(false)
+                    width: 26; height: 26
+                }
+                ToolButton {
+                    text: "✕"; onClicked: findOverlay.closeOverlay()
+                    width: 26; height: 26
                 }
             }
 
             Label {
                 id: resultsLabel
+                anchors.right: searchActionGroup.left
+                anchors.rightMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
                 text: "0"
-                Layout.minimumWidth: 60
+                width: 40
                 horizontalAlignment: Text.AlignRight
                 verticalAlignment: Text.AlignVCenter
                 color: findOverlay.isDark ? "#aaaaaa" : "#666666"
                 font.pixelSize: 11
             }
 
-            RowLayout {
-                spacing: 2
-                Layout.preferredHeight: 28
-
-                ToolButton {
-                    id: filterToggle
-                    text: "⏳"
-                    checkable: true
-                    checked: findOverlay.filterActive
-                    onCheckedChanged: findOverlay.filterActive = checked
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Filter lines (Grep mode)")
-                    Layout.preferredWidth: 28
-                    Layout.preferredHeight: 26
-                    
-                    background: Rectangle {
-                        color: filterToggle.checked ? (findOverlay.isDark ? "#00458d" : "#e0eeff") : "transparent"
-                        radius: 2
-                    }
-                }
-
-                ToolButton {
-                    id: caseToggle
-                    text: "Aa"
-                    checkable: true
-                    checked: findOverlay.matchCase
-                    onCheckedChanged: findOverlay.matchCase = checked
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Match Case")
-                    Layout.preferredWidth: 28
-                    Layout.preferredHeight: 26
-                    
-                    background: Rectangle {
-                        color: caseToggle.checked ? (findOverlay.isDark ? "#00458d" : "#e0eeff") : "transparent"
-                        radius: 2
-                    }
-                }
+            TextField {
+                id: searchInput
+                anchors.left: parent.left
+                anchors.leftMargin: 34 // Matches replaceInput alignment
+                anchors.right: parent.right
+                anchors.rightMargin: 198 // Matches replaceInput alignment
+                height: 26
+                placeholderText: filterActive ? qsTr("Filter lines...") : qsTr("Search...")
+                onAccepted: findOverlay.findNext(false)
                 
-                ToolButton {
-                    enabled: searchInput.text !== "" && !findOverlay.filterActive
-                    text: "▲"
-                    onClicked: findOverlay.findPrevious()
-                    Layout.preferredWidth: 28
-                    Layout.preferredHeight: 26
-                }
-
-                ToolButton {
-                    enabled: searchInput.text !== "" && !findOverlay.filterActive
-                    text: "▼"
-                    onClicked: findOverlay.findNext(false)
-                    Layout.preferredWidth: 28
-                    Layout.preferredHeight: 26
-                }
-
-                ToolButton {
-                    text: "✕"
-                    onClicked: findOverlay.closeOverlay()
-                    Layout.preferredWidth: 28
-                    Layout.preferredHeight: 26
+                color: findOverlay.isDark ? "#ffffff" : "#000000"
+                selectionColor: findOverlay.isDark ? "#4a9eff" : "#0078d7"
+                leftPadding: 28
+                
+                background: Rectangle {
+                    color: findOverlay.isDark ? "#1e1e1e" : "#fdfdfd"
+                    border.color: searchInput.activeFocus ? (findOverlay.isDark ? "#4a9eff" : "#0078d7") : (findOverlay.isDark ? "#333333" : "#cccccc")
+                    border.width: 1; radius: 3
+                    Label {
+                        text: filterActive ? "⏳" : "🔍"
+                        anchors.left: parent.left; anchors.leftMargin: 6; anchors.verticalCenter: parent.verticalCenter; opacity: 0.5
+                    }
                 }
             }
         }
 
-        // Bottom Row: Replace
-        RowLayout {
+        // --- ROW 2: REPLACE ---
+        Item {
+            id: replaceRow
             visible: findOverlay.replaceMode
-            Layout.fillWidth: true
-            Layout.preferredHeight: 28
-            spacing: 8
-            
-            // Spacer to align with search input (matching expandToggle width + spacing)
-            Item { Layout.preferredWidth: 24 }
+            width: parent.width
+            height: findOverlay.replaceMode ? 26 : 0
+            opacity: findOverlay.replaceMode ? 1 : 0
+            clip: true
+
+            Behavior on height { NumberAnimation { duration: 150 } }
+            Behavior on opacity { NumberAnimation { duration: 150 } }
 
             TextField {
                 id: replaceInput
-                Layout.fillWidth: true
-                Layout.minimumWidth: 150
-                Layout.preferredHeight: 26
+                anchors.left: parent.left
+                anchors.leftMargin: 34 // matches expandToggle.width (26) + leftMargin (8)
+                anchors.right: parent.right
+                anchors.rightMargin: 198 // matches searchActionGroup.width + resultsLabel.width + margins
+                height: 26
                 placeholderText: qsTr("Replace with...")
                 onAccepted: findOverlay.replaceNext()
                 
@@ -178,38 +146,32 @@ PariPaperWell {
                 background: Rectangle {
                     color: findOverlay.isDark ? "#1e1e1e" : "#fdfdfd"
                     border.color: replaceInput.activeFocus ? (findOverlay.isDark ? "#4a9eff" : "#0078d7") : (findOverlay.isDark ? "#333333" : "#cccccc")
-                    border.width: 1
-                    radius: 3
+                    border.width: 1; radius: 3
                 }
             }
 
-            RowLayout {
+            Row {
+                id: replaceActionGroup
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
                 spacing: 4
-                Layout.preferredHeight: 28
+                height: 24
 
-                Button {
+                PariButton {
                     text: qsTr("Replace")
-                    enabled: searchInput.text !== "" && !findOverlay.filterActive
                     onClicked: findOverlay.replaceNext()
-                    implicitHeight: 24
-                    Layout.preferredHeight: 24
-                    Layout.alignment: Qt.AlignVCenter
+                    width: 70; height: 24
                 }
-
-                Button {
-                    text: qsTr("All")
-                    enabled: searchInput.text !== "" && !findOverlay.filterActive
+                PariButton {
+                    text: qsTr("Replace All")
                     onClicked: findOverlay.replaceAll()
-                    implicitHeight: 24
-                    Layout.preferredHeight: 24
-                    Layout.alignment: Qt.AlignVCenter
+                    width: 85; height: 24
                 }
-                
-                // Align with the "✕" button above
-                Item { Layout.preferredWidth: 28 }
+                Item { width: 26 } // Aligns with the close button in Row 1
             }
         }
     }
+
 
     function open() {
         findOverlay.visible = true;

@@ -91,7 +91,7 @@ Rectangle {
                         color: pariTheme.textColor
                     }
                     
-                    Button {
+                    PariButton {
                         text: qsTr("Replace All")
                         enabled: projectSearchModel.resultCount > 0
                         onClicked: replaceConfirmDialog.open()
@@ -121,7 +121,7 @@ Rectangle {
 
                     Item { Layout.fillWidth: true }
                     
-                    Button {
+                    PariButton {
                         text: qsTr("Search")
                         highlighted: true
                         onClicked: projectSearchModel.search(fileSystem.rootPath, searchInput.text, caseCheck.checked, regexCheck.checked, scopeInput.text)
