@@ -69,138 +69,16 @@ ApplicationWindow {
                 anchors.fill: parent
                 spacing: 0
 
-                // 1. Classic OS Tab Strip
-                Rectangle {
-                    id: tabStrip
+                // 1. SIDEBAR TAB BAR (Unified Metallic)
+                PariSidebarTabBar {
+                    id: sidebarTabBar
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 38
-                    color: "transparent"
-                    z: 5
-                    
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 10
-                        anchors.rightMargin: 10
-                        anchors.topMargin: 6
-                        spacing: 2
-
-                        // TAB 1: Explorer
-                        AbstractButton {
-                            id: explorerTabBtn
-                            Layout.preferredWidth: 100
-                            Layout.fillHeight: true
-                            checkable: true
-                            autoExclusive: true
-                            checked: sidebarStack.currentIndex === 0
-                            onClicked: sidebarStack.currentIndex = 0
-                            
-                            contentItem: RowLayout {
-                                spacing: 6
-                                Image {
-                                    source: "qrc:/assets/folder.png"
-                                    sourceSize.width: 14
-                                    sourceSize.height: 14
-                                    fillMode: Image.PreserveAspectFit
-                                    Layout.alignment: Qt.AlignVCenter
-                                    Layout.leftMargin: 10
-                                    opacity: explorerTabBtn.checked ? 1.0 : 0.6
-                                }
-                                Label {
-                                    text: qsTr("Explorer")
-                                    font.pixelSize: 11
-                                    font.bold: explorerTabBtn.checked
-                                    color: pariTheme.textColor
-                                    opacity: explorerTabBtn.checked ? 1.0 : 0.7
-                                    Layout.alignment: Qt.AlignVCenter
-                                }
-                            }
-
-                            background: Rectangle {
-                                color: explorerTabBtn.checked ? pariTheme.sidebarBg : (pariTheme.isDark ? "#333333" : "#dcdcdc")
-                                topLeftRadius: 6
-                                topRightRadius: 6
-                                border.color: pariTheme.sidebarBorder
-                                border.width: 1
-                                
-                                // Hide bottom border when active to merge with content
-                                Rectangle {
-                                    anchors.bottom: parent.bottom
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.leftMargin: 1
-                                    anchors.rightMargin: 1
-                                    height: 1
-                                    color: parent.color
-                                    visible: explorerTabBtn.checked
-                                    z: 10
-                                }
-                            }
-                        }
-
-                        // TAB 2: Search
-                        AbstractButton {
-                            id: searchTabBtn
-                            Layout.preferredWidth: 100
-                            Layout.fillHeight: true
-                            checkable: true
-                            autoExclusive: true
-                            checked: sidebarStack.currentIndex === 1
-                            onClicked: sidebarStack.currentIndex = 1
-                            
-                            contentItem: RowLayout {
-                                spacing: 6
-                                Image {
-                                    source: "qrc:/assets/search.png"
-                                    sourceSize.width: 14
-                                    sourceSize.height: 14
-                                    fillMode: Image.PreserveAspectFit
-                                    Layout.alignment: Qt.AlignVCenter
-                                    Layout.leftMargin: 10
-                                    opacity: searchTabBtn.checked ? 1.0 : 0.6
-                                }
-                                Label {
-                                    text: qsTr("Search")
-                                    font.pixelSize: 11
-                                    font.bold: searchTabBtn.checked
-                                    color: pariTheme.textColor
-                                    opacity: searchTabBtn.checked ? 1.0 : 0.7
-                                    Layout.alignment: Qt.AlignVCenter
-                                }
-                            }
-
-                            background: Rectangle {
-                                color: searchTabBtn.checked ? pariTheme.sidebarBg : (pariTheme.isDark ? "#333333" : "#dcdcdc")
-                                topLeftRadius: 6
-                                topRightRadius: 6
-                                border.color: pariTheme.sidebarBorder
-                                border.width: 1
-                                
-                                // Hide bottom border when active to merge with content
-                                Rectangle {
-                                    anchors.bottom: parent.bottom
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.leftMargin: 1
-                                    anchors.rightMargin: 1
-                                    height: 1
-                                    color: parent.color
-                                    visible: searchTabBtn.checked
-                                    z: 10
-                                }
-                            }
-                        }
-                        
-                        Item { Layout.fillWidth: true }
-                    }
-                    
-                    // The main divider line that the active tab "sits" on
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        width: parent.width
-                        height: 1
-                        color: pariTheme.sidebarBorder
-                        z: 1
-                    }
+                    currentIndex: sidebarStack.currentIndex
+                    model: [
+                        { text: qsTr("Explorer"), icon: "qrc:/assets/folder.png" },
+                        { text: qsTr("Search"), icon: "qrc:/assets/search.png" }
+                    ]
+                    onTabClicked: (index) => sidebarStack.currentIndex = index
                 }
 
                 // 2. Main Sidebar Content

@@ -19,6 +19,7 @@
         <file>common/PariButton.qml</file>
         <file>common/PariToolButton.qml</file>
         <file>common/PariIconButton.qml</file>
+        <file>common/PariSidebarTabBar.qml</file>
         <file>common/PariPaperWell.qml</file>
         <file>common/PariReadOnlyTextArea.qml</file>
         <file>common/PariTabBar.qml</file>
