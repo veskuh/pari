@@ -1,0 +1,7 @@
+module sidebar
+FileIconProvider 1.0 FileIconProvider.qml
+FileTreeDelegate 1.0 FileTreeDelegate.qml
+NewFileDialog 1.0 NewFileDialog.qml
+RenameDialog 1.0 RenameDialog.qml
+FileInfoDialog 1.0 FileInfoDialog.qml
+GlobalSearchPane 1.0 GlobalSearchPane.qml
