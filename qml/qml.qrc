@@ -34,6 +34,7 @@
         <file>editor/EmptyEditorState.qml</file>
         <file>editor/GoToLineDialog.qml</file>
         <file>editor/SearchManager.qml</file>
+        <file>editor/BuildOutputPanel.qml</file>
         
         <file>ai/OutputPane.qml</file>
         <file>ai/AiInputControl.qml</file>

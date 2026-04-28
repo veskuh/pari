@@ -7,3 +7,4 @@ CompletionPopup 1.0 CompletionPopup.qml
 EmptyEditorState 1.0 EmptyEditorState.qml
 GoToLineDialog 1.0 GoToLineDialog.qml
 SearchManager 1.0 SearchManager.qml
+BuildOutputPanel 1.0 BuildOutputPanel.qml

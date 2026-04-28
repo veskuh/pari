@@ -214,86 +214,12 @@ ApplicationWindow {
                 }
             }
 
-            PariPaperWell {
+            BuildOutputPanel {
                 id: outputPanel
-                property bool expanded: false
                 SplitView.fillWidth: true
                 SplitView.preferredHeight: expanded ? codeColumn.height - 40 : codeColumn.height * 0.20
                 SplitView.minimumHeight: expanded ? codeColumn.height - 40 : 100
                 SplitView.maximumHeight: expanded ? codeColumn.height - 40 : codeColumn.height * 0.5
-                visible: false
-
-                content: ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 5
-
-                    RowLayout {
-                        Label {
-                            text: "Build Output"
-                            font.bold: true
-                            color: pariTheme.textColor
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        RowLayout {
-                            Layout.alignment: Qt.AlignRight
-                             PariIconButton {
-                                text: outputPanel.expanded? "➖" : "➕"
-                                onClicked: {
-                                    outputPanel.expanded = !outputPanel.expanded;
-                                }
-                            }
-                            PariIconButton {
-                                text: "✖️"
-                                onClicked: {
-                                    outputPanel.visible = false;
-                                    outputPanel.expanded = false;
-                                }
-                            }
-                        }
-                    }
-
-                    ScrollView {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Flickable {
-                            id: flickable
-                            clip: true
-                            contentHeight: outputArea.implicitHeight
-                            width: parent.width
-                            Text {
-                                id: outputArea
-                                color: pariTheme.textColor
-                                width: parent.width
-                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                                textFormat: Text.MarkdownText
-                                onLinkActivated: function (link) {
-                                    var parts = link.split(":");
-                                    if (parts.length > 0) {
-                                        var filePath = parts[0];
-                                        var lineNumber = -1;
-                                        if (parts.length > 1) {
-                                            lineNumber = parseInt(parts[1], 10);
-                                        }
-
-                                        if (fileSystem.fileExistsInProject(filePath)) {
-                                            var absolutePath = fileSystem.getAbsolutePath(filePath);
-                                            appWindow.goToLineNumber = lineNumber;
-                                            documentManager.openFile(absolutePath, false);
-                                        }
-                                    }
-                                }
-
-                                onContentHeightChanged: {
-                                    if (outputArea.contentHeight > flickable.height) {
-                                        flickable.contentY = outputArea.contentHeight - flickable.height;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -328,7 +254,7 @@ ApplicationWindow {
         dialogs: dialogs
         stackLayout: stackLayout
         outputPanel: outputPanel
-        outputArea: outputArea
+        outputArea: outputPanel.outputArea
         gitLogModel: gitLogModel
         hasBuildConfiguration: appWindow.hasBuildConfiguration
         onCloseCurrentFile: appWindow.closeCurrentFile()
@@ -522,7 +448,7 @@ ApplicationWindow {
         id: appLogic
         rootWindow: appWindow
         customStatusBar: customStatusBar
-        outputArea: outputArea
+        outputArea: outputPanel.outputArea
         aiOutputPane: aiOutputPane
         gitLogModel: gitLogModel
         blameModelBackend: gitBlameModel

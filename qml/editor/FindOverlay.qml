@@ -11,6 +11,7 @@ PariPaperWell {
     
     // Auto-adjust height based on content
     Layout.preferredHeight: contentColumn.implicitHeight + 16
+    backgroundColor: findOverlay.isDark ? "#1a1a1a" : "#d8d8d8"
     
     property alias searchText: searchInput.text
     property alias replaceText: replaceInput.text

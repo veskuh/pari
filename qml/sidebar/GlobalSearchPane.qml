@@ -35,6 +35,7 @@ Rectangle {
         PariPaperWell {
             Layout.fillWidth: true
             Layout.preferredHeight: root.replaceMode ? 180 : 145
+            backgroundColor: pariTheme.isDark ? "#1a1a1a" : "#d8d8d8"
             
             content: ColumnLayout {
                 anchors.fill: parent

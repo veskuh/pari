@@ -16,7 +16,8 @@ Rectangle {
     Layout.margins: _theme.paddingSmall
     radius: _theme.borderRadius
     
-    color: isDirtyWell ? _theme.editorBgDirty : _theme.editorBg
+    property color backgroundColor: "transparent"
+    color: backgroundColor !== Qt.rgba(0,0,0,0) ? backgroundColor : (isDirtyWell ? _theme.editorBgDirty : _theme.editorBg)
     border.color: _theme.editorBorder
     border.width: 1
 
