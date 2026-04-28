@@ -10,11 +10,12 @@
         <file>app/CustomStatusBar.qml</file>
         <file>app/AboutWindow.qml</file>
         
-        <file>filetree/FileTreeDelegate.qml</file>
-        <file>filetree/FileIconProvider.qml</file>
-        <file>filetree/NewFileDialog.qml</file>
-        <file>filetree/RenameDialog.qml</file>
-        <file>filetree/FileInfoDialog.qml</file>
+        <file>sidebar/FileTreeDelegate.qml</file>
+        <file>sidebar/FileIconProvider.qml</file>
+        <file>sidebar/NewFileDialog.qml</file>
+        <file>sidebar/RenameDialog.qml</file>
+        <file>sidebar/FileInfoDialog.qml</file>
+        <file>sidebar/GlobalSearchPane.qml</file>
         
         <file>common/PariButton.qml</file>
         <file>common/PariToolButton.qml</file>
@@ -35,7 +36,6 @@
         <file>editor/SearchManager.qml</file>
         
         <file>ai/OutputPane.qml</file>
-        <file>ai/InvestigationPane.qml</file>
         <file>ai/AiInputControl.qml</file>
         <file>ai/AiThinkingIndicator.qml</file>
         <file>ai/ChatLogWindow.qml</file>
@@ -54,7 +54,7 @@
         <file>utils/FormattingUtils.js</file>
 
         <file>app/qmldir</file>
-        <file>filetree/qmldir</file>
+        <file>sidebar/qmldir</file>
         <file>common/qmldir</file>
         <file>editor/qmldir</file>
         <file>ai/qmldir</file>

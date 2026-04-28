@@ -8,7 +8,7 @@ import "../ai"
 import "../buildtools"
 import "../editor"
 import "../git"
-import "../filetree"
+import "../sidebar"
 
 Item {
     id: root

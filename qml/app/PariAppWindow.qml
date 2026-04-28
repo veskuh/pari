@@ -6,7 +6,7 @@ import QtQuick.Window
 import QtQuick.Dialogs
 
 import net.veskuh.pari 1.0
-import "../filetree"
+import "../sidebar"
 import "../editor"
 import "../common"
 import "../ai"
@@ -128,7 +128,7 @@ ApplicationWindow {
                     }
 
                     // Search View
-                    InvestigationPane {
+                    GlobalSearchPane {
                         id: searchPane
                         onResultClicked: (path, line) => {
                             appWindow.goToLineNumber = line;
