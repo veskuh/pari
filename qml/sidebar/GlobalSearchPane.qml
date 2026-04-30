@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -5,11 +6,19 @@ import "../common"
 
 Rectangle {
     id: root
-    color: pariTheme.sidebarBg
-    
-    signal resultClicked(string filePath, int lineNumber)
     
     property bool replaceMode: false
+
+    signal resultClicked(string filePath, int lineNumber)
+    
+    color: pariTheme.sidebarBg
+
+    Connections {
+        target: fileSystem
+        function onRootPathChanged() {
+            projectSearchModel.clear();
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -19,23 +28,25 @@ Rectangle {
         ColumnLayout {
             Layout.fillWidth: true
             spacing: 0
+            
             Label {
                 text: qsTr("GLOBAL SEARCH")
+                color: pariTheme.textColor
                 font.pixelSize: 10
                 font.bold: true
+                opacity: 0.6
                 Layout.leftMargin: 10
                 Layout.topMargin: 10
                 Layout.bottomMargin: 8
-                color: pariTheme.textColor
-                opacity: 0.6
             }
         }
 
         // 2. Search/Replace Interface
         PariPaperWell {
+            id: searchWell
+            backgroundColor: pariTheme.isDark ? "#1a1a1a" : "#d8d8d8"
             Layout.fillWidth: true
             Layout.preferredHeight: root.replaceMode ? 180 : 145
-            backgroundColor: pariTheme.isDark ? "#1a1a1a" : "#d8d8d8"
             
             content: ColumnLayout {
                 anchors.fill: parent
@@ -45,10 +56,16 @@ Rectangle {
                 // Row 1: Wide Search Input
                 TextField {
                     id: searchInput
+                    color: pariTheme.textColor
                     Layout.fillWidth: true
                     placeholderText: qsTr("Search for...")
-                    color: pariTheme.textColor
                     onAccepted: projectSearchModel.search(fileSystem.rootPath, text, caseCheck.checked, regexCheck.checked, scopeInput.text)
+                    onTextChanged: {
+                        if (projectSearchModel.resultCount > 0 || projectSearchModel.isSearching) {
+                            projectSearchModel.cancel();
+                            projectSearchModel.clear();
+                        }
+                    }
                 }
 
                 // Row 2: Replace Toggle + Search Options (Checkboxes)
@@ -58,9 +75,9 @@ Rectangle {
 
                     PariIconButton {
                         text: root.replaceMode ? "▼" : "▶"
-                        onClicked: root.replaceMode = !root.replaceMode
                         Layout.preferredWidth: 24
                         Layout.preferredHeight: 24
+                        onClicked: root.replaceMode = !root.replaceMode
                     }
 
                     CheckBox {
@@ -80,15 +97,15 @@ Rectangle {
 
                 // Row 3: Replace (Collapsible)
                 RowLayout {
-                    visible: root.replaceMode
                     Layout.fillWidth: true
                     spacing: 8
+                    visible: root.replaceMode
                     
                     TextField {
                         id: replaceInput
+                        color: pariTheme.textColor
                         Layout.fillWidth: true
                         placeholderText: qsTr("Replace with...")
-                        color: pariTheme.textColor
                     }
                     
                     PariButton {
@@ -105,32 +122,38 @@ Rectangle {
 
                     Label {
                         text: qsTr("Scope:")
+                        color: pariTheme.textColor
                         font.pixelSize: 11
                         opacity: 0.7
-                        color: pariTheme.textColor
                     }
 
                     TextField {
                         id: scopeInput
-                        Layout.preferredWidth: 80
-                        placeholderText: "*.cpp"
-                        text: "*"
-                        font.pixelSize: 11
                         color: pariTheme.textColor
+                        text: "*"
+                        placeholderText: "*.cpp"
+                        font.pixelSize: 11
+                        Layout.preferredWidth: 80
                     }
 
                     Item { Layout.fillWidth: true }
                     
                     PariButton {
-                        text: qsTr("Search")
-                        highlighted: true
-                        onClicked: projectSearchModel.search(fileSystem.rootPath, searchInput.text, caseCheck.checked, regexCheck.checked, scopeInput.text)
+                        text: projectSearchModel.isSearching ? qsTr("Cancel") : qsTr("Search")
+                        highlighted: !projectSearchModel.isSearching
+                        onClicked: {
+                            if (projectSearchModel.isSearching) {
+                                projectSearchModel.cancel();
+                            } else {
+                                projectSearchModel.search(fileSystem.rootPath, searchInput.text, caseCheck.checked, regexCheck.checked, scopeInput.text);
+                            }
+                        }
                     }
                 }
                 
                 ProgressBar {
-                    Layout.fillWidth: true
                     visible: projectSearchModel.isSearching
+                    Layout.fillWidth: true
                     indeterminate: true
                 }
             }
@@ -139,9 +162,9 @@ Rectangle {
         // 3. Results List
         ListView {
             id: resultsList
+            model: projectSearchModel
             Layout.fillWidth: true
             Layout.fillHeight: true
-            model: projectSearchModel
             clip: true
             
             section.property: "filePath"
@@ -152,41 +175,50 @@ Rectangle {
                 
                 Label {
                     text: section.replace(fileSystem.rootPath + "/", "")
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    anchors.verticalCenter: parent.verticalCenter
+                    color: pariTheme.textColor
                     font.bold: true
                     font.pixelSize: 11
-                    color: pariTheme.textColor
                     elide: Text.ElideLeft
                     width: parent.width - 20
+                    anchors {
+                        left: parent.left
+                        leftMargin: 10
+                        verticalCenter: parent.verticalCenter
+                    }
                 }
             }
 
             delegate: ItemDelegate {
+                id: delegate
+                required property string filePath
+                required property int lineNumber
+                required property string lineText
+
                 width: resultsList.width
                 height: 45
                 
                 contentItem: ColumnLayout {
                     spacing: 2
+                    
                     Label {
-                        text: "Line " + model.lineNumber
-                        font.pixelSize: 10
+                        text: "Line " + delegate.lineNumber
                         color: pariTheme.accentColor
+                        font.pixelSize: 10
                         opacity: 0.8
                     }
+                    
                     Label {
-                        text: model.lineText
-                        Layout.fillWidth: true
-                        elide: Text.ElideRight
+                        text: delegate.lineText
+                        color: pariTheme.textColor
                         font.family: "Menlo"
                         font.pixelSize: 11
-                        color: pariTheme.textColor
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
                     }
                 }
                 
                 onClicked: {
-                    root.resultClicked(model.filePath, model.lineNumber);
+                    root.resultClicked(delegate.filePath, delegate.lineNumber);
                 }
             }
             
@@ -195,15 +227,21 @@ Rectangle {
         
         // 4. Footer Status
         Rectangle {
+            color: pariTheme.sidebarBg
             Layout.fillWidth: true
             Layout.preferredHeight: 20
-            color: pariTheme.sidebarBg
+            
             Label {
-                anchors.centerIn: parent
-                text: projectSearchModel.isSearching ? qsTr("Searching...") : qsTr("%1 matches found").arg(projectSearchModel.resultCount)
+                text: {
+                    if (projectSearchModel.isSearching) {
+                        return qsTr("Searching...");
+                    }
+                    return qsTr("%1 matches found").arg(projectSearchModel.resultCount);
+                }
+                color: pariTheme.textColor
                 font.pixelSize: 10
                 opacity: 0.7
-                color: pariTheme.textColor
+                anchors.centerIn: parent
             }
         }
     }
@@ -212,7 +250,6 @@ Rectangle {
         id: replaceConfirmDialog
         title: qsTr("Confirm Replace All")
         standardButtons: Dialog.Yes | Dialog.No
-        
         anchors.centerIn: Overlay.overlay
         modal: true
         

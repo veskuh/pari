@@ -86,6 +86,13 @@ void ProjectSearchModel::search(const QString &rootPath, const QString &pattern,
     m_watcher.setFuture(future);
 }
 
+void ProjectSearchModel::cancel()
+{
+    if (m_isSearching) {
+        m_watcher.cancel();
+    }
+}
+
 void ProjectSearchModel::clear()
 {
     beginResetModel();
@@ -166,6 +173,12 @@ void ProjectSearchModel::replaceAll(const QString &replaceText)
 
 void ProjectSearchModel::onSearchFinished()
 {
+    if (m_watcher.isCanceled()) {
+        m_isSearching = false;
+        emit isSearchingChanged();
+        return;
+    }
+
     beginResetModel();
     m_results = m_watcher.result();
     endResetModel();
@@ -176,12 +189,16 @@ void ProjectSearchModel::onSearchFinished()
     emit searchFinished();
 }
 
-QList<SearchResult> ProjectSearchModel::performSearch(const QString &rootPath, const QString &pattern,
-                                                    bool matchCase, bool useRegex, const QString &scopeFilter,
-                                                    const QMap<QString, QString> &openDocuments)
+void ProjectSearchModel::performSearch(QPromise<QList<SearchResult>> &promise,
+                                     const QString &rootPath, const QString &pattern,
+                                     bool matchCase, bool useRegex, const QString &scopeFilter,
+                                     const QMap<QString, QString> &openDocuments)
 {
     QList<SearchResult> results;
-    if (rootPath.isEmpty() || pattern.isEmpty()) return results;
+    if (rootPath.isEmpty() || pattern.isEmpty()) {
+        promise.addResult(results);
+        return;
+    }
 
     QRegularExpression re;
     if (useRegex) {
@@ -198,6 +215,8 @@ QList<SearchResult> ProjectSearchModel::performSearch(const QString &rootPath, c
 
     QDirIterator it(rootPath, filters, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
     while (it.hasNext()) {
+        if (promise.isCanceled()) return;
+
         QString filePath = it.next();
         
         static const QStringList binaryExts = {".png", ".jpg", ".jpeg", ".gif", ".o", ".a", ".so", ".dylib", ".exe", ".pari"};
@@ -222,11 +241,14 @@ QList<SearchResult> ProjectSearchModel::performSearch(const QString &rootPath, c
 
         QStringList lines = content.split('\n');
         for (int i = 0; i < lines.count(); ++i) {
+            if (promise.isCanceled()) return;
+
             const QString &line = lines.at(i);
             
             if (useRegex) {
                 QRegularExpressionMatchIterator matchIt = re.globalMatch(line);
                 while (matchIt.hasNext()) {
+                    if (promise.isCanceled()) return;
                     QRegularExpressionMatch match = matchIt.next();
                     SearchResult res;
                     res.filePath = filePath;
@@ -240,6 +262,7 @@ QList<SearchResult> ProjectSearchModel::performSearch(const QString &rootPath, c
                 Qt::CaseSensitivity cs = matchCase ? Qt::CaseSensitive : Qt::CaseInsensitive;
                 int pos = 0;
                 while ((pos = line.indexOf(pattern, pos, cs)) != -1) {
+                    if (promise.isCanceled()) return;
                     SearchResult res;
                     res.filePath = filePath;
                     res.lineNumber = i + 1;
@@ -253,5 +276,5 @@ QList<SearchResult> ProjectSearchModel::performSearch(const QString &rootPath, c
         }
     }
 
-    return results;
+    promise.addResult(results);
 }

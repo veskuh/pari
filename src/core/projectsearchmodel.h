@@ -40,6 +40,7 @@ public:
 
     Q_INVOKABLE void search(const QString &rootPath, const QString &pattern, 
                            bool matchCase, bool useRegex, const QString &scopeFilter);
+    Q_INVOKABLE void cancel();
     Q_INVOKABLE void clear();
     Q_INVOKABLE void replaceAll(const QString &replaceText);
 
@@ -66,9 +67,10 @@ private:
     bool m_lastUseRegex = false;
 
     // Helper for background search
-    static QList<SearchResult> performSearch(const QString &rootPath, const QString &pattern,
-                                           bool matchCase, bool useRegex, const QString &scopeFilter,
-                                           const QMap<QString, QString> &openDocuments);
+    static void performSearch(QPromise<QList<SearchResult>> &promise,
+                             const QString &rootPath, const QString &pattern,
+                             bool matchCase, bool useRegex, const QString &scopeFilter,
+                             const QMap<QString, QString> &openDocuments);
 };
 
 #endif // PROJECTSEARCHMODEL_H
