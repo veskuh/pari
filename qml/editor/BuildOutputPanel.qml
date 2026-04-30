@@ -9,14 +9,14 @@ PariPaperWell {
     property bool expanded: false
     property alias outputArea: outputArea
 
+    // Default visibility is false as it's toggled by actions
+    visible: false
+
     // Theme helper
     readonly property var theme: (typeof pariTheme !== 'undefined') ? pariTheme : fallbackTheme
     PariTheme {
         id: fallbackTheme
     }
-
-    // Default visibility is false as it's toggled by actions
-    visible: false
 
     content: ColumnLayout {
         anchors.fill: parent
@@ -50,10 +50,12 @@ PariPaperWell {
             }
 
             RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 8
-                anchors.rightMargin: 4
                 spacing: 8
+                anchors {
+                    fill: parent
+                    leftMargin: 8
+                    rightMargin: 4
+                }
 
                 Label {
                     id: titleLabel
@@ -102,16 +104,16 @@ PariPaperWell {
                     textFormat: Text.MarkdownText
 
                     onLinkActivated: function (link) {
-                        var parts = link.split(":");
+                        const parts = link.split(":");
                         if (parts.length > 0) {
-                            var filePath = parts[0];
-                            var lineNumber = -1;
+                            const filePath = parts[0];
+                            let lineNumber = -1;
                             if (parts.length > 1) {
                                 lineNumber = parseInt(parts[1], 10);
                             }
 
                             if (fileSystem.fileExistsInProject(filePath)) {
-                                var absolutePath = fileSystem.getAbsolutePath(filePath);
+                                const absolutePath = fileSystem.getAbsolutePath(filePath);
                                 if (typeof appWindow !== 'undefined') {
                                     appWindow.goToLineNumber = lineNumber;
                                 }
