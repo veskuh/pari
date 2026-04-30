@@ -19,6 +19,7 @@
 #include "test_cppsyntaxhighlighter.h"
 #include "test_swiftsyntaxhighlighter.h"
 #include "test_jssyntaxhighlighter.h"
+#include "test_javasyntaxhighlighter.h"
 #include "test_textdocumentsearcher.h"
 
 #include "diffutils.h"
@@ -96,6 +97,9 @@ int main(int argc, char *argv[])
 
     TestJsSyntaxHighlighter tc_js_highlighter;
     status |= QTest::qExec(&tc_js_highlighter, argc, argv);
+
+    TestJavaSyntaxHighlighter tc_java_highlighter;
+    status |= QTest::qExec(&tc_java_highlighter, argc, argv);
 
     TestTextDocumentSearcher tc_searcher;
     status |= QTest::qExec(&tc_searcher, argc, argv);
