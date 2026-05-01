@@ -1,45 +1,19 @@
 find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test LabsSettings QuickDialogs2 Concurrent REQUIRED)
 qt_standard_project_setup(REQUIRES 6.5)
 
-# --- GIT VERSION DETECTION ---
-find_package(Git QUIET)
-if(GIT_FOUND)
-    # Get latest tag matching v*
-    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --match "v*" --abbrev=0
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE GIT_TAG
-        ERROR_QUIET
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-    
-    if(NOT GIT_TAG)
-        set(PARI_VERSION "v0.0.0-dev")
-    else()
-        set(PARI_VERSION "${GIT_TAG}")
-    endif()
-
-    # Get short SHA
-    execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE GIT_SHA
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-    # Check for local modifications
-    execute_process(COMMAND ${GIT_EXECUTABLE} status --porcelain
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE GIT_STATUS
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-    
-    if(GIT_STATUS)
-        set(PARI_BUILD_ID "${GIT_SHA}+modified")
-    else()
-        set(PARI_BUILD_ID "${GIT_SHA}")
-    endif()
-else()
-    set(PARI_VERSION "v0.0.0-unknown")
-    set(PARI_BUILD_ID "unknown")
-endif()
-
-configure_file(core/version.h.in core/version.h)
+# --- BUILD-TIME VERSION DETECTION ---
+set(VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/core/version.h")
+add_custom_command(
+    OUTPUT "${VERSION_HEADER}"
+    COMMAND ${CMAKE_COMMAND} 
+        -DSOURCE_DIR=${CMAKE_SOURCE_DIR} 
+        -DOUTPUT_FILE=${VERSION_HEADER} 
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/core/generate_version.cmake"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/core/generate_version.cmake"
+    BYPRODUCTS "${VERSION_HEADER}"
+    COMMENT "Updating version information..."
+    VERBATIM
+)
 
 qt_add_executable(pari
     core/pari.cpp
@@ -97,6 +71,7 @@ qt_add_executable(pari
     integrations/gitmanager.h
     ../qml/qml.qrc
     ../assets/assets.qrc
+    ${VERSION_HEADER}
 )
 
 target_include_directories(pari PRIVATE
@@ -131,23 +106,36 @@ elseif(WIN32)
         WIN32_EXECUTABLE ON
         RESOURCE_FILES ${CMAKE_SOURCE_DIR}/assets/pari.ico
     )
-else()
-    # LINUX DEPLOYMENT
-    include(GNUInstallDirs)
-    
-    # 1. Install Binary
+endif()
+
+# --- CROSS-PLATFORM DEPLOYMENT ---
+include(GNUInstallDirs)
+
+if(APPLE)
+    # On macOS, install the .app bundle to /Applications by default
+    # but respect CMAKE_INSTALL_PREFIX if set (e.g. /usr/local)
     install(TARGETS pari
+        BUNDLE DESTINATION /Applications
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
+else()
+    # LINUX DEPLOYMENT
+    # 1. Install Binary (Force fresh install by being explicit)
+    install(TARGETS pari
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        COMPONENT Application
+    )
 
-    # 2. Install Icon (hicolor theme is standard)
+    # 2. Install Icon
     install(FILES ../assets/pari.png
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps
+        COMPONENT Application
     )
 
     # 3. Configure and Install Desktop File
     configure_file(../assets/pari.desktop.in pari.desktop @ONLY)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pari.desktop
         DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+        COMPONENT Application
     )
 endif()
