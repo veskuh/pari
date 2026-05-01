@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Pari
+Comment=Local AI Coding Companion
+Exec=@CMAKE_INSTALL_FULL_BINDIR@/pari
+Icon=pari
+Terminal=false
+Categories=Development;IDE;
+Keywords=AI;Coding;LLM;
+StartupWMClass=pari

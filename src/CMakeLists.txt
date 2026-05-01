@@ -131,4 +131,23 @@ elseif(WIN32)
         WIN32_EXECUTABLE ON
         RESOURCE_FILES ${CMAKE_SOURCE_DIR}/assets/pari.ico
     )
+else()
+    # LINUX DEPLOYMENT
+    include(GNUInstallDirs)
+    
+    # 1. Install Binary
+    install(TARGETS pari
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+
+    # 2. Install Icon (hicolor theme is standard)
+    install(FILES ../assets/pari.png
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps
+    )
+
+    # 3. Configure and Install Desktop File
+    configure_file(../assets/pari.desktop.in pari.desktop @ONLY)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pari.desktop
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+    )
 endif()
