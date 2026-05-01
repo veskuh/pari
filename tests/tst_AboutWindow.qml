@@ -22,8 +22,8 @@ Item {
 
         function test_initial_state() {
             compare(aboutWindow.title, "About Pari")
-            compare(aboutWindow.width, 400)
-            compare(aboutWindow.height, 320)
+            compare(aboutWindow.width, 420)
+            compare(aboutWindow.height, 400)
             compare(aboutWindow.modality, Qt.ApplicationModal)
         }
     }

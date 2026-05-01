@@ -91,7 +91,11 @@ add_executable(tst_all
     ../src/editor/textdocumentsearcher.h
 )
 
-target_include_directories(tst_all PRIVATE ../src ../src/core ../src/editor ../src/formatting ../src/integrations)
+target_include_directories(tst_all PRIVATE 
+    ../src ../src/core ../src/editor ../src/formatting ../src/integrations
+    ${CMAKE_BINARY_DIR}/src
+    ${CMAKE_BINARY_DIR}/src/core
+)
 
 target_link_libraries(tst_all PRIVATE
     Qt6::Test
@@ -134,7 +138,11 @@ add_executable(tst_ui
     ../src/editor/textdocumentsearcher.cpp
 )
 
-target_include_directories(tst_ui PRIVATE ../src ../src/core ../src/editor ../src/formatting ../src/integrations)
+target_include_directories(tst_ui PRIVATE 
+    ../src ../src/core ../src/editor ../src/formatting ../src/integrations
+    ${CMAKE_BINARY_DIR}/src
+    ${CMAKE_BINARY_DIR}/src/core
+)
 
 target_link_libraries(tst_ui PRIVATE
     Qt6::Test

@@ -1,6 +1,28 @@
 find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test LabsSettings QuickDialogs2 Concurrent REQUIRED)
 qt_standard_project_setup(REQUIRES 6.5)
 
+# --- GIT VERSION DETECTION ---
+find_package(Git QUIET)
+if(GIT_FOUND)
+    execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_SHA
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND ${GIT_EXECUTABLE} status --porcelain
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_STATUS
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(GIT_STATUS)
+        set(PARI_VERSION "${GIT_SHA}+modified")
+    else()
+        set(PARI_VERSION "${GIT_SHA}")
+    endif()
+else()
+    set(PARI_VERSION "unknown")
+endif()
+
+configure_file(core/version.h.in core/version.h)
+
 qt_add_executable(pari
     core/pari.cpp
     integrations/llm.cpp
@@ -64,6 +86,8 @@ target_include_directories(pari PRIVATE
     editor
     formatting
     integrations
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/core
 )
 
 target_link_libraries(pari PRIVATE

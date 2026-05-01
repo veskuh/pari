@@ -1,91 +1,203 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Effects
 import "../common"
 
 ApplicationWindow {
     id: aboutWindow
-    title: "About Pari"
-    width: 400
-    height: 320
+    title: qsTr("About Pari")
+    width: 420
+    height: 400
     modality: Qt.ApplicationModal
+    flags: Qt.Window | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.CustomizeWindowHint
 
     // Use pariTheme if available (global in app), otherwise fallback (for tests)
-    readonly property var _pariTheme: (typeof pariTheme !== 'undefined') ? pariTheme : null
+    readonly property var _theme: (typeof pariTheme !== 'undefined') ? pariTheme : fallbackTheme
+    PariTheme { id: fallbackTheme }
 
     background: Rectangle {
-        color: _pariTheme ? _pariTheme.windowBg : "#f0f0f0"
+        color: _theme.windowBg
+        radius: 8
+        border.color: _theme.sidebarBorder
+        border.width: 1
+    }
+
+    // Entrance Animation
+    Component.onCompleted: {
+        showAnim.start()
+    }
+
+    ParallelAnimation {
+        id: showAnim
+        NumberAnimation { target: aboutWindow.contentItem; property: "opacity"; from: 0; to: 1; duration: 250; easing.type: Easing.OutCubic }
+        NumberAnimation { target: aboutWindow.contentItem; property: "scale"; from: 0.95; to: 1; duration: 300; easing.type: Easing.OutBack }
     }
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: _pariTheme ? _pariTheme.paddingLarge : 10
-        anchors.margins: _pariTheme ? _pariTheme.marginStandard : 15
+        spacing: 0
 
-        Image {
-            source: "qrc:/assets/pari.png"
-            sourceSize.width: 64
-            sourceSize.height: 64
-            Layout.alignment: Qt.AlignHCenter
-            Layout.bottomMargin: _pariTheme ? _pariTheme.paddingMedium : 8
-        }
-
-        Label {
-            text: "Pari - Your Local AI Coding Companion"
-            font.bold: true
-            font.pixelSize: _pariTheme ? _pariTheme.fontSizeLarge : 14
-            color: _pariTheme ? _pariTheme.textColor : "black"
-            Layout.alignment: Qt.AlignHCenter
-        }
-
-        Label {
-            text: "Pari is a desktop application designed to be your local AI-powered coding partner. It leverages the power of local Large Language Models (LLMs) through Ollama to assist you with various coding tasks, right on your machine."
-            wrapMode: Text.WordWrap
+        // 1. HERO HEADER (Metallic)
+        Rectangle {
             Layout.fillWidth: true
-            color: _pariTheme ? _pariTheme.textColor : "black"
-            font.pixelSize: _pariTheme ? _pariTheme.fontSize : 12
+            Layout.preferredHeight: 120
+            
+            gradient: Gradient {
+                orientation: Gradient.Vertical
+                GradientStop { position: 0.0; color: _theme.isDark ? "#454545" : "#f8f9fa" }
+                GradientStop { position: 1.0; color: _theme.isDark ? "#2d2d2d" : "#e9ecef" }
+            }
+
+            // Bottom "Etched" line
+            Rectangle {
+                anchors.bottom: parent.bottom
+                width: parent.width
+                height: 1
+                color: _theme.isDark ? "#1a1a1a" : "#dee2e6"
+            }
+
+            ColumnLayout {
+                anchors.centerIn: parent
+                spacing: 12
+
+                Item {
+                    Layout.preferredWidth: 64
+                    Layout.preferredHeight: 64
+                    Layout.alignment: Qt.AlignHCenter
+                    
+                    Image {
+                        id: logo
+                        source: "qrc:/assets/pari.png"
+                        anchors.fill: parent
+                        smooth: true
+                        layer.enabled: true
+                        layer.effect: MultiEffect {
+                            shadowEnabled: true
+                            shadowColor: "black"
+                            shadowOpacity: 0.3
+                            shadowBlur: 0.5
+                            shadowVerticalOffset: 2
+                        }
+                    }
+                }
+
+                RowLayout {
+                    Layout.alignment: Qt.AlignHCenter
+                    spacing: 8
+                    Label {
+                        text: "PARI"
+                        font.bold: true
+                        font.pixelSize: 20
+                        font.letterSpacing: 2
+                        color: _theme.textColor
+                    }
+                    Rectangle {
+                        Layout.preferredWidth: versionLabel.implicitWidth + 12
+                        Layout.preferredHeight: 16
+                        radius: 8
+                        color: _theme.accentColor
+                        Label {
+                            id: versionLabel
+                            anchors.centerIn: parent
+                            text: (typeof appSettings !== 'undefined') ? appSettings.version : "v1.0"
+                            font.bold: true
+                            font.pixelSize: 9
+                            color: "white"
+                        }
+                    }
+                }
+            }
         }
 
-        Item {
+        // 2. CONTENT AREA
+        ColumnLayout {
+            Layout.fillWidth: true
             Layout.fillHeight: true
-        }
-
-        GridLayout {
-            columns: 2
-            columnSpacing: _pariTheme ? _pariTheme.paddingLarge : 10
-            rowSpacing: _pariTheme ? _pariTheme.paddingSmall : 4
+            Layout.margins: 24
+            spacing: 16
 
             Label {
-                text: "Author:"
+                text: qsTr("Your Local AI Coding Companion")
                 font.bold: true
-                color: _pariTheme ? _pariTheme.textColorDim : "gray"
-            }
-            Label {
-                text: "vesku.h@gmail.com with help of Gemini CLI and Jules"
-                color: _pariTheme ? _pariTheme.textColor : "black"
+                font.pixelSize: 14
+                color: _theme.accentColor
+                Layout.alignment: Qt.AlignHCenter
             }
 
             Label {
-                text: "License:"
-                font.bold: true
-                color: _pariTheme ? _pariTheme.textColorDim : "gray"
+                text: qsTr("Pari is a technical editor designed to bring the power of Large Language Models directly to your local development environment via Ollama.")
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                color: _theme.textColor
+                font.pixelSize: 12
+                lineHeight: 1.2
+                opacity: 0.9
             }
-            Label {
-                text: "BSD-3-Clause"
-                color: _pariTheme ? _pariTheme.textColor : "black"
+
+            // Technical Dossier
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: dossierGrid.implicitHeight + 20
+                color: _theme.isDark ? "#1a1a1a" : "#f1f3f5"
+                radius: 4
+                border.color: _theme.sidebarBorder
+                border.width: 1
+
+                GridLayout {
+                    id: dossierGrid
+                    anchors.centerIn: parent
+                    columns: 2
+                    columnSpacing: 20
+                    rowSpacing: 8
+
+                    Label {
+                        text: qsTr("AUTHOR")
+                        font.bold: true
+                        font.pixelSize: 10
+                        color: _theme.textColorMuted
+                    }
+                    Label {
+                        text: "vesku.h@gmail.com"
+                        color: _theme.textColor
+                        font.pixelSize: 11
+                    }
+
+                    Label {
+                        text: qsTr("ENGINE")
+                        font.bold: true
+                        font.pixelSize: 10
+                        color: _theme.textColorMuted
+                    }
+                    Label {
+                        text: "Qt " + "6.9.3" // Could be dynamic but hardcoded for now to match current env
+                        color: _theme.textColor
+                        font.pixelSize: 11
+                    }
+
+                    Label {
+                        text: qsTr("LICENSE")
+                        font.bold: true
+                        font.pixelSize: 10
+                        color: _theme.textColorMuted
+                    }
+                    Label {
+                        text: "BSD-3-Clause"
+                        color: _theme.textColor
+                        font.pixelSize: 11
+                    }
+                }
             }
-        }
 
-        Item {
-            Layout.fillHeight: true
-        }
+            Item { Layout.fillHeight: true }
 
-        PariButton {
-            objectName: "closeButton"
-            text: qsTr("Close")
-            Layout.alignment: Qt.AlignHCenter
-            onClicked: aboutWindow.close()
+            PariButton {
+                text: qsTr("Close")
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: 100
+                onClicked: aboutWindow.close()
+            }
         }
     }
 }
-

@@ -9,12 +9,14 @@
 #include <QCryptographicHash>
 
 #include "syntaxtheme.h"
+#include "version.h"
 
 class Settings : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString ollamaUrl READ ollamaUrl WRITE setOllamaUrl NOTIFY ollamaUrlChanged)
     Q_PROPERTY(QString ollamaModel READ ollamaModel WRITE setOllamaModel NOTIFY ollamaModelChanged)
+    Q_PROPERTY(QString version READ version CONSTANT)
     Q_PROPERTY(QString fontFamily READ fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
     Q_PROPERTY(QStringList availableModels READ availableModels WRITE setAvailableModels NOTIFY availableModelsChanged)
@@ -29,6 +31,8 @@ class Settings : public QObject
 public:
     explicit Settings(QObject *parent = nullptr);
     explicit Settings(const QString &appName, QObject *parent = nullptr);
+
+    QString version() const { return PARI_VERSION; }
 
     QString ollamaUrl() const;
     void setOllamaUrl(const QString &url);
