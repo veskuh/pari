@@ -36,6 +36,8 @@ Rectangle {
     // It sits behind the text (z: 0).
     Rectangle {
         id: activeTabBackground
+        opacity: root.model.length > 0 ? 1.0 : 0.0
+        Behavior on opacity { NumberAnimation { duration: 150 } }
 
         // Use a semi-transparent version of the system's highlight/accent color
         color: Qt.rgba(palette.highlight.r, palette.highlight.g, palette.highlight.b, 0.2)
@@ -163,6 +165,8 @@ Rectangle {
     // The bottom indicator line
     Rectangle {
         id: indicator
+        opacity: root.model.length > 0 ? 1.0 : 0.0
+        Behavior on opacity { NumberAnimation { duration: 150 } }
 
         // Use the system's highlight/accent color
         color: palette.highlight

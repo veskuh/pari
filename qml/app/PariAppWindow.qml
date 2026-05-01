@@ -296,11 +296,10 @@ ApplicationWindow {
 
         PariTabBar {
             id: tabBar
-            anchors.left: leftButtons.right
-            anchors.right: parent.right
+            x: codeColumn.x
+            width: codeColumn.width
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            anchors.leftMargin: 10
             model: documentManager.documents
             onTabClicked: (index) => setEditorIndex(index)
             onCloseTab: (index) => {
