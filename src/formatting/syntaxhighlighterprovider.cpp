@@ -3,6 +3,7 @@
 #include "swiftsyntaxhighlighter.h"
 #include "jssyntaxhighlighter.h"
 #include "javasyntaxhighlighter.h"
+#include "kotlinsyntaxhighlighter.h"
 #include "qmlsyntaxhighlighter.h"
 #include "shellsyntaxhighlighter.h"
 #include "markdownsyntaxhighlighter.h"
@@ -53,6 +54,8 @@ void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const
         higlighter = new JsSyntaxHighlighter(doc->textDocument(), currentTheme);
     } else if (extension == "java") {
         higlighter = new JavaSyntaxHighlighter(doc->textDocument(), currentTheme);
+    } else if (extension == "kt" || extension == "kts") {
+        higlighter = new KotlinSyntaxHighlighter(doc->textDocument(), currentTheme);
     }
 }
 
