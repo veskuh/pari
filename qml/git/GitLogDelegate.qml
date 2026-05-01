@@ -99,6 +99,7 @@ Item {
                 Layout.preferredHeight: headerLayout.implicitHeight + 24
                 
                 MouseArea {
+                    id: mouseArea
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
