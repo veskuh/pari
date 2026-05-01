@@ -8,7 +8,7 @@ ApplicationWindow {
     id: aboutWindow
     title: qsTr("About Pari")
     width: 420
-    height: 440
+    height: 420
     modality: Qt.ApplicationModal
     flags: Qt.Window | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.CustomizeWindowHint
 
@@ -36,7 +36,6 @@ ApplicationWindow {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.bottomMargin: 24
         spacing: 0
 
         // 1. HERO HEADER (Metallic)
@@ -209,6 +208,7 @@ ApplicationWindow {
                 text: qsTr("Close")
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredWidth: 100
+                Layout.bottomMargin: 12
                 onClicked: aboutWindow.close()
             }
         }
