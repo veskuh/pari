@@ -4,21 +4,39 @@ qt_standard_project_setup(REQUIRES 6.5)
 # --- GIT VERSION DETECTION ---
 find_package(Git QUIET)
 if(GIT_FOUND)
+    # Get latest tag matching v*
+    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --match "v*" --abbrev=0
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_TAG
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    
+    if(NOT GIT_TAG)
+        set(PARI_VERSION "v0.0.0-dev")
+    else()
+        set(PARI_VERSION "${GIT_TAG}")
+    endif()
+
+    # Get short SHA
     execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         OUTPUT_VARIABLE GIT_SHA
         OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    # Check for local modifications
     execute_process(COMMAND ${GIT_EXECUTABLE} status --porcelain
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         OUTPUT_VARIABLE GIT_STATUS
         OUTPUT_STRIP_TRAILING_WHITESPACE)
+    
     if(GIT_STATUS)
-        set(PARI_VERSION "${GIT_SHA}+modified")
+        set(PARI_BUILD_ID "${GIT_SHA}+modified")
     else()
-        set(PARI_VERSION "${GIT_SHA}")
+        set(PARI_BUILD_ID "${GIT_SHA}")
     endif()
 else()
-    set(PARI_VERSION "unknown")
+    set(PARI_VERSION "v0.0.0-unknown")
+    set(PARI_BUILD_ID "unknown")
 endif()
 
 configure_file(core/version.h.in core/version.h)

@@ -8,7 +8,7 @@ ApplicationWindow {
     id: aboutWindow
     title: qsTr("About Pari")
     width: 420
-    height: 400
+    height: 440
     modality: Qt.ApplicationModal
     flags: Qt.Window | Qt.WindowTitleHint | Qt.WindowCloseButtonHint | Qt.CustomizeWindowHint
 
@@ -36,6 +36,7 @@ ApplicationWindow {
 
     ColumnLayout {
         anchors.fill: parent
+        anchors.bottomMargin: 24
         spacing: 0
 
         // 1. HERO HEADER (Metallic)
@@ -184,6 +185,18 @@ ApplicationWindow {
                     }
                     Label {
                         text: "BSD-3-Clause"
+                        color: _theme.textColor
+                        font.pixelSize: 11
+                    }
+
+                    Label {
+                        text: qsTr("BUILD ID")
+                        font.bold: true
+                        font.pixelSize: 10
+                        color: _theme.textColorMuted
+                    }
+                    Label {
+                        text: (typeof appSettings !== 'undefined') ? appSettings.buildId : "unknown"
                         color: _theme.textColor
                         font.pixelSize: 11
                     }

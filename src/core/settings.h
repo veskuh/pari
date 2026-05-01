@@ -17,6 +17,7 @@ class Settings : public QObject
     Q_PROPERTY(QString ollamaUrl READ ollamaUrl WRITE setOllamaUrl NOTIFY ollamaUrlChanged)
     Q_PROPERTY(QString ollamaModel READ ollamaModel WRITE setOllamaModel NOTIFY ollamaModelChanged)
     Q_PROPERTY(QString version READ version CONSTANT)
+    Q_PROPERTY(QString buildId READ buildId CONSTANT)
     Q_PROPERTY(QString fontFamily READ fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
     Q_PROPERTY(QStringList availableModels READ availableModels WRITE setAvailableModels NOTIFY availableModelsChanged)
@@ -33,6 +34,7 @@ public:
     explicit Settings(const QString &appName, QObject *parent = nullptr);
 
     QString version() const { return PARI_VERSION; }
+    QString buildId() const { return PARI_BUILD_ID; }
 
     QString ollamaUrl() const;
     void setOllamaUrl(const QString &url);

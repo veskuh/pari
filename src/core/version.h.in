@@ -2,5 +2,6 @@
 #define VERSION_H
 
 #define PARI_VERSION "@PARI_VERSION@"
+#define PARI_BUILD_ID "@PARI_BUILD_ID@"
 
 #endif // VERSION_H
