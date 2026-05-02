@@ -7,6 +7,7 @@
 #include "qmlsyntaxhighlighter.h"
 #include "shellsyntaxhighlighter.h"
 #include "markdownsyntaxhighlighter.h"
+#include "rustsyntaxhighlighter.h"
 #include <QFileInfo>
 
 SyntaxHighlighterProvider::SyntaxHighlighterProvider(QObject *parent)
@@ -56,6 +57,8 @@ void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const
         higlighter = new JavaSyntaxHighlighter(doc->textDocument(), currentTheme);
     } else if (extension == "kt" || extension == "kts") {
         higlighter = new KotlinSyntaxHighlighter(doc->textDocument(), currentTheme);
+    } else if (extension == "rs") {
+        higlighter = new RustSyntaxHighlighter(doc->textDocument(), currentTheme);
     }
 }
 

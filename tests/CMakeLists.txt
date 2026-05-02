@@ -41,6 +41,8 @@ add_executable(tst_all
     test_javasyntaxhighlighter.h
     test_kotlinsyntaxhighlighter.cpp
     test_kotlinsyntaxhighlighter.h
+    test_rustsyntaxhighlighter.cpp
+    test_rustsyntaxhighlighter.h
     test_textdocumentsearcher.cpp
     test_textdocumentsearcher.h
     mocktextdocument.cpp
@@ -63,6 +65,8 @@ add_executable(tst_all
     ../src/formatting/javasyntaxhighlighter.h
     ../src/formatting/kotlinsyntaxhighlighter.cpp
     ../src/formatting/kotlinsyntaxhighlighter.h
+    ../src/formatting/rustsyntaxhighlighter.cpp
+    ../src/formatting/rustsyntaxhighlighter.h
     ../src/formatting/qmlsyntaxhighlighter.cpp
     ../src/formatting/qmlsyntaxhighlighter.h
     ../src/formatting/shellsyntaxhighlighter.cpp
@@ -121,6 +125,7 @@ add_executable(tst_ui
     ../src/formatting/jssyntaxhighlighter.cpp
     ../src/formatting/javasyntaxhighlighter.cpp
     ../src/formatting/kotlinsyntaxhighlighter.cpp
+    ../src/formatting/rustsyntaxhighlighter.cpp
     ../src/formatting/qmlsyntaxhighlighter.cpp
     ../src/formatting/shellsyntaxhighlighter.cpp
     ../src/core/diffutils.cpp

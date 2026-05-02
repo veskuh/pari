@@ -21,6 +21,7 @@
 #include "test_jssyntaxhighlighter.h"
 #include "test_javasyntaxhighlighter.h"
 #include "test_kotlinsyntaxhighlighter.h"
+#include "test_rustsyntaxhighlighter.h"
 #include "test_textdocumentsearcher.h"
 
 #include "diffutils.h"
@@ -104,6 +105,9 @@ int main(int argc, char *argv[])
 
     TestKotlinSyntaxHighlighter tc_kotlin_highlighter;
     status |= QTest::qExec(&tc_kotlin_highlighter, argc, argv);
+
+    TestRustSyntaxHighlighter tc_rust_highlighter;
+    status |= QTest::qExec(&tc_rust_highlighter, argc, argv);
 
     TestTextDocumentSearcher tc_searcher;
     status |= QTest::qExec(&tc_searcher, argc, argv);

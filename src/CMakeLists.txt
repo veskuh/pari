@@ -37,6 +37,8 @@ qt_add_executable(pari
     formatting/javasyntaxhighlighter.h
     formatting/kotlinsyntaxhighlighter.cpp
     formatting/kotlinsyntaxhighlighter.h
+    formatting/rustsyntaxhighlighter.cpp
+    formatting/rustsyntaxhighlighter.h
     formatting/syntaxhighlighterprovider.cpp
     formatting/syntaxhighlighterprovider.h
     formatting/qmlsyntaxhighlighter.cpp
