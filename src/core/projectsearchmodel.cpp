@@ -1,6 +1,7 @@
 #include "projectsearchmodel.h"
 #include "documentmanager.h"
 #include "textdocument.h"
+#include "syntaxhighlighterprovider.h"
 #include <QtConcurrent>
 #include <QDirIterator>
 #include <QFileInfo>
@@ -208,9 +209,22 @@ void ProjectSearchModel::performSearch(QPromise<QList<SearchResult>> &promise,
 
     QStringList filters;
     if (!scopeFilter.isEmpty() && scopeFilter != "*") {
-        filters = scopeFilter.split(',', Qt::SkipEmptyParts);
+        QStringList rawFilters = scopeFilter.split(',', Qt::SkipEmptyParts);
+        for (const QString &f : rawFilters) {
+            QString trimmed = f.trimmed();
+            if (trimmed.contains('*') || trimmed.contains('?')) {
+                filters << trimmed;
+            } else {
+                filters << "*." + trimmed;
+            }
+        }
     } else {
-        filters << "*.cpp" << "*.h" << "*.qml" << "*.js" << "*.swift" << "*.md" << "*.sh" << "*.txt";
+        for (const QString &ext : SyntaxHighlighterProvider::supportedExtensions()) {
+            filters << "*." + ext;
+        }
+        for (const QString &fileName : SyntaxHighlighterProvider::supportedFileNames()) {
+            filters << fileName;
+        }
     }
 
     QDirIterator it(rootPath, filters, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
@@ -228,6 +242,33 @@ void ProjectSearchModel::performSearch(QPromise<QList<SearchResult>> &promise,
             }
         }
         if (isBinary) continue;
+
+        // --- Filename Match ---
+        QString fileName = QFileInfo(filePath).fileName();
+        if (useRegex) {
+            QRegularExpressionMatch match = re.match(fileName);
+            if (match.hasMatch()) {
+                SearchResult res;
+                res.filePath = filePath;
+                res.lineNumber = 0; // Convention for filename match
+                res.lineText = fileName;
+                res.matchStart = match.capturedStart();
+                res.matchLength = match.capturedLength();
+                results.append(res);
+            }
+        } else {
+            Qt::CaseSensitivity cs = matchCase ? Qt::CaseSensitive : Qt::CaseInsensitive;
+            int pos = fileName.indexOf(pattern, 0, cs);
+            if (pos != -1) {
+                SearchResult res;
+                res.filePath = filePath;
+                res.lineNumber = 0;
+                res.lineText = fileName;
+                res.matchStart = pos;
+                res.matchLength = pattern.length();
+                results.append(res);
+            }
+        }
 
         QString content;
         if (openDocuments.contains(filePath)) {

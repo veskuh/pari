@@ -14,6 +14,9 @@ class MarkdownSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit MarkdownSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    static QStringList supportedExtensions() { return {"md", "markdown"}; }
+    static QStringList supportedFileNames() { return {}; }
+
 protected:
     void highlightBlock(const QString &text) override;
 

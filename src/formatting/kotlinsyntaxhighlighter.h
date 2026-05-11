@@ -14,6 +14,9 @@ class KotlinSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit KotlinSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    static QStringList supportedExtensions() { return {"kt", "kts"}; }
+    static QStringList supportedFileNames() { return {}; }
+
     struct HighlightRange {
         int start;
         int length;

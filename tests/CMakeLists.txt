@@ -41,6 +41,10 @@ add_executable(tst_all
     test_javasyntaxhighlighter.h
     test_kotlinsyntaxhighlighter.cpp
     test_kotlinsyntaxhighlighter.h
+    test_projectsearchmodel.cpp
+    test_projectsearchmodel.h
+    test_syntaxhighlighterprovider.cpp
+    test_syntaxhighlighterprovider.h
     test_rustsyntaxhighlighter.cpp
     test_rustsyntaxhighlighter.h
     test_textdocumentsearcher.cpp
@@ -49,6 +53,8 @@ add_executable(tst_all
     mocktextdocument.h
     ../src/core/settings.cpp
     ../src/core/settings.h
+    ../src/core/projectsearchmodel.cpp
+    ../src/core/projectsearchmodel.h
     ../src/core/filesystem.cpp
     ../src/core/filesystem.h
     ../src/formatting/markdownformatter.cpp
@@ -67,6 +73,8 @@ add_executable(tst_all
     ../src/formatting/kotlinsyntaxhighlighter.h
     ../src/formatting/rustsyntaxhighlighter.cpp
     ../src/formatting/rustsyntaxhighlighter.h
+    ../src/formatting/syntaxhighlighterprovider.cpp
+    ../src/formatting/syntaxhighlighterprovider.h
     ../src/formatting/qmlsyntaxhighlighter.cpp
     ../src/formatting/qmlsyntaxhighlighter.h
     ../src/formatting/shellsyntaxhighlighter.cpp
@@ -109,6 +117,7 @@ target_link_libraries(tst_all PRIVATE
     Qt6::Qml
     Qt6::Quick
     Qt6::Gui
+    Qt6::Concurrent
 )
 
 # UI Test Runner
@@ -117,6 +126,7 @@ add_executable(tst_ui
     ../assets/assets.qrc
     # Link sources for coverage
     ../src/core/settings.cpp
+    ../src/core/projectsearchmodel.cpp
     ../src/core/filesystem.cpp
     ../src/formatting/markdownformatter.cpp
     ../src/integrations/llm.cpp
@@ -126,6 +136,7 @@ add_executable(tst_ui
     ../src/formatting/javasyntaxhighlighter.cpp
     ../src/formatting/kotlinsyntaxhighlighter.cpp
     ../src/formatting/rustsyntaxhighlighter.cpp
+    ../src/formatting/syntaxhighlighterprovider.cpp
     ../src/formatting/qmlsyntaxhighlighter.cpp
     ../src/formatting/shellsyntaxhighlighter.cpp
     ../src/core/diffutils.cpp
@@ -158,6 +169,7 @@ target_link_libraries(tst_ui PRIVATE
     Qt6::Quick
     Qt6::Widgets
     Qt6::Network
+    Qt6::Concurrent
 )
 
 if(ENABLE_COVERAGE)

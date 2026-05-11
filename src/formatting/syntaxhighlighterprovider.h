@@ -13,6 +13,8 @@ class SyntaxHighlighterProvider : public QObject
 public:
     explicit SyntaxHighlighterProvider(QObject *parent = nullptr);
 
+    static QStringList supportedExtensions();
+    static QStringList supportedFileNames();
     Q_INVOKABLE void attachHighlighter(QQuickTextDocument *doc, const QString &filePath);
     void setSettings(Settings *settings);
 

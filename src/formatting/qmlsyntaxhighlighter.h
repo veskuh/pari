@@ -14,6 +14,9 @@ class QmlSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit QmlSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    static QStringList supportedExtensions() { return {"qml"}; }
+    static QStringList supportedFileNames() { return {}; }
+
 protected:
     void highlightBlock(const QString &text) override;
 

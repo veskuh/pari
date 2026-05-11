@@ -4,15 +4,66 @@
 #include "jssyntaxhighlighter.h"
 #include "javasyntaxhighlighter.h"
 #include "kotlinsyntaxhighlighter.h"
+#include "rustsyntaxhighlighter.h"
 #include "qmlsyntaxhighlighter.h"
 #include "shellsyntaxhighlighter.h"
 #include "markdownsyntaxhighlighter.h"
-#include "rustsyntaxhighlighter.h"
 #include <QFileInfo>
+#include <functional>
+
+struct HighlighterRegistryEntry {
+    QStringList extensions;
+    QStringList fileNames;
+    std::function<QSyntaxHighlighter*(QTextDocument*, SyntaxTheme*)> factory;
+};
+
+static QList<HighlighterRegistryEntry> highlighterRegistry() {
+    static QList<HighlighterRegistryEntry> registry = {
+        { CppSyntaxHighlighter::supportedExtensions(), CppSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new CppSyntaxHighlighter(doc, theme); } },
+        { SwiftSyntaxHighlighter::supportedExtensions(), SwiftSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new SwiftSyntaxHighlighter(doc, theme); } },
+        { JsSyntaxHighlighter::supportedExtensions(), JsSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new JsSyntaxHighlighter(doc, theme); } },
+        { JavaSyntaxHighlighter::supportedExtensions(), JavaSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new JavaSyntaxHighlighter(doc, theme); } },
+        { KotlinSyntaxHighlighter::supportedExtensions(), KotlinSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new KotlinSyntaxHighlighter(doc, theme); } },
+        { RustSyntaxHighlighter::supportedExtensions(), RustSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new RustSyntaxHighlighter(doc, theme); } },
+        { QmlSyntaxHighlighter::supportedExtensions(), QmlSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new QmlSyntaxHighlighter(doc, theme); } },
+        { ShellSyntaxHighlighter::supportedExtensions(), ShellSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new ShellSyntaxHighlighter(doc, theme); } },
+        { MarkdownSyntaxHighlighter::supportedExtensions(), MarkdownSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new MarkdownSyntaxHighlighter(doc, theme); } }
+    };
+    return registry;
+}
 
 SyntaxHighlighterProvider::SyntaxHighlighterProvider(QObject *parent)
     : QObject{parent}, m_settings(nullptr)
 {
+}
+
+QStringList SyntaxHighlighterProvider::supportedExtensions()
+{
+    QStringList exts;
+    for (const auto &entry : highlighterRegistry()) {
+        exts << entry.extensions;
+    }
+    // Also add plain text if not already there
+    if (!exts.contains("txt")) exts << "txt";
+    return exts;
+}
+
+QStringList SyntaxHighlighterProvider::supportedFileNames()
+{
+    QStringList names;
+    for (const auto &entry : highlighterRegistry()) {
+        names << entry.fileNames;
+    }
+    return names;
 }
 
 void SyntaxHighlighterProvider::setSettings(Settings *settings)
@@ -31,34 +82,16 @@ void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const
         return;
 
     QFileInfo fileInfo(filePath);
-    QString extension = fileInfo.suffix();
-    QStringList cppExtensions = {"cpp", "h", "cxx", "hxx", "cc", "hh"};
-
+    QString extension = fileInfo.suffix().toLower();
+    QString fileName = fileInfo.fileName();
+    
     SyntaxTheme *currentTheme = m_settings->systemThemeIsDark() ? m_settings->darkTheme() : m_settings->lightTheme();
 
-    QStringList shellExtensions = {"sh", "bash", "zsh","pro","cmake","py","pl","ps1","rb","conf","ini","cfg","yaml","mk"};
-    QStringList buildFiles = {"Makefile", "CMakeLists.txt"};
-
-    QSyntaxHighlighter* higlighter;
-
-    if (cppExtensions.contains(extension)) {
-        higlighter = new CppSyntaxHighlighter(doc->textDocument(), currentTheme);
-    } else if (extension == "qml") {
-        higlighter = new QmlSyntaxHighlighter(doc->textDocument(), currentTheme);
-    } else if (shellExtensions.contains(extension) || buildFiles.contains(fileInfo.fileName())) {
-        higlighter = new ShellSyntaxHighlighter(doc->textDocument(), currentTheme);
-    } else if (extension == "md" || extension == "markdown") {
-        higlighter = new MarkdownSyntaxHighlighter(doc->textDocument(), currentTheme);
-    } else if (extension == "swift") {
-        higlighter = new SwiftSyntaxHighlighter(doc->textDocument(), currentTheme);
-    } else if (extension == "js") {
-        higlighter = new JsSyntaxHighlighter(doc->textDocument(), currentTheme);
-    } else if (extension == "java") {
-        higlighter = new JavaSyntaxHighlighter(doc->textDocument(), currentTheme);
-    } else if (extension == "kt" || extension == "kts") {
-        higlighter = new KotlinSyntaxHighlighter(doc->textDocument(), currentTheme);
-    } else if (extension == "rs") {
-        higlighter = new RustSyntaxHighlighter(doc->textDocument(), currentTheme);
+    for (const auto &entry : highlighterRegistry()) {
+        if (entry.extensions.contains(extension) || entry.fileNames.contains(fileName)) {
+            entry.factory(doc->textDocument(), currentTheme);
+            return;
+        }
     }
 }
 

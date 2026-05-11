@@ -13,6 +13,13 @@ class ShellSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit ShellSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    static QStringList supportedExtensions() { 
+        return {"sh", "bash", "zsh", "pro", "cmake", "py", "pl", "ps1", "rb", "conf", "ini", "cfg", "yaml", "mk"}; 
+    }
+    static QStringList supportedFileNames() { 
+        return {"Makefile", "CMakeLists.txt"}; 
+    }
+
 protected:
     void highlightBlock(const QString &text) override;
 

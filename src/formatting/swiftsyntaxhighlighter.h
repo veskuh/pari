@@ -14,6 +14,9 @@ class SwiftSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit SwiftSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    static QStringList supportedExtensions() { return {"swift"}; }
+    static QStringList supportedFileNames() { return {}; }
+
     struct HighlightRange {
         int start;
         int length;

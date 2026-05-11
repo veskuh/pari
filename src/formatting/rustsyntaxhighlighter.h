@@ -14,6 +14,9 @@ class RustSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit RustSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    static QStringList supportedExtensions() { return {"rs"}; }
+    static QStringList supportedFileNames() { return {}; }
+
     struct HighlightRange {
         int start;
         int length;

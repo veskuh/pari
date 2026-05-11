@@ -1,4 +1,3 @@
-pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -174,7 +173,7 @@ Rectangle {
                 color: pariTheme.isDark ? "#3d3d3d" : "#e0e0e0"
                 
                 Label {
-                    text: section.replace(fileSystem.rootPath + "/", "")
+                    text: (typeof section !== "undefined" ? section : "").replace(fileSystem.rootPath + "/", "")
                     color: pariTheme.textColor
                     font.bold: true
                     font.pixelSize: 11
@@ -190,10 +189,6 @@ Rectangle {
 
             delegate: ItemDelegate {
                 id: delegate
-                required property string filePath
-                required property int lineNumber
-                required property string lineText
-
                 width: resultsList.width
                 height: 45
                 
@@ -201,14 +196,14 @@ Rectangle {
                     spacing: 2
                     
                     Label {
-                        text: "Line " + delegate.lineNumber
+                        text: model.lineNumber === 0 ? qsTr("Filename match") : qsTr("Line %1").arg(model.lineNumber)
                         color: pariTheme.accentColor
                         font.pixelSize: 10
                         opacity: 0.8
                     }
                     
                     Label {
-                        text: delegate.lineText
+                        text: model.lineText
                         color: pariTheme.textColor
                         font.family: "Menlo"
                         font.pixelSize: 11
@@ -218,7 +213,7 @@ Rectangle {
                 }
                 
                 onClicked: {
-                    root.resultClicked(delegate.filePath, delegate.lineNumber);
+                    root.resultClicked(model.filePath, model.lineNumber);
                 }
             }
             
@@ -252,10 +247,14 @@ Rectangle {
         standardButtons: Dialog.Yes | Dialog.No
         anchors.centerIn: Overlay.overlay
         modal: true
+        implicitWidth: 350
         
         Label {
+            anchors.left: parent.left
+            anchors.right: parent.right
             text: qsTr("Are you sure you want to replace all %1 occurrences in the project?").arg(projectSearchModel.resultCount)
             color: pariTheme.textColor
+            wrapMode: Text.WordWrap
         }
         
         onAccepted: projectSearchModel.replaceAll(replaceInput.text)

@@ -14,6 +14,9 @@ class JavaSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit JavaSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    static QStringList supportedExtensions() { return {"java"}; }
+    static QStringList supportedFileNames() { return {}; }
+
     struct HighlightRange {
         int start;
         int length;

@@ -14,6 +14,9 @@ class JsSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit JsSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    static QStringList supportedExtensions() { return {"js"}; }
+    static QStringList supportedFileNames() { return {}; }
+
     struct HighlightRange {
         int start;
         int length;

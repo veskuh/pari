@@ -14,6 +14,9 @@ class CppSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit CppSyntaxHighlighter(QTextDocument *parent = nullptr, SyntaxTheme *theme = nullptr);
 
+    static QStringList supportedExtensions() { return {"cpp", "h", "cxx", "hxx", "cc", "hh"}; }
+    static QStringList supportedFileNames() { return {}; }
+
     struct HighlightRange {
         int start;
         int length;
