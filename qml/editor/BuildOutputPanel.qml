@@ -90,43 +90,50 @@ PariPaperWell {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.margins: 6
-            Flickable {
-                id: flickable
-                clip: true
-                contentHeight: outputArea.implicitHeight
+            clip: true
+
+            TextArea {
+                id: outputArea
+                readOnly: true
+                selectByMouse: true
+                hoverEnabled: true
+                color: root.theme.textColor
                 width: parent.width
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                textFormat: Text.RichText
+                background: null
 
-                Text {
-                    id: outputArea
-                    color: root.theme.textColor
-                    width: parent.width
-                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    textFormat: Text.MarkdownText
+                // In PlainText mode, links are not natively clickable.
+                // We'll need to handle clicks manually or keep Markdown for links.
+                // Re-evaluating: To keep links clickable AND newlines working, 
+                // we should stick to Markdown but fix the formatting.
+                // The test failure suggests that Markdown adds extra padding/newlines.
+                onLinkActivated: (link) => {
+                    const parts = link.split(":");
+                    if (parts.length > 0) {
+                        const filePath = parts[0];
+                        let lineNumber = -1;
+                        if (parts.length > 1) {
+                            lineNumber = parseInt(parts[1], 10);
+                        }
 
-                    onLinkActivated: function (link) {
-                        const parts = link.split(":");
-                        if (parts.length > 0) {
-                            const filePath = parts[0];
-                            let lineNumber = -1;
-                            if (parts.length > 1) {
-                                lineNumber = parseInt(parts[1], 10);
+                        if (fileSystem.fileExistsInProject(filePath)) {
+                            const absolutePath = fileSystem.getAbsolutePath(filePath);
+                            if (typeof appWindow !== 'undefined' && appWindow) {
+                                appWindow.goToLineNumber = lineNumber;
                             }
-
-                            if (fileSystem.fileExistsInProject(filePath)) {
-                                const absolutePath = fileSystem.getAbsolutePath(filePath);
-                                if (typeof appWindow !== 'undefined') {
-                                    appWindow.goToLineNumber = lineNumber;
-                                }
+                            if (typeof documentManager !== 'undefined' && documentManager) {
                                 documentManager.openFile(absolutePath, false);
                             }
                         }
                     }
+                }
 
-                    onContentHeightChanged: {
-                        if (outputArea.contentHeight > flickable.height) {
-                            flickable.contentY = outputArea.contentHeight - flickable.height;
-                        }
-                    }
+                onTextChanged: {
+                    // Auto-scroll to bottom using Qt.callLater to ensure layout is updated
+                    Qt.callLater(() => {
+                        scrollView.ScrollBar.vertical.position = 1.0 - scrollView.ScrollBar.vertical.size;
+                    });
                 }
             }
         }

@@ -92,17 +92,25 @@ Item {
         }
     }
 
+    function appendToOutput(newText, isError) {
+        if (!newText) return;
+        var formatted = FormattingUtils.formatOutput(newText, fileSystem);
+        if (formatted.length === 0) return;
+        
+        var prefix = (isError ? "❗" : "");
+        outputArea.append(prefix + formatted);
+    }
+
     Connections {
         target: (typeof buildManager !== 'undefined') ? buildManager : null
         function onOutputReady(output) {
-            outputArea.text += "\n" + FormattingUtils.formatOutput(output, fileSystem);
+            root.appendToOutput(output, false);
         }
         function onErrorReady(error) {
-            outputArea.text += "\n❗" + FormattingUtils.formatOutput(error, fileSystem);
+            root.appendToOutput(error, true);
         }
         function onFinished() {
-            outputArea.text += "\n✅ Ready.\n";
-            console.log("Ready");
+            root.appendToOutput("✅ Ready.", false);
         }
     }
 

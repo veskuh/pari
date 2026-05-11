@@ -146,6 +146,7 @@ Item {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+b"
         onTriggered: {
+            outputArea.text = "";
             outputPanel.visible = true;
             buildManager.executeCommand(appSettings.getBuildCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
@@ -157,6 +158,7 @@ Item {
         enabled: hasBuildConfiguration
         shortcut: "Ctrl+r"
         onTriggered: {
+            outputArea.text = "";
             outputPanel.visible = true;
             buildManager.executeCommand(appSettings.getRunCommand(fileSystem.rootPath), fileSystem.rootPath);
         }
