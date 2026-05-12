@@ -23,6 +23,8 @@ qt_add_executable(pari
     core/filesystem.h
     core/settings.cpp
     core/settings.h
+    core/clipboardhelper.cpp
+    core/clipboardhelper.h
     core/projectsearchmodel.cpp
     core/projectsearchmodel.h
     formatting/markdownformatter.cpp

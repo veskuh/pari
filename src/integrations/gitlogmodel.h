@@ -21,6 +21,7 @@ struct GitCommit {
 class GitLogModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(QString filterText READ filterText WRITE setFilterText NOTIFY filterTextChanged)
 
 public:
     enum GitLogRoles {
@@ -45,11 +46,20 @@ public:
     Q_INVOKABLE void setDetailsLoading(const QString &sha, bool loading);
     Q_INVOKABLE QString shaAt(int index) const;
 
+    QString filterText() const { return m_filterText; }
+    void setFilterText(const QString &text);
+
+signals:
+    void filterTextChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
-    QList<GitCommit> m_commits;
+    void applyFilter();
+    QList<GitCommit> m_allCommits;
+    QList<GitCommit> m_visibleCommits;
+    QString m_filterText;
 };
 
 #endif // GITLOGMODEL_H

@@ -15,6 +15,7 @@ private slots:
     void testCommitWithoutBody();
     void testInvalidData();
     void testRoleNames();
+    void testFiltering();
 };
 
 #endif // TEST_GITLOGMODEL_H

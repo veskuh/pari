@@ -55,6 +55,8 @@ add_executable(tst_all
     mocktextdocument.h
     ../src/core/settings.cpp
     ../src/core/settings.h
+    ../src/core/clipboardhelper.cpp
+    ../src/core/clipboardhelper.h
     ../src/core/projectsearchmodel.cpp
     ../src/core/projectsearchmodel.h
     ../src/core/filesystem.cpp

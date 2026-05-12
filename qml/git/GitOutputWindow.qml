@@ -97,7 +97,29 @@ Window {
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
-                Item { Layout.preferredWidth: 20 }
+
+                // Filter Field (Visible only during git log)
+                TextField {
+                    id: logFilterField
+                    placeholderText: qsTr("Search log...")
+                    visible: command.includes("git log")
+                    Layout.preferredWidth: 200
+                    Layout.rightMargin: 10
+                    onTextChanged: {
+                        if (gitLogModel) {
+                            gitLogModel.filterText = text;
+                        }
+                    }
+                    
+                    background: Rectangle {
+                        radius: 4
+                        color: isDark ? "#2a2a2a" : "#ffffff"
+                        border.color: isDark ? "#444" : "#ccc"
+                    }
+                    color: isDark ? "#ffffff" : "#000000"
+                    font.pixelSize: 11
+                }
+
                 Label {
                     text: "🌿 " + branchName
                     font.bold: true
@@ -139,11 +161,12 @@ Window {
 
                     Label {
                         id: noEntriesLabel
-                        text: qsTr("No log entries found.")
+                        text: logFilterField.text !== "" ? qsTr("No matching entries found.") : qsTr("No log entries found.")
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.italic: true
                         color: isDark ? "#888888" : "#666666"
+                        visible: gitLogModel && gitLogModel.rowCount() === 0
                     }
 
                     PariReadOnlyTextArea {

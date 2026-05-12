@@ -19,6 +19,7 @@
 #include "gitmanager.h"
 #include "documentmanager.h"
 #include "projectsearchmodel.h"
+#include "clipboardhelper.h"
 
 int main(int argc, char *argv[])
 {
@@ -77,6 +78,9 @@ int main(int argc, char *argv[])
 
     GitDiffModel *gitDiffModel = new GitDiffModel(&app);
     engine.rootContext()->setContextProperty("gitDiffModel", gitDiffModel);
+
+    ClipboardHelper *clipboardHelper = new ClipboardHelper(&app);
+    engine.rootContext()->setContextProperty("clipboard", clipboardHelper);
 
     DocumentManager *documentManager = new DocumentManager(&app);
     engine.rootContext()->setContextProperty("documentManager", documentManager);

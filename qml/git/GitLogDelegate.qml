@@ -117,6 +117,7 @@ Item {
                         Layout.fillWidth: true
                         
                         Rectangle {
+                            id: shaPlate
                             Layout.preferredWidth: 70
                             Layout.preferredHeight: 18
                             radius: 3
@@ -134,6 +135,40 @@ Item {
                                 font.pixelSize: 10
                                 font.bold: true
                                 color: isDark ? "#aaa" : "#555"
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    if (typeof clipboard !== 'undefined') {
+                                        clipboard.setText(_sha);
+                                        copyTooltip.show("Copied!");
+                                    }
+                                }
+                                ToolTip {
+                                    id: copyTooltip
+                                    text: qsTr("Click to copy SHA")
+                                    visible: parent.containsMouse
+                                    delay: 500
+                                    
+                                    function show(msg) {
+                                        var oldText = text;
+                                        text = msg;
+                                        visible = true;
+                                        timer.start();
+                                    }
+
+                                    Timer {
+                                        id: timer
+                                        interval: 1000
+                                        onTriggered: {
+                                            copyTooltip.visible = false;
+                                            copyTooltip.text = qsTr("Click to copy SHA");
+                                        }
+                                    }
+                                }
                             }
                         }
 
