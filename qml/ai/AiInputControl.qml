@@ -34,6 +34,7 @@ ColumnLayout {
         ScrollView {
             anchors.fill: parent
             anchors.margins: 4
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
             TextArea {
                 id: aiMessagePane
                 objectName: "aiMessagePane"

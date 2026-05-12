@@ -134,6 +134,7 @@ Window {
                         clip: true
                         spacing: 5
                         delegate: GitLogDelegate {}
+                        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOn }
                     }
 
                     Label {
@@ -152,6 +153,7 @@ Window {
                         textFormat: Text.RichText
                         wrapMode: Text.NoWrap
                         textAreaFont.family: Qt.platform.os === 'osx' ? 'Menlo' : 'Noto Sans Mono'
+                        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOn }
                     }
 
                     ListView {
@@ -160,6 +162,7 @@ Window {
                         model: blameModel
                         clip: true
                         boundsBehavior: Flickable.StopAtBounds
+                        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOn }
                         
                         delegate: Rectangle {
                             width: blameView.width

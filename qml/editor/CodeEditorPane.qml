@@ -129,6 +129,7 @@ ColumnLayout {
             id: codeEditorScrollView
             anchors.fill: parent
             clip: true
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
             Flickable {
                 id: codeEditorFlickable

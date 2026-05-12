@@ -91,6 +91,7 @@ PariPaperWell {
             Layout.fillHeight: true
             Layout.margins: 6
             clip: true
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
             TextArea {
                 id: outputArea

@@ -204,7 +204,11 @@ Item {
             }
         }
         
-        ScrollIndicator.vertical: ScrollIndicator { }
-        ScrollIndicator.horizontal: ScrollIndicator { }
+        ScrollBar.vertical: ScrollBar { 
+            policy: ScrollBar.AlwaysOn
+        }
+        ScrollBar.horizontal: ScrollBar { 
+            policy: ScrollBar.AsNeeded
+        }
     }
 }

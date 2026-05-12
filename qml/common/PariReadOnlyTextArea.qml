@@ -6,6 +6,7 @@ import "../app"
 ScrollView {
     id: root
     clip: true
+    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     
     property alias text: textArea.text
     property int textFormat: Text.MarkdownText

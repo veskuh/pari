@@ -63,7 +63,7 @@ Window {
             }
 
             ScrollBar.vertical: ScrollBar {
-                active: true
+                policy: ScrollBar.AlwaysOn
             }
 
             onCountChanged: {

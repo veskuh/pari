@@ -217,7 +217,7 @@ Rectangle {
                 }
             }
             
-            ScrollIndicator.vertical: ScrollIndicator { }
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOn }
         }
         
         // 4. Footer Status

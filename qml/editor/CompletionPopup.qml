@@ -37,6 +37,8 @@ Popup {
     ListView {
         id: completionListView
         anchors.fill: parent
+        clip: true
+        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOn }
         model: ListModel { // This will be the filtered model
             id: filteredDisplayModel // Renamed to avoid confusion with original completionModel
 
