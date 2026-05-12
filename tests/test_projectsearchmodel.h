@@ -14,6 +14,8 @@ private slots:
     void testRegexSearch();
     void testCaseSensitivity();
     void testExtensionFiltering();
+    void testReplaceAll();
+    void testCancellation();
     void cleanupTestCase();
 
 private:

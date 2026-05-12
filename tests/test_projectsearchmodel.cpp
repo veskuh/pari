@@ -140,3 +140,31 @@ void TestProjectSearchModel::testExtensionFiltering()
     }
     QVERIFY(foundFilename);
 }
+
+void TestProjectSearchModel::testReplaceAll()
+{
+    ProjectSearchModel model;
+    QSignalSpy spy(&model, &ProjectSearchModel::searchFinished);
+
+    model.search(m_testPath, "search test", true, false, "md");
+    QVERIFY(spy.wait(2000));
+    QCOMPARE(model.rowCount(), 2); // Filename + content
+
+    model.replaceAll("Final version");
+    
+    // Verify file content changed
+    QFile file(m_testPath + "/readme.md");
+    QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
+    QString content = file.readAll();
+    QVERIFY(content.contains("Final version"));
+}
+
+void TestProjectSearchModel::testCancellation()
+{
+    ProjectSearchModel model;
+    model.search(m_testPath, "test", true, false, "");
+    model.cancel();
+    // Wait a bit to ensure no results pop in after cancellation
+    QTest::qWait(100);
+    QCOMPARE(model.isSearching(), false);
+}

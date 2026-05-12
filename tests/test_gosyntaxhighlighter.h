@@ -21,6 +21,7 @@ private slots:
     void testRawStrings();
     void testComments();
     void testMultilineComments();
+    void testMultiLineBlockStates();
     void testPerformance();
 
 private:

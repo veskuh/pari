@@ -11,7 +11,7 @@ LOG_FILE="coverage_run.log"
 
 # lcov options: ignore common mismatched/missing data errors in clang/macOS
 LCOV_OPTS="--ignore-errors unsupported,empty,inconsistent,format,unused,missing"
-GENHTML_OPTS="--ignore-errors source,category"
+GENHTML_OPTS="--ignore-errors source,category,inconsistent,corrupt"
 
 # Navigate to project root (assuming script is in scripts/)
 cd "$(dirname "$0")/.."

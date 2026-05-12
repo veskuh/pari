@@ -115,3 +115,33 @@ void TestGitLogModel::testFiltering()
     model.setFilterText("nonexistent");
     QCOMPARE(model.rowCount(), 0);
 }
+
+void TestGitLogModel::testDetailsAndLoading()
+{
+    GitLogModel model;
+    QString log = "sha1" + UNIT_SEPARATOR + "Author One" + UNIT_SEPARATOR + "one@example.com" + UNIT_SEPARATOR + "Mon, 3 Jun 2024 10:00:00 +0000" + UNIT_SEPARATOR + "msg";
+    model.parseAndSetLog(log);
+
+    QCOMPARE(model.data(model.index(0, 0), GitLogModel::DetailsLoadingRole).toBool(), false);
+    
+    model.setDetailsLoading("sha1", true);
+    QCOMPARE(model.data(model.index(0, 0), GitLogModel::DetailsLoadingRole).toBool(), true);
+    
+    model.updateDetails("sha1", "Stat details");
+    QCOMPARE(model.data(model.index(0, 0), GitLogModel::DetailsRole).toString(), QString("Stat details"));
+    QCOMPARE(model.data(model.index(0, 0), GitLogModel::DetailsLoadingRole).toBool(), false);
+    
+    QCOMPARE(model.shaAt(0), QString("sha1"));
+    QCOMPARE(model.shaAt(99), QString(""));
+}
+
+void TestGitLogModel::testParseComplexLog()
+{
+    GitLogModel model;
+    // Test with missing fields or extra separators
+    QString log = RECORD_SEPARATOR + "sha1" + UNIT_SEPARATOR + "A" + UNIT_SEPARATOR + "E" + UNIT_SEPARATOR + "Mon, 3 Jun 2024 10:00:00 +0000" + UNIT_SEPARATOR + "H\nB" + RECORD_SEPARATOR + RECORD_SEPARATOR;
+    model.parseAndSetLog(log);
+    QCOMPARE(model.rowCount(), 1);
+    QCOMPARE(model.data(model.index(0, 0), GitLogModel::MessageHeaderRole).toString(), QString("H"));
+    QCOMPARE(model.data(model.index(0, 0), GitLogModel::MessageBodyRole).toString(), QString("B"));
+}

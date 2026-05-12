@@ -2,6 +2,7 @@ add_executable(tst_all
     main.cpp
     test_settings.cpp
     test_settings.h
+    test_clipboardhelper.h
     test_filesystem.cpp
     test_filesystem.h
     test_markdownformatter.cpp

@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QQmlEngine>
 #include "test_settings.h"
+#include "test_clipboardhelper.h"
 #include "test_filesystem.h"
 #include "test_markdownformatter.h"
 #include "test_llm.h"
@@ -52,8 +53,11 @@ int main(int argc, char *argv[])
     TestSettings tc_settings;
     status |= QTest::qExec(&tc_settings, argc, argv);
 
-    TestFileSystem tc_fs;
-    status |= QTest::qExec(&tc_fs, argc, argv);
+    TestClipboardHelper tc_clipboard;
+    status |= QTest::qExec(&tc_clipboard, argc, argv);
+
+    TestFileSystem tc_filesystem;
+    status |= QTest::qExec(&tc_filesystem, argc, argv);
 
     TestMarkdownFormatter tc_markdown;
     status |= QTest::qExec(&tc_markdown, argc, argv);

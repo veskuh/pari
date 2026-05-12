@@ -16,6 +16,8 @@ private slots:
     void testInvalidData();
     void testRoleNames();
     void testFiltering();
+    void testDetailsAndLoading();
+    void testParseComplexLog();
 };
 
 #endif // TEST_GITLOGMODEL_H
