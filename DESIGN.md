@@ -77,8 +77,8 @@ The system supports full **Light** and **Dark** modes. All components must utili
 ### Inkwell Editor (`CodeEditorPane`)
 *   **Tactile Feedback:** The background color shifts based on the "Dirty" state.
 *   **Line Navigation:** Integrated `LineNumberGutter` with active line highlighting and non-sequential mapping support.
-*   **Search & Filter:** Integrated `FindOverlay` with **Grep Mode** (⏳) for isolating lines while preserving original numbering.
-*   **Extended Syntax Support:** High-fidelity highlighting for C++, QML, Markdown, Shell, Swift, and JavaScript.
+*   **Search & Filter:** Integrated `FindOverlay` with **Grep Mode** for isolating lines while preserving original numbering.
+*   **Extended Syntax Support:** High-fidelity highlighting for **C++, Go, Java, JavaScript, Kotlin, Markdown, QML, Rust, Shell, and Swift**.
 
 ### Global Investigation (`InvestigationPane`)
 *   **Ergonomic Layout**: Maximized horizontal width for search inputs, with collapsible "Replace" rows.

@@ -125,21 +125,27 @@ void TestGoSyntaxHighlighter::testMultiLineBlockStates() {
 
     // Multi-line comment across blocks
     doc.setPlainText("/* line 1\n   line 2\n   line 3 */\nvar i int");
+    highlighter.rehighlight();
     
     // Check line 1
     QTextBlock block = doc.begin();
+    QVERIFY(block.isValid());
     QCOMPARE(block.layout()->formats().size(), 1);
     QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), m_theme->commentColor);
 
     // Check line 2
     block = block.next();
+    QVERIFY(block.isValid());
     QCOMPARE(block.layout()->formats().size(), 1);
     QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), m_theme->commentColor);
 
     // Check line 4 (code after comment)
     block = block.next().next();
-    QCOMPARE(block.layout()->formats().size(), 2); // 'var' and 'int'
-    QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), m_theme->keywordColor);
+    QVERIFY(block.isValid());
+    // "var i int" -> "var" and "int" should be highlighted as keywords
+    QCOMPARE(block.layout()->formats().size(), 2); 
+    QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), m_theme->keywordColor); // "var"
+    QCOMPARE(block.layout()->formats().at(1).format.foreground().color(), m_theme->keywordColor); // "int"
 }
 
 void TestGoSyntaxHighlighter::testPerformance() {

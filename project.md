@@ -11,9 +11,9 @@
 *   **Build System:** Configurable build/run/clean commands with clickable error navigation.
 *   **Advanced Search:** Integrated incremental search and **Grep-like line filtering** with original document numbering.
 *   **Project-Wide Investigation:** Background-threaded search and global replacement engine across the entire codebase.
-*   **Multi-Language:** Precision syntax highlighting for C++, QML, Markdown, Shell, **Swift**, and **JavaScript**.
+*   **Multi-Language:** Precision syntax highlighting for **C++, Go, Java, JavaScript, Kotlin, Markdown, QML, Rust, Shell, and Swift**.
 *   **Skeuomorphic Design:** Tactile "Precision Bench" design with "Machine Bezel" top-tab navigation and premium tactile refinements.
-*   **Quality First:** Robust test suite with **235+ tests** and **85.7%** line coverage.
+*   **Quality First:** Robust test suite with **350+ tests** and **85.7%** line coverage.
 
 ## Current Architecture
 
@@ -28,10 +28,10 @@
 
 ### Running Tests
 ```bash
-# C++ Unit Tests (94 tests)
+# C++ Unit Tests (204 tests)
 ./build/tests/tst_all
 
-# QML UI Tests (141 tests)
+# QML UI Tests (147 tests)
 ./build/tests/tst_ui -input tests/
 ```
 

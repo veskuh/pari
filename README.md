@@ -12,29 +12,28 @@ The primary goal of Pari is to provide a simple way to use LLMs for:
 *   **Documentation:** Generate comments and documentation for your code.
 *   **Code Generation:** Get help with writing new code snippets.
 
-Pari aims to be a trusted, local utility that can assist with coding tasks in an offline-first environment.
+Pari aims to assist with coding tasks in an offline-first environment.
 
 ## Key Features
 
-*   **Local LLM Integration:** Full streaming support for local Ollama instances.
-*   **Precision Code Editor:** Syntax highlighting for C++, QML, Markdown, Shell, **Swift**, and **JavaScript**. Supports auto-indentation and LSP integration.
+*   **Local LLM Integration:** Streaming support for local Ollama instances.
+*   **Code Editor:** Syntax highlighting for **C++, Go, Java, JavaScript, Kotlin, Markdown, QML, Rust, Shell, and Swift**. Supports auto-indentation and LSP integration.
 *   **Workspace Investigation:** Integrated project-wide search and global replacement engine utilizing background-threaded C++ scanning.
-*   **Atelier Workspace Status:** Structured Git diffs with precision line navigation and badging for untracked "NEW" files.
-*   **Tactile Design:** A high-fidelity "Developer's Atelier" aesthetic featuring "Machine Bezel" navigation and premium tactile refinements.
+*   **Atelier Workspace Status:** Structured Git diffs with line navigation and badging for untracked files.
+*   **Tactile Design:** A high-fidelity "Developer's Atelier" aesthetic featuring "Machine Bezel" navigation and tactile refinements.
 *   **Integrated Tools:** Built-in build system, Grep-mode line filtering, and interactive AI-suggested changes.
 
 ## Testing & Quality
 
 ### Unit & UI Testing
 
-The project includes a robust automated test suite covering both C++ logic and QML UI components.
-*   **Unit Tests:** 94 tests verifying core backend logic using the Qt Test framework.
-*   **UI Tests:** 141 tests verifying component behavior and state using `QtQuickTest`.
-*   **Total Tests:** 235 passing tests ensuring system stability.
+The project includes an automated test suite covering both C++ logic and QML UI components.
+*   **Unit Tests:** 204 tests verifying core backend logic using the Qt Test framework.
+*   **UI Tests:** 147 tests verifying component behavior and state using `QtQuickTest`.
 
 ### Code Coverage
 
-Pari maintains a high standard of quality with **85.7%** line coverage. You can generate a detailed HTML report:
+Pari maintains quality with **85.7%** line coverage. You can generate a detailed HTML report:
 
 ```bash
 # Reconfigure with coverage enabled

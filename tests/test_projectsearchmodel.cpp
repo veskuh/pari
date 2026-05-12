@@ -148,7 +148,7 @@ void TestProjectSearchModel::testReplaceAll()
 
     model.search(m_testPath, "search test", true, false, "md");
     QVERIFY(spy.wait(2000));
-    QCOMPARE(model.rowCount(), 2); // Filename + content
+    QCOMPARE(model.rowCount(), 1); // Only content matches
 
     model.replaceAll("Final version");
     
