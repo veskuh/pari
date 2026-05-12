@@ -24,6 +24,7 @@
 #include "test_projectsearchmodel.h"
 #include "test_syntaxhighlighterprovider.h"
 #include "test_rustsyntaxhighlighter.h"
+#include "test_gosyntaxhighlighter.h"
 #include "test_textdocumentsearcher.h"
 
 #include "diffutils.h"
@@ -116,6 +117,9 @@ int main(int argc, char *argv[])
 
     TestRustSyntaxHighlighter tc_rust_highlighter;
     status |= QTest::qExec(&tc_rust_highlighter, argc, argv);
+
+    TestGoSyntaxHighlighter tc_go_highlighter;
+    status |= QTest::qExec(&tc_go_highlighter, argc, argv);
 
     TestTextDocumentSearcher tc_searcher;
     status |= QTest::qExec(&tc_searcher, argc, argv);

@@ -5,6 +5,7 @@
 #include "javasyntaxhighlighter.h"
 #include "kotlinsyntaxhighlighter.h"
 #include "rustsyntaxhighlighter.h"
+#include "gosyntaxhighlighter.h"
 #include "qmlsyntaxhighlighter.h"
 #include "shellsyntaxhighlighter.h"
 #include "markdownsyntaxhighlighter.h"
@@ -31,6 +32,8 @@ static QList<HighlighterRegistryEntry> highlighterRegistry() {
           [](QTextDocument* doc, SyntaxTheme* theme) { return new KotlinSyntaxHighlighter(doc, theme); } },
         { RustSyntaxHighlighter::supportedExtensions(), RustSyntaxHighlighter::supportedFileNames(), 
           [](QTextDocument* doc, SyntaxTheme* theme) { return new RustSyntaxHighlighter(doc, theme); } },
+        { GoSyntaxHighlighter::supportedExtensions(), GoSyntaxHighlighter::supportedFileNames(), 
+          [](QTextDocument* doc, SyntaxTheme* theme) { return new GoSyntaxHighlighter(doc, theme); } },
         { QmlSyntaxHighlighter::supportedExtensions(), QmlSyntaxHighlighter::supportedFileNames(), 
           [](QTextDocument* doc, SyntaxTheme* theme) { return new QmlSyntaxHighlighter(doc, theme); } },
         { ShellSyntaxHighlighter::supportedExtensions(), ShellSyntaxHighlighter::supportedFileNames(), 
