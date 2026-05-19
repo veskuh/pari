@@ -1,24 +1,20 @@
 #include "shellsyntaxhighlighter.h"
+#include "syntaxtheme.h"
 
 ShellSyntaxHighlighter::ShellSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
-    : QSyntaxHighlighter(parent), m_theme(theme)
-{
+    : QSyntaxHighlighter(parent), m_theme(theme) {
+    if (m_theme) {
+        commentFormat.setForeground(m_theme->commentColor);
+        stringFormat.setForeground(m_theme->stringColor);
+    }
 }
 
-void ShellSyntaxHighlighter::highlightBlock(const QString &text)
-{
-    if (!m_theme) return;
+void ShellSyntaxHighlighter::highlightBlock(const QString &text) {
+    if (!m_theme)
+        return;
 
-    QTextCharFormat commentFormat;
-    commentFormat.setForeground(m_theme->commentColor);
-
-    QTextCharFormat stringFormat;
-    stringFormat.setForeground(m_theme->stringColor);
-
-    QRegularExpression expression(
-        "(?<string>\"([^\"\\\\]|\\\\.)*\"|'[^']*')|"
-        "(?<comment>#[^\n]*)"
-    );
+    QRegularExpression expression("(?<string>\"([^\"\\\\]|\\\\.)*\"|'[^']*')|"
+                                  "(?<comment>#[^\n]*)");
 
     QRegularExpressionMatchIterator it = expression.globalMatch(text);
     while (it.hasNext()) {
