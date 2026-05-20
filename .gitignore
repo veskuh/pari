@@ -28,6 +28,7 @@ notes.md
 src/qrc_*
 test_project/
 *.user
+.antigravitycli/
 
 # Coverage
 gcov_output.txt

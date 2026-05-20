@@ -26,6 +26,7 @@ private slots:
 
 private:
     QProcess *m_process;
+    QString m_currentCommand;
 };
 
 #endif // BUILDMANAGER_H
