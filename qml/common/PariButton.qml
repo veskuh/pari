@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Basic
@@ -17,7 +18,7 @@ AbstractButton {
 
     readonly property bool _isDark: _theme.isDark
 
-    contentItem: Label {
+    contentItem: KaakaoLabel {
         text: control.text
         font.pixelSize: _theme.fontButton
         color: {

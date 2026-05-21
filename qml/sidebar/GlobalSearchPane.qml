@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -28,7 +29,7 @@ Rectangle {
             Layout.fillWidth: true
             spacing: 0
             
-            Label {
+            KaakaoLabel {
                 text: qsTr("GLOBAL SEARCH")
                 color: pariTheme.textColor
                 font.pixelSize: 10
@@ -114,12 +115,12 @@ Rectangle {
                     }
                 }
 
-                // Row 4: Scope & Search Button
+                // Row 4: Scope & Search KaakaoButton
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 8
 
-                    Label {
+                    KaakaoLabel {
                         text: qsTr("Scope:")
                         color: pariTheme.textColor
                         font.pixelSize: 11
@@ -172,7 +173,7 @@ Rectangle {
                 height: 24
                 color: pariTheme.isDark ? "#3d3d3d" : "#e0e0e0"
                 
-                Label {
+                KaakaoLabel {
                     text: (typeof section !== "undefined" ? section : "").replace(fileSystem.rootPath + "/", "")
                     color: pariTheme.textColor
                     font.bold: true
@@ -195,14 +196,14 @@ Rectangle {
                 contentItem: ColumnLayout {
                     spacing: 2
                     
-                    Label {
+                    KaakaoLabel {
                         text: model.lineNumber === 0 ? qsTr("Filename match") : qsTr("Line %1").arg(model.lineNumber)
                         color: pariTheme.accentColor
                         font.pixelSize: 10
                         opacity: 0.8
                     }
                     
-                    Label {
+                    KaakaoLabel {
                         text: model.lineText
                         color: pariTheme.textColor
                         font.family: "Menlo"
@@ -226,7 +227,7 @@ Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 20
             
-            Label {
+            KaakaoLabel {
                 text: {
                     if (projectSearchModel.isSearching) {
                         return qsTr("Searching...");
@@ -249,7 +250,7 @@ Rectangle {
         modal: true
         implicitWidth: 350
         
-        Label {
+        KaakaoLabel {
             anchors.left: parent.left
             anchors.right: parent.right
             text: qsTr("Are you sure you want to replace all %1 occurrences in the project?").arg(projectSearchModel.resultCount)

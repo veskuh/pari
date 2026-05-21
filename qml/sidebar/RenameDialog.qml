@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -21,7 +22,7 @@ Dialog {
     contentItem: ColumnLayout {
         spacing: _pariTheme ? _pariTheme.paddingLarge : 15
 
-        Label {
+        KaakaoLabel {
             text: "Enter new name for: " + (renameDialog.oldPath ? renameDialog.oldPath.substring(renameDialog.oldPath.lastIndexOf('/') + 1) : "")
             Layout.fillWidth: true
             elide: Text.ElideMiddle

@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -32,7 +33,7 @@ ApplicationWindow {
             columnSpacing: 10
             Layout.fillWidth: true
 
-            Label {
+            KaakaoLabel {
                 text: qsTr("Build:")
                 font.bold: true
                 color: _pariTheme ? _pariTheme.textColor : "#333333"
@@ -45,7 +46,7 @@ ApplicationWindow {
                 selectByMouse: true
             }
 
-            Label {
+            KaakaoLabel {
                 text: qsTr("Run:")
                 font.bold: true
                 color: _pariTheme ? _pariTheme.textColor : "#333333"
@@ -58,7 +59,7 @@ ApplicationWindow {
                 selectByMouse: true
             }
 
-            Label {
+            KaakaoLabel {
                 text: qsTr("Clean:")
                 font.bold: true
                 color: _pariTheme ? _pariTheme.textColor : "#333333"

@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -45,7 +46,7 @@ ApplicationWindow {
         anchors.margins: 15
         spacing: 10
 
-        Label {
+        KaakaoLabel {
             text: "Ollama Settings"
             font.bold: true
             color: _pariTheme ? _pariTheme.textColor : "black"
@@ -55,7 +56,7 @@ ApplicationWindow {
             columns: 2
             columnSpacing: 10
 
-            Label {
+            KaakaoLabel {
                 text: "API URL:"
                 color: _pariTheme ? _pariTheme.textColor : "black"
             }
@@ -65,7 +66,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
             }
 
-            Label {
+            KaakaoLabel {
                 text: "Model:"
                 color: _pariTheme ? _pariTheme.textColor : "black"
             }
@@ -84,7 +85,7 @@ ApplicationWindow {
             }
         }
 
-        Label {
+        KaakaoLabel {
             text: "Editor Settings"
             font.bold: true
             color: _pariTheme ? _pariTheme.textColor : "black"
@@ -94,12 +95,12 @@ ApplicationWindow {
             columns: 2
             columnSpacing: 10
 
-            Label {
+            KaakaoLabel {
                 text: "Font:"
                 color: _pariTheme ? _pariTheme.textColor : "black"
             }
             RowLayout {
-                Label {
+                KaakaoLabel {
                     id: fontValue
                     text: _appSettings ? `${_appSettings.fontFamily}, ${_appSettings.fontSize}` : ""
                     Layout.fillWidth: true
@@ -111,7 +112,7 @@ ApplicationWindow {
                 }
             }
 
-            Label {
+            KaakaoLabel {
                 text: "Indentation:"
                 color: _pariTheme ? _pariTheme.textColor : "black"
             }
@@ -123,7 +124,7 @@ ApplicationWindow {
                     checked: _appSettings ? _appSettings.indentWithSpaces : true
                 }
                 RowLayout {
-                    Label { text: "Size:"; color: _pariTheme ? _pariTheme.textColor : "black" }
+                    KaakaoLabel { text: "Size:"; color: _pariTheme ? _pariTheme.textColor : "black" }
                     SpinBox {
                         id: indentSizeSpinBox
                         from: 1
@@ -134,7 +135,7 @@ ApplicationWindow {
             }
         }
 
-        Label {
+        KaakaoLabel {
             text: "Highlighting Settings"
             font.bold: true
             color: _pariTheme ? _pariTheme.textColor : "black"
@@ -147,13 +148,13 @@ ApplicationWindow {
             RowLayout {
                 spacing: 10
                 Item { Layout.preferredWidth: 120 }
-                Label {
+                KaakaoLabel {
                     text: "Dark:"
                     Layout.preferredWidth: 50
                     horizontalAlignment: Text.AlignHCenter
                     color: _pariTheme ? _pariTheme.textColorDim : "gray"
                 }
-                Label {
+                KaakaoLabel {
                     text: "Light:"
                     Layout.preferredWidth: 50
                     horizontalAlignment: Text.AlignHCenter

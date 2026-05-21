@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -14,7 +15,7 @@ ColumnLayout {
 
     spacing: 8
 
-    Label {
+    KaakaoLabel {
         text: qsTr("AI PROMPT")
         font.family: "Public Sans"
         font.pixelSize: 10

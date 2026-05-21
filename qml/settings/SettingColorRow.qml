@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -23,7 +24,7 @@ RowLayout {
     signal darkColorSelected(color newColor)
     signal lightColorSelected(color newColor)
 
-    Label {
+    KaakaoLabel {
         text: root.labelText
         Layout.preferredWidth: 120
     }

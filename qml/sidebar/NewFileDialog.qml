@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -22,7 +23,7 @@ Dialog {
     contentItem: ColumnLayout {
         spacing: _pariTheme ? _pariTheme.paddingLarge : 15
 
-        Label {
+        KaakaoLabel {
             text: qsTr("Create new file in: ") + newFileDialog.folderPath
             Layout.fillWidth: true
             elide: Text.ElideMiddle

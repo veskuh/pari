@@ -1,6 +1,7 @@
 import QtQuick
 import QtTest
 import QtQuick.Controls
+import Kaakao
 import QtQuick.Layouts
 import "../qml/app"
 import "../qml/editor"

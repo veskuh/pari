@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -97,7 +98,7 @@ Item {
         spacing: 4
 
         // --- Indicator (Folder Arrow) ---
-        Label {
+        KaakaoLabel {
             id: indicator
             text: isDirectory ? (expanded ? "▼" : "▶") : ""
             font.pixelSize: 10
@@ -135,8 +136,8 @@ Item {
             opacity: root.enabled ? 1.0 : 0.5
         }
 
-        // --- Label ---
-        Label {
+        // --- KaakaoLabel ---
+        KaakaoLabel {
             text: root.display ? root.display : ""
             Layout.fillWidth: true
             clip: true

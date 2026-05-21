@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -69,7 +70,7 @@ Rectangle {
                                 anchors.verticalCenter: parent.verticalCenter
                                 opacity: root.currentIndex === index ? 1.0 : 0.6
                             }
-                            Label {
+                            KaakaoLabel {
                                 text: modelData.text
                                 font.pixelSize: 11
                                 font.bold: root.currentIndex === index

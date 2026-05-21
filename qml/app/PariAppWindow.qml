@@ -1,3 +1,6 @@
+import QtCore
+import Qt.labs.settings
+import Kaakao
 import QtQuick
 import QtCore
 import QtQuick.Controls
@@ -91,7 +94,7 @@ ApplicationWindow {
                     // Explorer View
                     ColumnLayout {
                         spacing: 0
-                        Label {
+                        KaakaoLabel {
                             text: qsTr("EXPLORER")
                             font.pixelSize: 10
                             font.bold: true
@@ -101,7 +104,7 @@ ApplicationWindow {
                             color: pariTheme.textColor
                             opacity: 0.6
                         }
-                        Label {
+                        KaakaoLabel {
                             text: "💻 " + fileSystem.rootName
                             font.bold: true
                             Layout.leftMargin: 10

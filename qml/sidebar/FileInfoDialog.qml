@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 
@@ -21,16 +22,16 @@ ApplicationWindow {
 
         spacing: 10
 
-        Label {
+        KaakaoLabel {
             text: qsTr("Name: %1").arg(fileName)
         }
-        Label {
+        KaakaoLabel {
             text: qsTr("Path: %1").arg(filePath)
         }
-        Label {
+        KaakaoLabel {
             text: qsTr("Size: %1").arg(fileSize)
         }
-        Label {
+        KaakaoLabel {
             text: qsTr("Modified: %1").arg(fileModified)
         }
     }

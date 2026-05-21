@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -31,7 +32,7 @@ Rectangle {
                     NumberAnimation { from: 0.3; to: 1.0; duration: 800 }
                 }
             }
-            Label {
+            KaakaoLabel {
                 text: qsTr("AI IS THINKING...")
                 font.family: "Menlo"
                 font.pixelSize: 12

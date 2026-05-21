@@ -7,6 +7,7 @@
 #include "gitmanager.h"
 #include "documentmanager.h"
 #include "diffutils.h"
+#include <QCoreApplication>
 
 class Setup : public QObject
 {
@@ -17,6 +18,9 @@ public:
 public slots:
     void qmlEngineAvailable(QQmlEngine *engine)
     {
+        engine->addImportPath("qrc:/qt-project.org/imports");
+        engine->addImportPath(QCoreApplication::applicationDirPath() + "/../3rdparty/Kaakao/src");
+        engine->addImportPath(QCoreApplication::applicationDirPath() + "/../../3rdparty/Kaakao/src");
         qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
         qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
         qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");

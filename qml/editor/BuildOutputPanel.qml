@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -57,7 +58,7 @@ PariPaperWell {
                     rightMargin: 4
                 }
 
-                Label {
+                KaakaoLabel {
                     id: titleLabel
                     text: qsTr("BUILD OUTPUT")
                     font.pixelSize: 10

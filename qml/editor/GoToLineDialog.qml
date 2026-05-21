@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -19,7 +20,7 @@ Dialog {
     contentItem: ColumnLayout {
         spacing: _pariTheme ? _pariTheme.paddingLarge : 10
 
-        Label {
+        KaakaoLabel {
             text: qsTr("Line number:")
             color: _pariTheme ? _pariTheme.textColor : "black"
         }

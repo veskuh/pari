@@ -1,3 +1,4 @@
+import Kaakao
 // CustomTabBar.qml
 import QtQuick
 import QtQuick.Layouts
@@ -113,7 +114,7 @@ Rectangle {
                 }
 
 
-                Label {
+                KaakaoLabel {
                     id: label
                     text: modelData.isDirty? modelData.fileName +  "- ✏️ Edited" : modelData.fileName
                     anchors.centerIn: parent
@@ -123,7 +124,7 @@ Rectangle {
                     color: palette.text
                 }
 
-                Label {
+                KaakaoLabel {
                     text: "✕"
                     anchors.right: parent.right
                     anchors.rightMargin: 8

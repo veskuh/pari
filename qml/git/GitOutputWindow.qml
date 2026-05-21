@@ -1,5 +1,10 @@
+import QtCore
+import Qt.labs.settings
+import Kaakao
+import Kaakao
 import QtQuick
 import QtCore
+import Qt.labs.settings
 import QtQuick.Controls
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
@@ -85,12 +90,12 @@ Window {
 
             RowLayout {
                 Layout.fillWidth: true
-                Label {
+                KaakaoLabel {
                     text: qsTr("Command: ")
                     font.bold: true
                     color: isDark ? "#aaaaaa" : "#555555"
                 }
-                Label {
+                KaakaoLabel {
                     text: command
                     font.family: "Menlo"
                     color: isDark ? "#ffffff" : "#000000"
@@ -120,7 +125,7 @@ Window {
                     font.pixelSize: 11
                 }
 
-                Label {
+                KaakaoLabel {
                     text: "🌿 " + branchName
                     font.bold: true
                     visible: branchName !== ""
@@ -159,7 +164,7 @@ Window {
                         ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOn }
                     }
 
-                    Label {
+                    KaakaoLabel {
                         id: noEntriesLabel
                         text: logFilterField.text !== "" ? qsTr("No matching entries found.") : qsTr("No log entries found.")
                         horizontalAlignment: Text.AlignHCenter
@@ -213,7 +218,7 @@ Window {
                                         anchors.rightMargin: 12
                                         spacing: 10
 
-                                        Label {
+                                        KaakaoLabel {
                                             text: model.hash
                                             font.family: appSettings.fontFamily
                                             font.pointSize: appSettings.fontSize - 1
@@ -221,7 +226,7 @@ Window {
                                             Layout.preferredWidth: 65
                                         }
 
-                                        Label {
+                                        KaakaoLabel {
                                             text: model.author
                                             font.family: appSettings.fontFamily
                                             font.pointSize: appSettings.fontSize - 1
@@ -230,7 +235,7 @@ Window {
                                             Layout.fillWidth: true
                                         }
 
-                                        Label {
+                                        KaakaoLabel {
                                             text: model.date
                                             font.family: appSettings.fontFamily
                                             font.pointSize: appSettings.fontSize - 1
@@ -258,7 +263,7 @@ Window {
                                     visible: !model.showMetadata
                                 }
 
-                                Label {
+                                KaakaoLabel {
                                     id: codeLabel
                                     text: model.content
                                     font.family: appSettings.fontFamily

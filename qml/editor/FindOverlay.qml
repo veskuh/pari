@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Basic
@@ -75,7 +76,7 @@ PariPaperWell {
                 }
             }
 
-            Label {
+            KaakaoLabel {
                 id: resultsLabel
                 anchors.right: searchActionGroup.left
                 anchors.rightMargin: 8
@@ -106,7 +107,7 @@ PariPaperWell {
                     color: findOverlay.isDark ? "#1e1e1e" : "#fdfdfd"
                     border.color: searchInput.activeFocus ? (findOverlay.isDark ? "#4a9eff" : "#0078d7") : (findOverlay.isDark ? "#333333" : "#cccccc")
                     border.width: 1; radius: 3
-                    Label {
+                    KaakaoLabel {
                         text: filterActive ? "⏳" : "🔍"
                         anchors.left: parent.left; anchors.leftMargin: 6; anchors.verticalCenter: parent.verticalCenter; opacity: 0.5
                     }

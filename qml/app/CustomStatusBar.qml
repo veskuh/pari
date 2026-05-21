@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -48,7 +49,7 @@ Rectangle {
             color: root.isDark ? "#1a1a1a" : "#fdfdfd"
             border.color: root.isDark ? "#121212" : "#bcbcbc"
             
-            Label {
+            KaakaoLabel {
                 id: branchLabel
                 text: "🌿 " + root.branchName
                 anchors.centerIn: parent
@@ -75,7 +76,7 @@ Rectangle {
             color: root.isDark ? "#1a1a1a" : "#fdfdfd"
             border.color: root.isDark ? "#121212" : "#bcbcbc"
             
-            Label {
+            KaakaoLabel {
                 id: modelLabel
                 text: "💡 " + root.modelName
                 anchors.centerIn: parent
@@ -103,7 +104,7 @@ Rectangle {
             color: root.isDark ? "#1a1a1a" : "#fdfdfd"
             border.color: root.isDark ? "#121212" : "#bcbcbc"
             
-            Label {
+            KaakaoLabel {
                 id: statusLabel
                 anchors.centerIn: parent
                 font.family: "Menlo"

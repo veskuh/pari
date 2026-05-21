@@ -1,10 +1,11 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import "../app"
 
-Button {
+KaakaoButton {
     id: control
     
     property string iconText: ""

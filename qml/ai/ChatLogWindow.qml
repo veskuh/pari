@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -21,7 +22,7 @@ Window {
         anchors.margins: _pariTheme ? _pariTheme.marginStandard : 10
         spacing: _pariTheme ? _pariTheme.marginStandard : 10
 
-        Label {
+        KaakaoLabel {
             text: qsTr("Chat Session Log")
             font.bold: true
             font.pixelSize: _pariTheme ? _pariTheme.fontSizeLarge : 14

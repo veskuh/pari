@@ -1,7 +1,9 @@
+import Kaakao
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Effects
+import Qt5Compat.GraphicalEffects
 import "../common"
 
 ApplicationWindow {
@@ -72,12 +74,12 @@ ApplicationWindow {
                         anchors.fill: parent
                         smooth: true
                         layer.enabled: true
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowColor: "black"
-                            shadowOpacity: 0.3
-                            shadowBlur: 0.5
-                            shadowVerticalOffset: 2
+                        layer.effect: DropShadow {
+
+                            color: "black"
+                            opacity: 0.3
+                            radius: 0.5
+                            verticalOffset: 2
                         }
                     }
                 }
@@ -85,7 +87,7 @@ ApplicationWindow {
                 RowLayout {
                     Layout.alignment: Qt.AlignHCenter
                     spacing: 8
-                    Label {
+                    KaakaoLabel {
                         text: "PARI"
                         font.bold: true
                         font.pixelSize: 20
@@ -97,7 +99,7 @@ ApplicationWindow {
                         Layout.preferredHeight: 16
                         radius: 8
                         color: _theme.accentColor
-                        Label {
+                        KaakaoLabel {
                             id: versionLabel
                             anchors.centerIn: parent
                             text: (typeof appSettings !== 'undefined') ? appSettings.version : "v1.0"
@@ -117,7 +119,7 @@ ApplicationWindow {
             Layout.margins: 24
             spacing: 16
 
-            Label {
+            KaakaoLabel {
                 text: qsTr("Your Local AI Coding Companion")
                 font.bold: true
                 font.pixelSize: 14
@@ -125,7 +127,7 @@ ApplicationWindow {
                 Layout.alignment: Qt.AlignHCenter
             }
 
-            Label {
+            KaakaoLabel {
                 text: qsTr("Pari is a technical editor designed to bring the power of Large Language Models directly to your local development environment via Ollama.")
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
@@ -152,49 +154,49 @@ ApplicationWindow {
                     columnSpacing: 20
                     rowSpacing: 8
 
-                    Label {
+                    KaakaoLabel {
                         text: qsTr("AUTHOR")
                         font.bold: true
                         font.pixelSize: 10
                         color: _theme.textColorMuted
                     }
-                    Label {
+                    KaakaoLabel {
                         text: "vesku.h@gmail.com"
                         color: _theme.textColor
                         font.pixelSize: 11
                     }
 
-                    Label {
+                    KaakaoLabel {
                         text: qsTr("ENGINE")
                         font.bold: true
                         font.pixelSize: 10
                         color: _theme.textColorMuted
                     }
-                    Label {
+                    KaakaoLabel {
                         text: "Qt " + "6.9.3" // Could be dynamic but hardcoded for now to match current env
                         color: _theme.textColor
                         font.pixelSize: 11
                     }
 
-                    Label {
+                    KaakaoLabel {
                         text: qsTr("LICENSE")
                         font.bold: true
                         font.pixelSize: 10
                         color: _theme.textColorMuted
                     }
-                    Label {
+                    KaakaoLabel {
                         text: "BSD-3-Clause"
                         color: _theme.textColor
                         font.pixelSize: 11
                     }
 
-                    Label {
+                    KaakaoLabel {
                         text: qsTr("BUILD ID")
                         font.bold: true
                         font.pixelSize: 10
                         color: _theme.textColorMuted
                     }
-                    Label {
+                    KaakaoLabel {
                         text: (typeof appSettings !== 'undefined') ? appSettings.buildId : "unknown"
                         color: _theme.textColor
                         font.pixelSize: 11

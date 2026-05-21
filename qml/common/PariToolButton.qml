@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -90,7 +91,7 @@ AbstractButton {
                 opacity: control.enabled ? 1.0 : 0.4
             }
             
-            Label {
+            KaakaoLabel {
                 Layout.alignment: Qt.AlignHCenter
                 text: control.text
                 font.pixelSize: _theme.fontToolbar

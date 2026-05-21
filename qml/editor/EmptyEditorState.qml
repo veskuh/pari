@@ -1,3 +1,4 @@
+import Kaakao
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -28,7 +29,7 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             width: 200; height: 100
             
-            Label {
+            KaakaoLabel {
                 text: "PARI"
                 font.family: "Public Sans"
                 font.pixelSize: 64
@@ -43,14 +44,14 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             spacing: 10
             
-            Label {
+            KaakaoLabel {
                 text: "← SELECT SOURCE FROM WORKSPACE"
                 font.family: "Menlo"
                 font.pixelSize: 11
                 color: isDark ? "#444444" : "#a0a0a0"
                 Layout.alignment: Qt.AlignHCenter
             }
-            Label {
+            KaakaoLabel {
                 text: "⌘+O TO RETRIEVE DOCUMENT"
                 font.family: "Menlo"
                 font.pixelSize: 11

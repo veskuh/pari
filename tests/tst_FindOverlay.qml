@@ -1,6 +1,7 @@
 import QtQuick
 import QtTest
 import "../qml/editor"
+import Kaakao
 
 Item {
     width: 600
