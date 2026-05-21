@@ -43,9 +43,9 @@ jobs:
     - name: Run UI tests
       run: |
         # Use full path for input to ensure discovery
-        xvfb-run --server-args="-screen 0 1024x768x24" ./build/tests/tst_ui -input $(pwd)/tests
+        QML_IMPORT_PATH=$(pwd)/build/3rdparty/Kaakao/src QML2_IMPORT_PATH=$(pwd)/build/3rdparty/Kaakao/src xvfb-run --server-args="-screen 0 1024x768x24" ./build/tests/tst_ui -input $(pwd)/tests
 
     - name: Run smoke test
       working-directory: build/src
       run: |
-        QT_QPA_PLATFORM=offscreen ./pari --selfcheck
+        QML_IMPORT_PATH=$(pwd)/../3rdparty/Kaakao/src QML2_IMPORT_PATH=$(pwd)/../3rdparty/Kaakao/src QT_QPA_PLATFORM=offscreen ./pari --selfcheck

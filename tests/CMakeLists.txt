@@ -192,4 +192,5 @@ if(ENABLE_COVERAGE)
 endif()
 
 add_test(NAME AllTests COMMAND tst_all)
+set_tests_properties(UiTests PROPERTIES ENVIRONMENT "QML_IMPORT_PATH=${CMAKE_BINARY_DIR}/3rdparty/Kaakao/src")
 add_test(NAME UiTests COMMAND tst_ui -input ${CMAKE_CURRENT_SOURCE_DIR})
