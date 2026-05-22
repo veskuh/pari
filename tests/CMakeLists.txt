@@ -193,4 +193,4 @@ endif()
 
 add_test(NAME AllTests COMMAND tst_all)
 add_test(NAME UiTests COMMAND tst_ui -input ${CMAKE_CURRENT_SOURCE_DIR})
-set_tests_properties(UiTests PROPERTIES ENVIRONMENT "QML_IMPORT_PATH=${CMAKE_BINARY_DIR}/3rdparty/Kaakao/src;QML2_IMPORT_PATH=${CMAKE_BINARY_DIR}/3rdparty/Kaakao/src")
+set_tests_properties(UiTests PROPERTIES ENVIRONMENT "QML_IMPORT_PATH=${CMAKE_BINARY_DIR}/3rdparty/Kaakao/src:${CMAKE_SOURCE_DIR}/3rdparty/Kaakao/src;QML2_IMPORT_PATH=${CMAKE_BINARY_DIR}/3rdparty/Kaakao/src:${CMAKE_SOURCE_DIR}/3rdparty/Kaakao/src")
