@@ -48,4 +48,4 @@ jobs:
     - name: Run smoke test
       working-directory: build/src
       run: |
-        QML_IMPORT_PATH=$(pwd)/../3rdparty QML2_IMPORT_PATH=$(pwd)/../3rdparty QT_QPA_PLATFORM=offscreen ./pari --selfcheck
+        QML_IMPORT_PATH=$(pwd)/../build/3rdparty QML2_IMPORT_PATH=$(pwd)/../build/3rdparty QT_QPA_PLATFORM=offscreen ./pari --selfcheck
