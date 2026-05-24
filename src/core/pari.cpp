@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
     }
 
     engine.addImportPath("3rdparty/Kaakao/src");
-    engine.addImportPath(QCoreApplication::applicationDirPath() + "/../3rdparty");
-    engine.addImportPath(QCoreApplication::applicationDirPath() + "/../../3rdparty");
+    engine.addImportPath(QCoreApplication::applicationDirPath() + "/../3rdparty/Kaakao/src");
+    engine.addImportPath(QCoreApplication::applicationDirPath() + "/../../3rdparty/Kaakao/src");
     engine.load(url);
     return app.exec();
 }
