@@ -98,6 +98,7 @@ target_link_libraries(pari PRIVATE
     Qt6::LabsSettings
     Qt6::QuickDialogs2
     Qt6::Concurrent
+    Kaakao
 )
 
 if(APPLE)

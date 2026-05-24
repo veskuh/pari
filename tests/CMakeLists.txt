@@ -125,6 +125,7 @@ target_link_libraries(tst_all PRIVATE
     Qt6::Quick
     Qt6::Gui
     Qt6::Concurrent
+    Kaakao
 )
 
 # UI Test Runner
@@ -178,6 +179,7 @@ target_link_libraries(tst_ui PRIVATE
     Qt6::Widgets
     Qt6::Network
     Qt6::Concurrent
+    Kaakao
 )
 
 if(ENABLE_COVERAGE)

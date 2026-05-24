@@ -118,9 +118,9 @@ int main(int argc, char *argv[])
             }, Qt::QueuedConnection);
     }
 
-    engine.addImportPath("3rdparty/Kaakao/src");
-    engine.addImportPath(QCoreApplication::applicationDirPath() + "/../3rdparty/Kaakao/src");
-    engine.addImportPath(QCoreApplication::applicationDirPath() + "/../../3rdparty/Kaakao/src");
+    engine.addImportPath("3rdparty");
+    engine.addImportPath(QCoreApplication::applicationDirPath() + "/../3rdparty");
+    engine.addImportPath(QCoreApplication::applicationDirPath() + "/../../3rdparty");
     engine.load(url);
     return app.exec();
 }
