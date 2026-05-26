@@ -18,6 +18,18 @@ Dialog {
 
     property string oldPath
 
+    onOldPathChanged: {
+        if (oldPath) {
+            var currentName = oldPath.substring(oldPath.lastIndexOf('/') + 1);
+            newNameField.text = currentName;
+        }
+    }
+
+    onOpened: {
+        newNameField.forceActiveFocus();
+        newNameField.selectAll();
+    }
+
     contentItem: ColumnLayout {
         spacing: _pariTheme ? _pariTheme.paddingLarge : 15
 

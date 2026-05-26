@@ -213,8 +213,14 @@ ApplicationWindow {
                             filePath: model.filePath
                             isActivePane: stackLayout.currentIndex === index
                             injectedLspClient: lspClient
-
                             readonly property var docModel: model
+
+                            onFilePathChanged: {
+                                if (isActivePane) {
+                                    fileSystem.currentFilePath = filePath;
+                                    fileSystemView.selectedPath = filePath;
+                                }
+                            }
 
                             onIsActivePaneChanged: {
                                 if (isActivePane) {

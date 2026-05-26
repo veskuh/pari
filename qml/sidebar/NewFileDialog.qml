@@ -19,6 +19,11 @@ Dialog {
 
     property string folderPath
 
+    onOpened: {
+        fileNameField.text = "";
+        fileNameField.forceActiveFocus();
+    }
+
     contentItem: ColumnLayout {
         spacing: _pariTheme ? _pariTheme.paddingLarge : 15
 
@@ -71,7 +76,9 @@ Dialog {
 
     function doCreate() {
         var name = fileNameField.text.trim();
+        var filePath = newFileDialog.folderPath + "/" + name;
         if (fileSystem.createNewFile(newFileDialog.folderPath, name)) {
+            documentManager.openFile(filePath, false);
             return true;
         } else {
             errorDialog.text = qsTr("Failed to create file. Make sure the name is valid and doesn't already exist.");
