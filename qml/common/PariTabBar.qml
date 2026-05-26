@@ -117,6 +117,8 @@ Rectangle {
                     id: label
                     text: modelData.isDirty? modelData.fileName +  "- ✏️ Edited" : modelData.fileName
                     anchors.centerIn: parent
+                    width: Math.min(implicitWidth, parent.width - 64)
+                    elide: Text.ElideRight
                     font.bold: root.currentIndex === index
                     font.pixelSize: _theme.fontToolbar
                     // Active text uses the system highlight color, inactive uses standard text color

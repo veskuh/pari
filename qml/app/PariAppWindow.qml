@@ -16,6 +16,35 @@ import "../utils/FormattingUtils.js" as FormattingUtils
 ApplicationWindow {
     id: appWindow
 
+    title: {
+        var baseTitle = "Pari";
+        if (currentEditor && currentEditor.filePath) {
+            var fileName = currentEditor.filePath.substring(currentEditor.filePath.lastIndexOf('/') + 1);
+            return (currentEditor.dirty ? "* " : "") + fileName + " - " + baseTitle;
+        }
+        return baseTitle;
+    }
+
+    property bool forceClose: false
+
+    onClosing: (close) => {
+        if (forceClose) {
+            close.accepted = true;
+            return;
+        }
+        var hasDirty = false;
+        for (var i = 0; i < documentManager.documents.length; i++) {
+            if (documentManager.documents[i].isDirty) {
+                hasDirty = true;
+                break;
+            }
+        }
+        if (hasDirty) {
+            close.accepted = false;
+            dialogs.quitConfirmationDialog.open();
+        }
+    }
+
     PariTheme {
         id: pariTheme
     }
@@ -371,6 +400,21 @@ ApplicationWindow {
                 documentManager.saveFile(index, text);
             }
             closeCurrentFile(index);
+        }
+        onSaveAllAndQuit: {
+            for (var i = 0; i < documentManager.documents.length; i++) {
+                var doc = documentManager.documents[i];
+                if (doc.isDirty) {
+                    var text = (i === stackLayout.currentIndex) ? appWindow.currentEditor.text : doc.text;
+                    documentManager.saveFile(i, text);
+                }
+            }
+            appWindow.forceClose = true;
+            Qt.quit();
+        }
+        onDiscardAllAndQuit: {
+            appWindow.forceClose = true;
+            Qt.quit();
         }
         onResultClicked: (path, line) => {
             appWindow.goToLineNumber = line;

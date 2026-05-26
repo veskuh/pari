@@ -24,15 +24,18 @@ Item {
     property alias fileDialog: fileDialog
     property alias saveAsDialog: saveAsDialog
     property alias newFileDialog: newFileDialog
-
-    property int targetIndex: -1
+    property alias quitConfirmationDialog: quitConfirmationDialog
 
     // Signals for dialog actions
     signal saveConfiguration(string buildCommand, string runCommand, string cleanCommand)
     signal goToLine(int lineNumber)
     signal discardChanges(int index)
     signal saveAndClose(int index)
+    signal saveAllAndQuit()
+    signal discardAllAndQuit()
     signal resultClicked(string filePath, int lineNumber)
+
+    property int targetIndex: -1
 
     SettingsWindow {
         id: settingsDialog
@@ -70,6 +73,19 @@ Item {
         }
         onDiscardClicked: {
             root.discardChanges(root.targetIndex);
+        }
+    }
+
+    Platform.MessageDialog {
+        id: quitConfirmationDialog
+        title: qsTr("Unsaved Changes")
+        text: qsTr("You have unsaved changes in one or more files. Do you want to save them before exiting?")
+        buttons: Platform.MessageDialog.SaveAll | Platform.MessageDialog.Discard | Platform.MessageDialog.Cancel
+        onAccepted: {
+            root.saveAllAndQuit();
+        }
+        onDiscardClicked: {
+            root.discardAllAndQuit();
         }
     }
 
