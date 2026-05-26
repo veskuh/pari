@@ -1,5 +1,6 @@
 import QtQuick
 import "../utils/FormattingUtils.js" as FormattingUtils
+import "../utils/FileUtils.js" as FileUtils
 
 Item {
     id: root
@@ -76,7 +77,19 @@ Item {
             customStatusBar.text = qsTr("✅ File saved: %1").arg(filePath);
         }
         function onFileRenamed(oldPath, newPath) {
+            if (typeof lspClient !== 'undefined' && lspClient && FileUtils.isCppFile(oldPath)) {
+                lspClient.documentClosed(oldPath);
+            }
             documentManager.updatePath(oldPath, newPath);
+            if (typeof lspClient !== 'undefined' && lspClient && FileUtils.isCppFile(newPath)) {
+                for (var i = 0; i < documentManager.documents.length; i++) {
+                    var doc = documentManager.documents[i];
+                    if (doc.filePath === newPath) {
+                        lspClient.documentOpened(newPath, doc.text);
+                        break;
+                    }
+                }
+            }
         }
     }
 

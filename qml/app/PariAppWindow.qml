@@ -243,6 +243,18 @@ ApplicationWindow {
                                         docModel.text = editor.text;
                                     }
                                 }
+                                if (typeof lspClient !== 'undefined' && lspClient && FileUtils.isCppFile(filePath)) {
+                                    var isStillOpen = false;
+                                    for (var i = 0; i < documentManager.documents.length; i++) {
+                                        if (documentManager.documents[i].filePath === filePath) {
+                                            isStillOpen = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!isStillOpen) {
+                                        lspClient.documentClosed(filePath);
+                                    }
+                                }
                             }
 
                             onTextChangedByUser: {

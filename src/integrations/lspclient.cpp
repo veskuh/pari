@@ -93,6 +93,21 @@ void LspClient::documentOpened(const QString &documentPath, const QString &conte
     sendMessage(message);
 }
 
+void LspClient::documentClosed(const QString &documentPath) {
+    QJsonObject textDocument;
+    textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
+
+    QJsonObject params;
+    params["textDocument"] = textDocument;
+
+    QJsonObject message;
+    message["jsonrpc"] = "2.0";
+    message["method"] = "textDocument/didClose";
+    message["params"] = params;
+
+    sendMessage(message);
+}
+
 void LspClient::documentChanged(const QString &documentPath, const QString &content) {
     QJsonObject textDocument;
     textDocument["uri"] = QUrl::fromLocalFile(documentPath).toString();
