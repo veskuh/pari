@@ -147,6 +147,11 @@ ApplicationWindow {
                             model: fileSystem.model
                             property string selectedPath: ""
                             delegate: FileTreeDelegate { mainWindow: appWindow }
+                            columnWidthProvider: function(column) {
+                                return column === 0 ? width : 0;
+                            }
+                            onWidthChanged: forceLayout()
+                            ScrollBar.horizontal: ScrollBar { policy: ScrollBar.AlwaysOff }
                         }
                         Connections {
                             target: fileSystemView
