@@ -14,6 +14,7 @@ ColumnLayout {
     property bool dirty: false
     property bool isActivePane: false
     property string filePath: ""
+    property alias searchManager: searchManager
 
     signal textChangedByUser()
 

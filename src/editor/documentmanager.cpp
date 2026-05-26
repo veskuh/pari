@@ -24,19 +24,19 @@ int DocumentManager::currentIndex() const
 
 void DocumentManager::openFile(const QString &filePath, bool newTab)
 {
+    for (int i = 0; i < m_documents.size(); ++i) {
+        if (m_documents[i]->filePath() == filePath) {
+            setCurrentIndex(i);
+            emit fileOpened(QUrl::fromLocalFile(filePath), m_documents[i]->text());
+            return;
+        }
+    }
+
     QFile file(filePath);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);
         QString content(in.readAll());
         file.close();
-
-        for (int i = 0; i < m_documents.size(); ++i) {
-            if (m_documents[i]->filePath() == filePath) {
-                setCurrentIndex(i);
-                emit fileOpened(QUrl::fromLocalFile(filePath), content);
-                return;
-            }
-        }
 
         TextDocument *doc = new TextDocument(this);
         doc->setFilePath(filePath);
@@ -49,7 +49,11 @@ void DocumentManager::openFile(const QString &filePath, bool newTab)
             m_documents.append(doc);
             setCurrentIndex(m_documents.size() - 1);
         } else {
+            TextDocument *oldDoc = m_documents[m_currentIndex];
             m_documents[m_currentIndex] = doc;
+            if (oldDoc) {
+                oldDoc->deleteLater();
+            }
         }
         emit documentsChanged();
         emit fileOpened(QUrl::fromLocalFile(filePath), content);
@@ -72,10 +76,16 @@ void DocumentManager::closeFile(int index)
         if (m_documents.isEmpty()) {
             setCurrentIndex(-1);
         } else {
-            if (m_currentIndex >= index) {
+            if (m_currentIndex > index) {
                 setCurrentIndex(m_currentIndex - 1);
+            } else if (m_currentIndex == index) {
+                if (m_currentIndex >= m_documents.size()) {
+                    setCurrentIndex(m_documents.size() - 1);
+                } else {
+                    emit currentIndexChanged();
+                }
             } else {
-                setCurrentIndex(0);
+                emit currentIndexChanged();
             }
         }
     }
@@ -90,6 +100,7 @@ bool DocumentManager::saveFile(int index, const QString &content)
             QTextStream out(&file);
             out << content;
             file.close();
+            doc->setText(content);
             doc->setDirty(false);
             emit dirtyStatusChanged();
             return true;

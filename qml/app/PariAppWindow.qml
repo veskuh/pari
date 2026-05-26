@@ -185,12 +185,28 @@ ApplicationWindow {
                             isActivePane: stackLayout.currentIndex === index
                             injectedLspClient: lspClient
 
+                            readonly property var docModel: model
+
                             onIsActivePaneChanged: {
                                 if (isActivePane) {
                                     tabBar.currentIndex = index
                                     appWindow.currentEditor = editor
                                     fileSystem.currentFilePath = filePath
                                     fileSystemView.selectedPath = filePath
+                                } else {
+                                    if (docModel && (!editor.searchManager || !editor.searchManager.filterActive)) {
+                                        if (docModel.text !== editor.text) {
+                                            docModel.text = editor.text;
+                                        }
+                                    }
+                                }
+                            }
+
+                            Component.onDestruction: {
+                                if (docModel && (!editor.searchManager || !editor.searchManager.filterActive)) {
+                                    if (docModel.text !== editor.text) {
+                                        docModel.text = editor.text;
+                                    }
                                 }
                             }
 
