@@ -12,6 +12,7 @@ private slots:
     void initTestCase();
     void testFindNext();
     void testFindPrevious();
+    void testFindRegex();
     void testApplyFilter();
     void testClearFilter();
     void cleanupTestCase();

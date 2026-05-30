@@ -37,15 +37,37 @@ Item {
                 var result = [];
                 var lineNums = [];
                 var matchCase = overlay.matchCase;
+                var useRegex = overlay.useRegex;
+                
+                var regex = null;
+                if (useRegex) {
+                    try {
+                        regex = new RegExp(pattern, matchCase ? "" : "i");
+                    } catch (e) {
+                        filteredLineNumbers = [];
+                        if (editor.text !== "") {
+                            editor.text = "";
+                        }
+                        updateResults();
+                        return;
+                    }
+                }
                 
                 var searchPattern = matchCase ? pattern : pattern.toLowerCase();
 
                 for (var i = 0; i < lines.length; i++) {
                     var line = lines[i];
-                    var textToMatch = matchCase ? line : line.toLowerCase();
-                    if (textToMatch.indexOf(searchPattern) !== -1) {
-                        result.push(line);
-                        lineNums.push(i + 1);
+                    if (useRegex) {
+                        if (regex && regex.test(line)) {
+                            result.push(line);
+                            lineNums.push(i + 1);
+                        }
+                    } else {
+                        var textToMatch = matchCase ? line : line.toLowerCase();
+                        if (textToMatch.indexOf(searchPattern) !== -1) {
+                            result.push(line);
+                            lineNums.push(i + 1);
+                        }
                     }
                 }
                 
@@ -93,6 +115,14 @@ Item {
                 searchManager.updateResults();
             }
         }
+        function onUseRegexChanged() {
+            if (searchManager.filterActive) {
+                searchManager.applyFilter();
+            } else {
+                searchManager.findNext(true);
+                searchManager.updateResults();
+            }
+        }
         function onClosed() {
             if (overlay) overlay.filterActive = false;
             searchManager.applyFilter();
@@ -113,6 +143,17 @@ Item {
         }
     }
 
+    Connections {
+        target: editor
+        ignoreUnknownSignals: true
+        function onSelectionStartChanged() {
+            searchManager.updateResults();
+        }
+        function onSelectionEndChanged() {
+            searchManager.updateResults();
+        }
+    }
+
     function findNext(isIncremental) {
         if (!editor || !overlay) return;
         if (filterActive) return;
@@ -128,12 +169,14 @@ Item {
 
         var startPos = isIncremental ? sessionStartPosition : editor.cursorPosition;
         var options = overlay.matchCase ? 2 : 0; 
+        var useRegex = overlay.useRegex;
         
-        var pos = textDocumentSearcher.find(editor.textDocument, searchText, startPos, options);
+        var result = textDocumentSearcher.find(editor.textDocument, searchText, startPos, options, useRegex);
+        var pos = result.position;
         
         if (pos !== -1) {
-            var start = pos - searchText.length;
-            var end = pos;
+            var start = result.start;
+            var end = result.end;
             editor.cursorPosition = end;
             editor.select(start, end);
             if (positionCallback) positionCallback(pos);
@@ -155,12 +198,14 @@ Item {
 
         var startPos = editor.selectionStart;
         var options = (overlay.matchCase ? 2 : 0) | 1; 
+        var useRegex = overlay.useRegex;
         
-        var pos = textDocumentSearcher.find(editor.textDocument, searchText, startPos, options);
+        var result = textDocumentSearcher.find(editor.textDocument, searchText, startPos, options, useRegex);
+        var pos = result.position;
         
         if (pos !== -1) {
-            var start = pos - searchText.length;
-            var end = pos;
+            var start = result.start;
+            var end = result.end;
             editor.cursorPosition = end;
             editor.select(start, end);
             if (positionCallback) positionCallback(start);
@@ -177,7 +222,17 @@ Item {
 
         if (editor.selectionStart !== editor.selectionEnd) {
             var selectedText = editor.text.substring(editor.selectionStart, editor.selectionEnd);
-            var match = overlay.matchCase ? (selectedText === searchText) : (selectedText.toLowerCase() === searchText.toLowerCase());
+            var match = false;
+            if (overlay.useRegex) {
+                try {
+                    var re = new RegExp("^" + searchText + "$", overlay.matchCase ? "" : "i");
+                    match = re.test(selectedText);
+                } catch (e) {
+                    match = false;
+                }
+            } else {
+                match = overlay.matchCase ? (selectedText === searchText) : (selectedText.toLowerCase() === searchText.toLowerCase());
+            }
             
             if (match) {
                 var start = editor.selectionStart;
@@ -200,12 +255,21 @@ Item {
 
         var content = editor.text;
         var newContent;
-        if (overlay.matchCase) {
-            newContent = content.split(searchText).join(replaceText);
+        if (overlay.useRegex) {
+            try {
+                var re = new RegExp(searchText, overlay.matchCase ? "g" : "gi");
+                newContent = content.replace(re, replaceText);
+            } catch (e) {
+                return;
+            }
         } else {
-            var escapedSearch = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            var re = new RegExp(escapedSearch, "gi");
-            newContent = content.replace(re, replaceText);
+            if (overlay.matchCase) {
+                newContent = content.split(searchText).join(replaceText);
+            } else {
+                var escapedSearch = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                var re = new RegExp(escapedSearch, "gi");
+                newContent = content.replace(re, replaceText);
+            }
         }
 
         if (content !== newContent) {
@@ -225,24 +289,63 @@ Item {
         if (!editor || !overlay) return;
         var searchText = overlay.searchText;
         if (searchText === "") {
+            overlay.currentMatchIndex = -1;
+            overlay.totalMatches = 0;
             overlay.updateResults(0);
             return;
         }
         
         if (filterActive) {
+            overlay.currentMatchIndex = -1;
+            overlay.totalMatches = filteredLineNumbers.length;
             overlay.updateResults(filteredLineNumbers.length);
         } else {
-            var count = 0;
-            var pos = 0;
             var text = editor.text;
-            var searchPattern = overlay.matchCase ? searchText : searchText.toLowerCase();
-            var textToSearch = overlay.matchCase ? text : text.toLowerCase();
+            var ranges = [];
             
-            while ((pos = textToSearch.indexOf(searchPattern, pos)) !== -1) {
-                count++;
-                pos += searchPattern.length;
+            if (overlay.useRegex) {
+                try {
+                    var re = new RegExp(searchText, overlay.matchCase ? "g" : "gi");
+                    var match;
+                    while ((match = re.exec(text)) !== null) {
+                        ranges.push({ start: match.index, end: re.lastIndex });
+                        if (re.lastIndex === match.index) {
+                            re.lastIndex++; // Prevent infinite loop on empty match
+                        }
+                    }
+                } catch (e) {
+                    ranges = [];
+                }
+            } else {
+                var pos = 0;
+                var searchPattern = overlay.matchCase ? searchText : searchText.toLowerCase();
+                var textToSearch = overlay.matchCase ? text : text.toLowerCase();
+                
+                while ((pos = textToSearch.indexOf(searchPattern, pos)) !== -1) {
+                    ranges.push({ start: pos, end: pos + searchPattern.length });
+                    pos += searchPattern.length;
+                }
             }
-            overlay.updateResults(count);
+            
+            // Find current match index
+            var currentIdx = -1;
+            var selStart = editor.selectionStart;
+            var selEnd = editor.selectionEnd;
+            for (var i = 0; i < ranges.length; i++) {
+                if (ranges[i].start === selStart && ranges[i].end === selEnd) {
+                    currentIdx = i;
+                    break;
+                }
+            }
+            
+            overlay.currentMatchIndex = currentIdx;
+            overlay.totalMatches = ranges.length;
+            
+            if (currentIdx !== -1) {
+                overlay.updateResults((currentIdx + 1) + " of " + ranges.length);
+            } else {
+                overlay.updateResults(ranges.length);
+            }
         }
     }
 }

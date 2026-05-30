@@ -18,6 +18,9 @@ PariPaperWell {
     property bool matchCase: false
     property bool filterActive: false
     property bool replaceMode: false
+    property bool useRegex: false
+    property int currentMatchIndex: -1
+    property int totalMatches: 0
 
     signal findNext(bool isIncremental)
     signal findPrevious()
@@ -63,11 +66,15 @@ PariPaperWell {
                     onCheckedChanged: findOverlay.matchCase = checked
                 }
                 PariIconButton {
-                    enabled: searchInput.text !== "" && !findOverlay.filterActive
+                    text: ".*"; checkable: true; checked: findOverlay.useRegex
+                    onCheckedChanged: findOverlay.useRegex = checked
+                }
+                PariIconButton {
+                    enabled: searchInput.text !== "" && !findOverlay.filterActive && findOverlay.totalMatches > 0 && (findOverlay.currentMatchIndex === -1 || findOverlay.currentMatchIndex > 0)
                     text: "▲"; onClicked: findOverlay.findPrevious()
                 }
                 PariIconButton {
-                    enabled: searchInput.text !== "" && !findOverlay.filterActive
+                    enabled: searchInput.text !== "" && !findOverlay.filterActive && findOverlay.totalMatches > 0 && (findOverlay.currentMatchIndex === -1 || findOverlay.currentMatchIndex < findOverlay.totalMatches - 1)
                     text: "▼"; onClicked: findOverlay.findNext(false)
                 }
                 PariIconButton {
@@ -93,7 +100,7 @@ PariPaperWell {
                 anchors.left: parent.left
                 anchors.leftMargin: 34 // Matches replaceInput alignment
                 anchors.right: parent.right
-                anchors.rightMargin: 198 // Matches replaceInput alignment
+                anchors.rightMargin: 226 // Matches replaceInput alignment
                 height: 26
                 placeholderText: filterActive ? qsTr("Filter lines...") : qsTr("Search...")
                 onAccepted: findOverlay.findNext(false)
@@ -131,7 +138,7 @@ PariPaperWell {
                 anchors.left: parent.left
                 anchors.leftMargin: 34 // matches expandToggle.width (26) + leftMargin (8)
                 anchors.right: parent.right
-                anchors.rightMargin: 198 // matches searchActionGroup.width + resultsLabel.width + margins
+                anchors.rightMargin: 226 // matches searchActionGroup.width + resultsLabel.width + margins
                 height: 26
                 placeholderText: qsTr("Replace with...")
                 onAccepted: findOverlay.replaceNext()

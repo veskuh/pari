@@ -2,15 +2,21 @@
 #include <QTextCursor>
 #include <QQuickTextDocument>
 #include <QTextDocument>
+#include <QRegularExpression>
 
 TextDocumentSearcher::TextDocumentSearcher(QObject *parent)
     : QObject{parent}
 {
 }
 
-int TextDocumentSearcher::find(QObject *doc, const QString &subString, int from, int options)
+QVariantMap TextDocumentSearcher::find(QObject *doc, const QString &subString, int from, int options, bool useRegex)
 {
-    if (!doc) return -1;
+    QVariantMap result;
+    result["position"] = -1;
+    result["start"] = -1;
+    result["end"] = -1;
+
+    if (!doc) return result;
 
     QTextDocument *textDocument = qobject_cast<QTextDocument*>(doc);
     if (!textDocument) {
@@ -24,13 +30,27 @@ int TextDocumentSearcher::find(QObject *doc, const QString &subString, int from,
         }
     }
 
-    if (!textDocument) return -1;
+    if (!textDocument) return result;
 
-    QTextCursor cursor = textDocument->find(subString, from, QTextDocument::FindFlags(options));
+    QTextCursor cursor;
+    if (useRegex) {
+        QRegularExpression::PatternOptions patternOptions = QRegularExpression::NoPatternOption;
+        if (!(options & QTextDocument::FindCaseSensitively)) {
+            patternOptions |= QRegularExpression::CaseInsensitiveOption;
+        }
+        QRegularExpression re(subString, patternOptions);
+        if (!re.isValid()) return result;
+        cursor = textDocument->find(re, from, QTextDocument::FindFlags(options));
+    } else {
+        cursor = textDocument->find(subString, from, QTextDocument::FindFlags(options));
+    }
     
-    if (cursor.isNull()) return -1;
+    if (cursor.isNull()) return result;
 
-    return cursor.position();
+    result["position"] = cursor.position();
+    result["start"] = cursor.selectionStart();
+    result["end"] = cursor.selectionEnd();
+    return result;
 }
 
 void TextDocumentSearcher::applyFilter(QObject *doc, const QString &pattern, bool isRegex, bool matchCase)
