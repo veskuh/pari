@@ -86,6 +86,8 @@ Item {
         function test_buttons() {
             overlay.open()
             overlay.searchText = "search term"
+            overlay.totalMatches = 5
+            overlay.currentMatchIndex = 2
 
             var nextBtn = findChildByText(overlay, "▼")
             var prevBtn = findChildByText(overlay, "▲")

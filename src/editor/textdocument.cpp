@@ -50,3 +50,29 @@ void TextDocument::setDirty(bool isDirty)
         emit dirtyChanged();
     }
 }
+
+QDateTime TextDocument::lastModified() const
+{
+    return m_lastModified;
+}
+
+void TextDocument::setLastModified(const QDateTime &lastModified)
+{
+    if (m_lastModified != lastModified) {
+        m_lastModified = lastModified;
+        emit lastModifiedChanged();
+    }
+}
+
+bool TextDocument::pendingReloadPrompt() const
+{
+    return m_pendingReloadPrompt;
+}
+
+void TextDocument::setPendingReloadPrompt(bool pending)
+{
+    if (m_pendingReloadPrompt != pending) {
+        m_pendingReloadPrompt = pending;
+        emit pendingReloadPromptChanged();
+    }
+}

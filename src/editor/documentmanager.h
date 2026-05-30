@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QList>
 #include <QUrl>
+#include <QFileSystemWatcher>
+#include <QDateTime>
 
 class TextDocument;
 
@@ -27,16 +29,24 @@ public slots:
     void markDirty(int index);
     void updatePath(const QString &oldPath, const QString &newPath);
     Q_INVOKABLE bool isDirty(const QString &filePath) const;
+    Q_INVOKABLE void reloadFile(const QString &filePath);
+    Q_INVOKABLE void ignoreExternalChange(const QString &filePath);
 
 signals:
     void documentsChanged();
     void currentIndexChanged();
     void dirtyStatusChanged();
     void fileOpened(const QUrl &filePath, const QString &content);
+    void fileContentReloaded(const QString &filePath, const QString &content);
+    void fileModifiedExternally(const QString &filePath);
+
+private slots:
+    void onFileChanged(const QString &path);
 
 private:
     QList<TextDocument*> m_documents;
     int m_currentIndex;
+    QFileSystemWatcher *m_watcher;
 };
 
 #endif // DOCUMENTMANAGER_H

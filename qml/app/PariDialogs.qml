@@ -25,6 +25,8 @@ Item {
     property alias saveAsDialog: saveAsDialog
     property alias newFileDialog: newFileDialog
     property alias quitConfirmationDialog: quitConfirmationDialog
+    property alias reloadConfirmationDialog: reloadConfirmationDialog
+    property string reloadTargetFilePath: ""
 
     // Signals for dialog actions
     signal saveConfiguration(string buildCommand, string runCommand, string cleanCommand)
@@ -86,6 +88,19 @@ Item {
         }
         onDiscardClicked: {
             root.discardAllAndQuit();
+        }
+    }
+
+    Platform.MessageDialog {
+        id: reloadConfirmationDialog
+        title: qsTr("File Changed Externally")
+        text: qsTr("The file '%1' has been modified externally. Do you want to reload it and discard your changes?").arg(reloadTargetFilePath)
+        buttons: Platform.MessageDialog.Yes | Platform.MessageDialog.No
+        onYesClicked: {
+            documentManager.reloadFile(reloadTargetFilePath);
+        }
+        onNoClicked: {
+            documentManager.ignoreExternalChange(reloadTargetFilePath);
         }
     }
 

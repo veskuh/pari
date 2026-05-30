@@ -233,6 +233,10 @@ ApplicationWindow {
                                     appWindow.currentEditor = editor
                                     fileSystem.currentFilePath = filePath
                                     fileSystemView.selectedPath = filePath
+                                    if (docModel && docModel.pendingReloadPrompt) {
+                                        docModel.pendingReloadPrompt = false;
+                                        appWindow.showReloadPrompt(filePath);
+                                    }
                                 } else {
                                     if (docModel && (!editor.searchManager || !editor.searchManager.filterActive)) {
                                         if (docModel.text !== editor.text) {
@@ -461,6 +465,11 @@ ApplicationWindow {
                 fileSystem.saveFile(dialogs.saveAsDialog.file.toString().replace("file://", ""), appWindow.currentEditor.text);
             }
         }
+    }
+
+    function showReloadPrompt(filePath) {
+        dialogs.reloadTargetFilePath = filePath;
+        dialogs.reloadConfirmationDialog.open();
     }
 
     function closeCurrentFile(index) {

@@ -20,6 +20,9 @@ private slots:
     void testSaveFileFailure();
     void testSaveFile_invalidIndex();
     void testUpdatePath();
+    void testAutoreloadNonDirty();
+    void testNoAutoreloadDirty();
+    void testSaveFileIgnoresSelfSave();
 };
 
 #endif // TEST_DOCUMENTMANAGER_H

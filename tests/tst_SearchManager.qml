@@ -10,7 +10,7 @@ Item {
 
     property string searchText: ""
     property string replaceText: ""
-    property int resultsCount: 0
+    property var resultsCount: 0
     property int dirtyCount: 0
 
     // Mock searcher for global context
@@ -18,13 +18,20 @@ Item {
 
     QtObject {
         id: mockSearcher
-        function find(doc, pattern, from, options) {
-            // Hardcoded logic for "hello world\nhello again"
+        function find(doc, pattern, from, options, useRegex) {
+            var res = { "position": -1, "start": -1, "end": -1 };
             if (pattern === "hello") {
-                if (from <= 0) return 5;
-                if (from >= 5 && from <= 12) return 17;
+                if (from <= 0) {
+                    res.position = 5;
+                    res.start = 0;
+                    res.end = 5;
+                } else if (from >= 5 && from <= 12) {
+                    res.position = 17;
+                    res.start = 12;
+                    res.end = 17;
+                }
             }
-            return -1;
+            return res;
         }
         function applyFilter() {}
         function clearFilter() {}
@@ -36,6 +43,9 @@ Item {
         property alias replaceText: rootItem.replaceText
         property bool matchCase: false
         property bool filterActive: false
+        property bool useRegex: false
+        property int currentMatchIndex: -1
+        property int totalMatches: 0
         function updateResults(total) {
             rootItem.resultsCount = total
         }
@@ -72,6 +82,7 @@ Item {
 
         function init() {
             mockEditor.text = "hello world\nhello again"
+            mockEditor.deselect()
             mockEditor.cursorPosition = 0
             searchManager.sessionStartPosition = 0
             rootItem.searchText = ""
@@ -124,7 +135,7 @@ Item {
         function test_updateResults() {
             rootItem.searchText = "hello"
             searchManager.updateResults()
-            compare(rootItem.resultsCount, 2)
+            compare(rootItem.resultsCount, "1 of 2")
         }
     }
 }

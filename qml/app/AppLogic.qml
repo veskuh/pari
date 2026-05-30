@@ -103,6 +103,22 @@ Item {
         function onCurrentIndexChanged() {
             root.handlePendingNavigation();
         }
+        function onFileContentReloaded(filePath, content) {
+            if (typeof stackLayout !== 'undefined') {
+                for (var i = 0; i < stackLayout.children.length; i++) {
+                    var child = stackLayout.children[i];
+                    if (child.filePath === filePath) {
+                        child.text = content;
+                        break;
+                    }
+                }
+            }
+        }
+        function onFileModifiedExternally(filePath) {
+            if (rootWindow && typeof rootWindow.showReloadPrompt === 'function') {
+                rootWindow.showReloadPrompt(filePath);
+            }
+        }
     }
 
     function appendToOutput(newText, isError) {
