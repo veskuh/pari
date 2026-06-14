@@ -82,9 +82,22 @@ ApplicationWindow {
         orientation: Qt.Horizontal
 
         handle: Rectangle {
-            implicitWidth: 1
-            implicitHeight: 1
-            color: pariTheme.sidebarBorder
+            implicitWidth: 6
+            color: "transparent"
+            
+            Rectangle {
+                anchors.centerIn: parent
+                width: 1
+                height: parent.height
+                color: SplitHandle.hovered || SplitHandle.pressed ? pariTheme.accentColor : pariTheme.sidebarBorder
+                Behavior on color { ColorAnimation { duration: 150 } }
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.SplitHCursor
+                acceptedButtons: Qt.NoButton
+            }
         }
 
         // Pane 1: Sidebar
@@ -189,9 +202,22 @@ ApplicationWindow {
             SplitView.minimumWidth: 250
 
             handle: Rectangle {
-                implicitWidth: 1
-                implicitHeight: 1
-                color: pariTheme.sidebarBorder
+                implicitHeight: 6
+                color: "transparent"
+                
+                Rectangle {
+                    anchors.centerIn: parent
+                    height: 1
+                    width: parent.width
+                    color: SplitHandle.hovered || SplitHandle.pressed ? pariTheme.accentColor : pariTheme.sidebarBorder
+                    Behavior on color { ColorAnimation { duration: 150 } }
+                }
+                
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.SplitVCursor
+                    acceptedButtons: Qt.NoButton
+                }
             }
 
             ColumnLayout {

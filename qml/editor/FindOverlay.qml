@@ -7,10 +7,31 @@ import "../common"
 
 PariPaperWell {
     id: findOverlay
-    visible: false
     
-    // Auto-adjust height based on content
-    Layout.preferredHeight: contentColumn.implicitHeight + 16
+    property bool active: false
+    property int animationDuration: 200
+    property real targetHeight: active ? contentColumn.implicitHeight + 16 : 0
+    
+    implicitHeight: targetHeight
+    Layout.preferredHeight: implicitHeight
+    
+    visible: active || targetHeight > 0
+    opacity: active ? 1.0 : 0.0
+    clip: true
+    
+    Behavior on targetHeight {
+        NumberAnimation {
+            duration: findOverlay.animationDuration
+            easing.type: Easing.InOutQuad
+        }
+    }
+    Behavior on opacity {
+        NumberAnimation {
+            duration: findOverlay.animationDuration
+            easing.type: Easing.InOutQuad
+        }
+    }
+    
     backgroundColor: findOverlay.isDark ? "#1a1a1a" : "#d8d8d8"
     
     property alias searchText: searchInput.text
@@ -177,13 +198,13 @@ PariPaperWell {
 
 
     function open() {
-        findOverlay.visible = true;
+        findOverlay.active = true;
         searchInput.forceActiveFocus();
         searchInput.selectAll();
     }
 
     function close() {
-        findOverlay.visible = false;
+        findOverlay.active = false;
         closed();
     }
 
