@@ -99,12 +99,23 @@ Item {
         // --- Indicator (Folder Arrow) ---
         Label {
             id: indicator
-            text: isDirectory ? (expanded ? "▼" : "▶") : ""
+            text: isDirectory ? "▶" : ""
             font.pixelSize: 10
             color: root.highlight ? "#ffffff" : (root.isDark ? "#888888" : "#666666")
             Layout.alignment: Qt.AlignVCenter
             Layout.preferredWidth: 12
+            Layout.preferredHeight: 12
             horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            
+            transform: Rotation {
+                origin.x: 6
+                origin.y: 6
+                angle: root.expanded ? 90 : 0
+                Behavior on angle {
+                    NumberAnimation { duration: 150; easing.type: Easing.InOutQuad }
+                }
+            }
         }
 
         // --- Status LED (Dirty Indicator) ---
