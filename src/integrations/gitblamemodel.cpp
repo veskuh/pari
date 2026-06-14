@@ -84,32 +84,7 @@ void GitBlameModel::parseRawOutput(const QString &rawOutput)
         QString line = lines.at(i);
         if (line.isEmpty()) continue;
 
-        // If it's a new commit block (starts with a 40-char hash or similar)
-        static QRegularExpression hashRegex("^([0-9a-f]{40})");
-        auto match = hashRegex.match(line);
-        if (match.hasMatch()) {
-            QString hash = match.captured(1).left(8);
-            if (hash != currentLine.hash) {
-                currentLine.hash = hash;
-                if (commitCache.contains(hash)) {
-                    CommitInfo info = commitCache.value(hash);
-                    currentLine.author = info.author;
-                    currentLine.email = info.email;
-                    currentLine.date = info.date;
-                } else {
-                    currentLine.author = "";
-                    currentLine.email = "";
-                    currentLine.date = "";
-                }
-            }
-        } else if (line.startsWith("author ")) {
-            currentLine.author = line.mid(7);
-        } else if (line.startsWith("author-mail ")) {
-            currentLine.email = line.mid(12).remove('<').remove('>');
-        } else if (line.startsWith("author-time ")) {
-            qlonglong timestamp = line.mid(12).toLongLong();
-            currentLine.date = QDateTime::fromSecsSinceEpoch(timestamp).toString("yyyy-MM-dd");
-        } else if (line.startsWith('\t')) {
+        if (line.startsWith('\t')) {
             // This is the actual source code line
             currentLine.content = line.mid(1);
             currentLine.color = getColorForHash(currentLine.hash);
@@ -122,6 +97,42 @@ void GitBlameModel::parseRawOutput(const QString &rawOutput)
             
             m_lines.append(currentLine);
             lastHash = currentLine.hash;
+        } else if (line.startsWith("author ")) {
+            currentLine.author = line.mid(7);
+        } else if (line.startsWith("author-mail ")) {
+            currentLine.email = line.mid(12).remove('<').remove('>');
+        } else if (line.startsWith("author-time ")) {
+            qlonglong timestamp = line.mid(12).toLongLong();
+            currentLine.date = QDateTime::fromSecsSinceEpoch(timestamp).toString("yyyy-MM-dd");
+        } else {
+            // Check if it's a new commit block (starts with a 7-char to 64-char hex hash)
+            int firstSpace = line.indexOf(' ');
+            if (firstSpace >= 7 && firstSpace <= 64) {
+                bool isHex = true;
+                for (int j = 0; j < firstSpace; ++j) {
+                    ushort c = line.at(j).unicode();
+                    if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
+                        isHex = false;
+                        break;
+                    }
+                }
+                if (isHex) {
+                    QString hash = line.left(qMin(firstSpace, 8));
+                    if (hash != currentLine.hash) {
+                        currentLine.hash = hash;
+                        if (commitCache.contains(hash)) {
+                            CommitInfo info = commitCache.value(hash);
+                            currentLine.author = info.author;
+                            currentLine.email = info.email;
+                            currentLine.date = info.date;
+                        } else {
+                            currentLine.author = "";
+                            currentLine.email = "";
+                            currentLine.date = "";
+                        }
+                    }
+                }
+            }
         }
     }
 

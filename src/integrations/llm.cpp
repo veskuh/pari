@@ -161,6 +161,7 @@ void Llm::listModels()
             emit modelsListed(models);
         } else {
             qDebug() << "Error listing models:" << reply->errorString();
+            emit modelsListError(reply->errorString());
         }
         reply->deleteLater();
     });

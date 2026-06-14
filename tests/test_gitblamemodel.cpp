@@ -34,7 +34,7 @@ void TestGitBlameModel::testParsing() {
 
 void TestGitBlameModel::testClear() {
     GitBlameModel model;
-    model.parseRawOutput("hash 1 1 1\nauthor X\n\tcontent\n");
+    model.parseRawOutput("4a9e0123456789abcdef0123456789abcdef0123 1 1 1\nauthor X\n\tcontent\n");
     QVERIFY(model.rowCount() > 0);
     model.clear();
     QCOMPARE(model.rowCount(), 0);

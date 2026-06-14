@@ -24,6 +24,7 @@ signals:
     void responseReady(const QString &response);
     void newLineReceived(const QString &line);
     void modelsListed(const QStringList &models);
+    void modelsListError(const QString &error);
     void chatLogChanged();
     void busyChanged();
 

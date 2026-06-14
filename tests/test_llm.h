@@ -32,6 +32,7 @@ private slots:
     void testErrorResponse();
     void testSettingsChangeAddsToLog();
     void testListModels();
+    void testListModelsFailure();
 
 private:
     MockOllamaServer *m_mockServer;

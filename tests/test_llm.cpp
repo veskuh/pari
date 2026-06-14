@@ -143,3 +143,20 @@ void TestLlm::testListModels()
     QCOMPARE(result.size(), 1);
     QCOMPARE(result.first(), QString("model:latest"));
 }
+
+void TestLlm::testListModelsFailure()
+{
+    Settings settings("PariTests");
+    // Use an invalid/unreachable URL to trigger a network error
+    settings.setOllamaUrl("http://invalid.local.url.xyz");
+    Llm llm(&settings);
+    
+    QSignalSpy spy(&llm, &Llm::modelsListError);
+    
+    llm.listModels();
+    
+    QVERIFY(spy.wait(5000));
+    QCOMPARE(spy.count(), 1);
+    QString error = spy.first().at(0).toString();
+    QVERIFY(!error.isEmpty());
+}
