@@ -112,3 +112,37 @@ void TestCppSyntaxHighlighter::testPerformance()
         CppSyntaxHighlighter highlighter(&doc, &theme);
     }
 }
+
+void TestCppSyntaxHighlighter::testMultiLineBlockStates()
+{
+    SyntaxTheme theme;
+    theme.commentColor = QColor("green");
+    theme.keywordColor = QColor("blue");
+
+    QTextDocument doc;
+    CppSyntaxHighlighter highlighter(&doc, &theme);
+
+    // Multi-line comment across blocks, ending with */ at the start of a line
+    doc.setPlainText("/* line 1\n*/\nint main()");
+    highlighter.rehighlight();
+
+    // Check line 1 (starts the comment)
+    QTextBlock block = doc.begin();
+    QVERIFY(block.isValid());
+    QCOMPARE(block.layout()->formats().size(), 1);
+    QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), theme.commentColor);
+
+    // Check line 2 (ends the comment with */)
+    block = block.next();
+    QVERIFY(block.isValid());
+    QCOMPARE(block.layout()->formats().size(), 1);
+    QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), theme.commentColor);
+
+    // Check line 3 (should be highlighted as code, not comment)
+    block = block.next();
+    QVERIFY(block.isValid());
+    // "int" is keyword, "main()" is not
+    QCOMPARE(block.layout()->formats().size(), 1);
+    QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), theme.keywordColor);
+}
+

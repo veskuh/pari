@@ -14,6 +14,7 @@ private slots:
     void testKeywords();
     void testStrings();
     void testComments();
+    void testMultiLineBlockStates();
 };
 
 #endif // TEST_QMLSYNTAXHIGHLIGHTER_H

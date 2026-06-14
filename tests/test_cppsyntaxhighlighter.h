@@ -15,6 +15,7 @@ private slots:
     void testPreprocessor();
     void testNumbers();
     void testInclude();
+    void testMultiLineBlockStates();
     void testPerformance();
     void cleanupTestCase();
 };

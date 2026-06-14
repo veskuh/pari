@@ -14,6 +14,7 @@ private slots:
     void testMultilineComments();
     void testTypes();
     void testAttributes();
+    void testMultiLineBlockStates();
     void cleanupTestCase();
 };
 

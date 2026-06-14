@@ -98,3 +98,36 @@ void TestSwiftSyntaxHighlighter::testAttributes()
     }
     QVERIFY(found);
 }
+
+void TestSwiftSyntaxHighlighter::testMultiLineBlockStates()
+{
+    SyntaxTheme theme;
+    theme.commentColor = QColor("green");
+    theme.keywordColor = QColor("blue");
+
+    QTextDocument doc;
+    SwiftSyntaxHighlighter highlighter(&doc, &theme);
+
+    // Multi-line comment across blocks, ending with */ at the start of a line
+    doc.setPlainText("/* line 1\n*/\nfunc test()");
+    highlighter.rehighlight();
+
+    // Check line 1 (starts the comment)
+    QTextBlock block = doc.begin();
+    QVERIFY(block.isValid());
+    QCOMPARE(block.layout()->formats().size(), 1);
+    QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), theme.commentColor);
+
+    // Check line 2 (ends the comment with */)
+    block = block.next();
+    QVERIFY(block.isValid());
+    QCOMPARE(block.layout()->formats().size(), 1);
+    QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), theme.commentColor);
+
+    // Check line 3 (should be highlighted as code, not comment)
+    block = block.next();
+    QVERIFY(block.isValid());
+    // "func" -> keyword
+    QCOMPARE(block.layout()->formats().size(), 1);
+    QCOMPARE(block.layout()->formats().at(0).format.foreground().color(), theme.keywordColor);
+}

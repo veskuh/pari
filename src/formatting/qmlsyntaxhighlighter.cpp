@@ -70,12 +70,16 @@ void QmlSyntaxHighlighter::highlightBlock(const QString &text)
     // Multi-line comments
     setCurrentBlockState(Normal);
     int startIndex = 0;
+    bool startedInComment = false;
     if (previousBlockState() != InComment) {
         startIndex = text.indexOf(multiLineCommentStartExpression);
+    } else {
+        startedInComment = true;
     }
 
     while (startIndex >= 0) {
-        QRegularExpressionMatch endMatch = multiLineCommentEndExpression.match(text, startIndex + 2);
+        int searchStart = startedInComment ? startIndex : startIndex + 2;
+        QRegularExpressionMatch endMatch = multiLineCommentEndExpression.match(text, searchStart);
         int endIndex = endMatch.capturedStart();
         int commentLength;
         if (endIndex == -1) {
@@ -86,5 +90,6 @@ void QmlSyntaxHighlighter::highlightBlock(const QString &text)
         }
         setFormat(startIndex, commentLength, multiLineCommentFormat);
         startIndex = text.indexOf(multiLineCommentStartExpression, startIndex + commentLength);
+        startedInComment = false;
     }
 }

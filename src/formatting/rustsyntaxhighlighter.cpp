@@ -117,13 +117,17 @@ void RustSyntaxHighlighter::highlightBlock(const QString &text) {
 
     setCurrentBlockState(Normal);
     int startIndex = 0;
+    bool startedInComment = false;
 
     if (previousBlockState() != InComment) {
         startIndex = text.indexOf(commentStart);
+    } else {
+        startedInComment = true;
     }
 
     while (startIndex >= 0) {
-        int endIndex = text.indexOf(commentEnd, startIndex + 2);
+        int searchStart = startedInComment ? startIndex : startIndex + 2;
+        int endIndex = text.indexOf(commentEnd, searchStart);
         int commentLength;
         if (endIndex == -1) {
             setCurrentBlockState(InComment);
@@ -133,5 +137,6 @@ void RustSyntaxHighlighter::highlightBlock(const QString &text) {
         }
         setFormat(startIndex, commentLength, multiLineCommentFormat);
         startIndex = text.indexOf(commentStart, startIndex + commentLength);
+        startedInComment = false;
     }
 }
