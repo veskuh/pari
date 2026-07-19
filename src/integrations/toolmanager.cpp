@@ -7,28 +7,50 @@
 #include <QDir>
 
 ToolManager::ToolManager(QObject *parent)
-    : QObject{parent}, m_branchProcess(new QProcess(this)), m_process(new QProcess(this)), m_qmlFormatProcess(new QProcess(this)), m_tempQmlFile(nullptr)
+    : QObject{parent}, m_branchProcess(new QProcess(this)), m_qmlFormatProcess(new QProcess(this)), m_tempQmlFile(nullptr)
 {
     connect(m_branchProcess, &QProcess::finished, this, &ToolManager::onBranchProcessFinished);
-    connect(m_process, &QProcess::finished, this, &ToolManager::onProcessFinished);
-    connect(m_process, &QProcess::readyReadStandardOutput, this, &ToolManager::onReadyReadStandardOutput);
-    connect(m_process, &QProcess::readyReadStandardError, this, &ToolManager::onReadyReadStandardError);
     connect(m_qmlFormatProcess, &QProcess::finished, this, &ToolManager::onQmlFormatProcessFinished);
 }
 
 void ToolManager::runCommand(const QString &command, const QString &workingDirectory)
 {
-    m_command = command;
-    m_workingDirectory = workingDirectory;
-    m_outputBuffer.clear();
-    m_errorBuffer.clear();
+    QProcess *process = new QProcess(this);
+    process->setWorkingDirectory(workingDirectory);
+    m_runningCommands.insert(process, {command, QByteArray(), QByteArray()});
 
-    if (m_process->state() != QProcess::NotRunning) {
-        m_process->kill();
-    }
+    connect(process, &QProcess::readyReadStandardOutput, this, [this, process]() {
+        auto it = m_runningCommands.find(process);
+        if (it != m_runningCommands.end())
+            it->outputBuffer += process->readAllStandardOutput();
+    });
+    connect(process, &QProcess::readyReadStandardError, this, [this, process]() {
+        auto it = m_runningCommands.find(process);
+        if (it != m_runningCommands.end())
+            it->errorBuffer += process->readAllStandardError();
+    });
+    connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished), this, [this, process](int, QProcess::ExitStatus) {
+        auto it = m_runningCommands.find(process);
+        if (it == m_runningCommands.end()) {
+            process->deleteLater();
+            return;
+        }
+        CommandContext ctx = it.value();
+        m_runningCommands.erase(it);
+        dispatchCommandOutput(ctx);
+        process->deleteLater();
+    });
+    connect(process, &QProcess::errorOccurred, this, [this, process](QProcess::ProcessError error) {
+        if (error != QProcess::FailedToStart)
+            return;
+        if (m_runningCommands.contains(process)) {
+            CommandContext ctx = m_runningCommands.take(process);
+            dispatchCommandOutput(ctx);
+            process->deleteLater();
+        }
+    });
 
-    m_process->setWorkingDirectory(workingDirectory);
-    m_process->start("sh", QStringList() << "-c" << command);
+    process->start("sh", QStringList() << "-c" << command);
 }
 
 void ToolManager::getBranchName(const QString &workingDirectory)
@@ -64,25 +86,26 @@ void ToolManager::indentQmlFile(const QString &filePath, const QString &content)
     }
 }
 
-void ToolManager::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void ToolManager::dispatchCommandOutput(const CommandContext &ctx)
 {
-    Q_UNUSED(exitCode);
-    Q_UNUSED(exitStatus);
+    const QString &command = ctx.command;
+    const QString output = QString::fromUtf8(ctx.outputBuffer);
+    const QString error = QString::fromUtf8(ctx.errorBuffer);
 
-    qDebug() << "ToolManager: Process finished. Command:" << m_command << "Output size:" << m_outputBuffer.size();
+    qDebug() << "ToolManager: Process finished. Command:" << command << "Output size:" << output.size();
 
-    if (m_command.startsWith("git log")) {
-        emit gitLogReady(m_outputBuffer);
-    } else if (m_command.contains("git show --stat")) {
-        QString sha = m_command.split(" ").last();
-        emit commitDetailsReady(sha, m_outputBuffer);
-    } else if (m_command.contains("git diff") || m_command.contains("git show")) {
-        emit gitDiffReady(m_outputBuffer);
-        emit outputReady(m_command, formatDiffOutput(m_outputBuffer), m_branchName);
-    } else if (m_command.contains("git blame")) {
-        emit outputReady(m_command, m_outputBuffer, m_branchName);
+    if (command.startsWith("git log")) {
+        emit gitLogReady(output);
+    } else if (command.contains("git show --stat")) {
+        QString sha = command.split(" ").last();
+        emit commitDetailsReady(sha, output);
+    } else if (command.contains("git diff") || command.contains("git show")) {
+        emit gitDiffReady(output);
+        emit outputReady(command, formatDiffOutput(output), m_branchName);
+    } else if (command.contains("git blame")) {
+        emit outputReady(command, output, m_branchName);
     } else {
-        emit outputReady(m_command, m_outputBuffer.isEmpty() ? m_errorBuffer : m_outputBuffer, m_branchName);
+        emit outputReady(command, output.isEmpty() ? error : output, m_branchName);
     }
 }
 
@@ -106,16 +129,6 @@ void ToolManager::onQmlFormatProcessFinished(int exitCode, QProcess::ExitStatus 
         m_tempQmlFile->deleteLater();
         m_tempQmlFile = nullptr;
     }
-}
-
-void ToolManager::onReadyReadStandardOutput()
-{
-    m_outputBuffer += m_process->readAllStandardOutput();
-}
-
-void ToolManager::onReadyReadStandardError()
-{
-    m_errorBuffer += m_process->readAllStandardError();
 }
 
 QString ToolManager::formatDiffOutput(const QString &output) const

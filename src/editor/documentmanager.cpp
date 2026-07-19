@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QFileInfo>
+#include <QTimer>
 
 DocumentManager::DocumentManager(QObject *parent) : QObject(parent), m_currentIndex(-1)
 {
@@ -56,6 +57,7 @@ void DocumentManager::openFile(const QString &filePath, bool newTab)
             TextDocument *oldDoc = m_documents[m_currentIndex];
             if (oldDoc) {
                 m_watcher->removePath(oldDoc->filePath());
+                stopReloadTimer(oldDoc->filePath());
             }
             m_documents[m_currentIndex] = doc;
             if (oldDoc) {
@@ -78,6 +80,7 @@ void DocumentManager::closeFile(int index)
     if (index >= 0 && index < m_documents.size()) {
         TextDocument *doc = m_documents.takeAt(index);
         m_watcher->removePath(doc->filePath());
+        stopReloadTimer(doc->filePath());
         doc->deleteLater();
         emit documentsChanged();
         emit dirtyStatusChanged();
@@ -146,6 +149,7 @@ void DocumentManager::updatePath(const QString &oldPath, const QString &newPath)
     for (TextDocument *doc : m_documents) {
         if (doc->filePath() == oldPath) {
             m_watcher->removePath(oldPath);
+            stopReloadTimer(oldPath);
             doc->setFilePath(newPath);
             doc->setLastModified(QFileInfo(newPath).lastModified());
             m_watcher->addPath(newPath);
@@ -167,6 +171,45 @@ bool DocumentManager::isDirty(const QString &filePath) const
 
 void DocumentManager::onFileChanged(const QString &path)
 {
+    bool hasDoc = false;
+    for (const TextDocument *doc : m_documents) {
+        if (doc->filePath() == path) {
+            hasDoc = true;
+            break;
+        }
+    }
+    if (!hasDoc) return;
+
+    scheduleReloadCheck(path);
+}
+
+void DocumentManager::scheduleReloadCheck(const QString &path)
+{
+    auto it = m_reloadTimers.constFind(path);
+    if (it != m_reloadTimers.constEnd()) {
+        it.value()->start();
+        return;
+    }
+    QTimer *timer = new QTimer(this);
+    timer->setSingleShot(true);
+    timer->setInterval(200);
+    connect(timer, &QTimer::timeout, this, [this, path]() { onReloadCheckTimeout(path); });
+    m_reloadTimers.insert(path, timer);
+    timer->start();
+}
+
+void DocumentManager::stopReloadTimer(const QString &path)
+{
+    auto it = m_reloadTimers.find(path);
+    if (it != m_reloadTimers.end()) {
+        it.value()->stop();
+        it.value()->deleteLater();
+        m_reloadTimers.erase(it);
+    }
+}
+
+void DocumentManager::onReloadCheckTimeout(const QString &path)
+{
     TextDocument *targetDoc = nullptr;
     int targetIndex = -1;
     for (int i = 0; i < m_documents.size(); ++i) {
@@ -181,7 +224,6 @@ void DocumentManager::onFileChanged(const QString &path)
 
     QFileInfo info(path);
     if (!info.exists()) {
-        m_watcher->removePath(path);
         return;
     }
 
@@ -193,10 +235,11 @@ void DocumentManager::onFileChanged(const QString &path)
     if (!targetDoc->isDirty()) {
         reloadFile(path);
     } else {
+        if (targetDoc->pendingReloadPrompt())
+            return;
+        targetDoc->setPendingReloadPrompt(true);
         if (targetIndex == m_currentIndex) {
             emit fileModifiedExternally(path);
-        } else {
-            targetDoc->setPendingReloadPrompt(true);
         }
     }
 }

@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QString>
 #include <QTemporaryFile>
+#include <QHash>
 
 class ToolManager : public QObject
 {
@@ -25,23 +26,23 @@ signals:
 
 private slots:
     void onBranchProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void onReadyReadStandardOutput();
-    void onReadyReadStandardError();
     void onQmlFormatProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
+    struct CommandContext {
+        QString command;
+        QByteArray outputBuffer;
+        QByteArray errorBuffer;
+    };
+
     QString formatDiffOutput(const QString &output) const;
+    void dispatchCommandOutput(const CommandContext &ctx);
     QProcess *m_branchProcess;
-    QProcess *m_process;
     QProcess *m_qmlFormatProcess;
-    QString m_command;
-    QString m_workingDirectory;
+    QHash<QProcess*, CommandContext> m_runningCommands;
     QString m_branchName;
     QString m_originalQmlContent;
     QTemporaryFile *m_tempQmlFile;
-    QString m_outputBuffer;
-    QString m_errorBuffer;
 };
 
 #endif // TOOLMANAGER_H

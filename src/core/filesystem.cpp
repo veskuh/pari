@@ -4,6 +4,24 @@
 #include <QDebug>
 #include <QSettings>
 
+bool ProjectTreeProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+    const QAbstractItemModel *src = sourceModel();
+    if (!src)
+        return true;
+    QModelIndex index = src->index(sourceRow, 0, sourceParent);
+    if (!index.isValid())
+        return true;
+
+    const QString fileName = index.data(QFileSystemModel::FileNameRole).toString();
+    if (fileName == QLatin1String(".git") ||
+        fileName == QLatin1String(".svn") ||
+        fileName == QLatin1String(".hg")) {
+        return false;
+    }
+    return true;
+}
+
 bool FileSystem::renameFile(const QString &oldPath, const QString &newPath)
 {
     QFile file(oldPath);
@@ -40,7 +58,6 @@ bool FileSystem::createNewFile(const QString &folderPath, const QString &fileNam
 FileSystem::FileSystem(QObject *parent)
     : QObject{parent}
     , m_rootPath("")
-    , m_currentRootIndex()
     , m_currentFilePath("")
     , m_isGitRepository(false)
     , m_showHiddenFiles(false)
@@ -49,14 +66,17 @@ FileSystem::FileSystem(QObject *parent)
     m_model->setFilter(QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot);
     m_model->setRootPath(m_rootPath);
 
+    m_proxy = new ProjectTreeProxyModel(this);
+    m_proxy->setSourceModel(m_model);
+
     QSettings settings("Pari", "Pari");
     m_lastOpenedPath = settings.value("lastOpenedPath", QDir::homePath()).toString();
     m_homePath = QDir::homePath();
 }
 
-QFileSystemModel* FileSystem::model() const
+QAbstractItemModel* FileSystem::model() const
 {
-    return m_model;
+    return m_proxy;
 }
 
 QString FileSystem::rootPath() const
@@ -72,7 +92,7 @@ QString FileSystem::rootName() const {
 
 QModelIndex FileSystem::currentRootIndex() const
 {
-    return m_currentRootIndex;
+    return m_proxy->mapFromSource(m_model->index(m_rootPath));
 }
 
 QString FileSystem::lastOpenedPath() const
@@ -136,7 +156,7 @@ void FileSystem::setRootPath(const QString &path)
 {
     if (m_rootPath != path) {
         m_rootPath = path;
-        m_currentRootIndex = m_model->setRootPath(m_rootPath);
+        m_model->setRootPath(m_rootPath);
         emit rootPathChanged();
         emit rootNameChanged();
         emit currentRootIndexChanged();

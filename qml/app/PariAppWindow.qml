@@ -494,6 +494,16 @@ ApplicationWindow {
     }
 
     function showReloadPrompt(filePath) {
+        if (dialogs.reloadConfirmationDialog.visible && dialogs.reloadTargetFilePath !== filePath) {
+            for (var i = 0; i < documentManager.documents.length; i++) {
+                var d = documentManager.documents[i];
+                if (d.filePath === filePath) {
+                    d.pendingReloadPrompt = true;
+                    break;
+                }
+            }
+            return;
+        }
         dialogs.reloadTargetFilePath = filePath;
         dialogs.reloadConfirmationDialog.open();
     }

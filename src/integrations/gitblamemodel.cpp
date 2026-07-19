@@ -137,7 +137,6 @@ void GitBlameModel::parseRawOutput(const QString &rawOutput)
     }
 
     endResetModel();
-    emit layoutChanged();
 }
 
 void GitBlameModel::clear()
@@ -146,7 +145,6 @@ void GitBlameModel::clear()
     m_lines.clear();
     m_colorCache.clear();
     endResetModel();
-    emit layoutChanged();
 }
 
 QColor GitBlameModel::getColorForHash(const QString &hash)

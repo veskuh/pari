@@ -3,11 +3,22 @@
 
 #include <QObject>
 #include <QFileSystemModel>
+#include <QSortFilterProxyModel>
+
+class ProjectTreeProxyModel : public QSortFilterProxyModel
+{
+    Q_OBJECT
+public:
+    using QSortFilterProxyModel::QSortFilterProxyModel;
+
+protected:
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+};
 
 class FileSystem : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QFileSystemModel* model READ model CONSTANT)
+    Q_PROPERTY(QAbstractItemModel* model READ model CONSTANT)
     Q_PROPERTY(QString rootPath READ rootPath NOTIFY rootPathChanged)
     Q_PROPERTY(QString rootName READ rootName NOTIFY rootNameChanged)
     Q_PROPERTY(QModelIndex currentRootIndex READ currentRootIndex NOTIFY currentRootIndexChanged)
@@ -20,7 +31,7 @@ class FileSystem : public QObject
 public:
     explicit FileSystem(QObject *parent = nullptr);
 
-    QFileSystemModel* model() const;
+    QAbstractItemModel* model() const;
     QString rootPath() const;
     QString rootName() const;
     QModelIndex currentRootIndex() const;
@@ -60,8 +71,8 @@ signals:
 
 private:
     QFileSystemModel* m_model;
+    ProjectTreeProxyModel* m_proxy;
     QString m_rootPath;
-    QModelIndex m_currentRootIndex;
     QString m_lastOpenedPath;
     QString m_currentFilePath;
     QString m_homePath;

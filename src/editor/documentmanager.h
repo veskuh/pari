@@ -6,7 +6,9 @@
 #include <QUrl>
 #include <QFileSystemWatcher>
 #include <QDateTime>
+#include <QHash>
 
+class QTimer;
 class TextDocument;
 
 class DocumentManager : public QObject
@@ -42,11 +44,15 @@ signals:
 
 private slots:
     void onFileChanged(const QString &path);
+    void onReloadCheckTimeout(const QString &path);
 
 private:
+    void scheduleReloadCheck(const QString &path);
+    void stopReloadTimer(const QString &path);
     QList<TextDocument*> m_documents;
     int m_currentIndex;
     QFileSystemWatcher *m_watcher;
+    QHash<QString, QTimer*> m_reloadTimers;
 };
 
 #endif // DOCUMENTMANAGER_H

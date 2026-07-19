@@ -144,8 +144,8 @@ void TestDocumentManager::testAutoreloadNonDirty()
     QVERIFY(file.setFileTime(newTime, QFileDevice::FileModificationTime));
     file.close();
 
-    // Wait for the filesystem watcher event loop to process
-    QTest::qWait(150);
+    // Wait for the filesystem watcher event + debounced reload
+    QVERIFY(spy.wait(1000));
 
     // Verify it automatically reloaded
     QCOMPARE(docManager.documents().size(), 1);
@@ -181,8 +181,8 @@ void TestDocumentManager::testNoAutoreloadDirty()
     QVERIFY(file.setFileTime(newTime, QFileDevice::FileModificationTime));
     file.close();
 
-    // Wait for the filesystem watcher event loop to process
-    QTest::qWait(150);
+    // Wait for the filesystem watcher event + debounced reload-decision
+    QVERIFY(spyModifiedExternally.wait(1000));
 
     // Verify it did NOT reload and did NOT lose local changes
     QCOMPARE(doc->text(), QString("locally modified content"));
@@ -206,8 +206,8 @@ void TestDocumentManager::testSaveFileIgnoresSelfSave()
     // Save locally
     QVERIFY(docManager.saveFile(0, "saved by pari"));
 
-    // Wait to see if any watcher events trigger and get ignored
-    QTest::qWait(150);
+    // Wait long enough for any watcher + debounce events to have been processed
+    QTest::qWait(500);
 
     // Verify no signal was emitted
     QCOMPARE(spyReloaded.count(), 0);
