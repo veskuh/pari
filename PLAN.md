@@ -154,13 +154,11 @@ Document tabs `PariTabBar` replaced with `KaakaoTabBar`/`KaakaoTabButton`; sideb
 
 Re-shelled `PariAppWindow` on `KaakaoWindow` and `KaakaoSplitView`; re-based `PariToolBar` on `KaakaoToolBar` and `CustomStatusBar` on `KaakaoStatusBar`; updated `PariMenuBar` and context menus to `KaakaoMenu`, `KaakaoMenuItem`, `KaakaoMenuSeparator`. Full build, `tst_all`, `tst_ui` (132 test cases), and `--selfcheck` passed cleanly.
 
-## Step 8 — Re-base the surviving customs
+## Step 8 — Re-base the surviving customs ✅
 
-`PariPaperWell` colors/inner shadow sourced from `Theme.contentBackground`/`textFieldInnerShadow`;
-`PariReadOnlyTextArea` → `KaakaoTextArea` (component deleted); `ColorButton` rebuilt on
-`KaakaoButton`.
+**Status: DONE**
 
-Verify: `tst_ColorButton`, `tst_CodeEditorPane`, `tst_OutputPane`, full suite.
+Sourced `PariPaperWell` background and inner shadow directly from `Theme.contentBackground` and `Theme.textFieldInnerShadow`; rebuilt `ColorButton` on `KaakaoButton`; replaced `PariReadOnlyTextArea` with `KaakaoTextArea` and deleted `PariReadOnlyTextArea.qml` along with its `qmldir`/`qml.qrc` entries. Full build, `tst_all`, `tst_ui` (132 test cases including `tst_ColorButton` and `tst_OutputPane`), and `--selfcheck` passed cleanly.
 
 ## Step 9 — Cleanup and docs
 

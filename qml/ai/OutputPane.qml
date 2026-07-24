@@ -50,21 +50,31 @@ Follow the instructions by user. You will get a full file content and user selec
             anchors.fill: parent
             currentIndex: aiPane.diffVisible ? 1 : 0
 
-            PariReadOnlyTextArea {
-                id: aiOutputPane
-                objectName: "aiOutputPane"
-                text: markdownFormatter.toHtml(aiPane.fullAiText)
-                textFormat: Text.RichText
-                placeholderText: qsTr("✨ AI assistant output...")
+            ScrollView {
+                clip: true
+                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                KaakaoTextArea {
+                    id: aiOutputPane
+                    objectName: "aiOutputPane"
+                    readOnly: true
+                    text: markdownFormatter.toHtml(aiPane.fullAiText)
+                    textFormat: Text.RichText
+                    placeholderText: qsTr("✨ AI assistant output...")
+                }
             }
 
-            PariReadOnlyTextArea {
-                id: diffView
-                objectName: "diffView"
-                textFormat: Text.RichText
-                placeholderText: qsTr("Diff view...")
-                wrapMode: Text.NoWrap
-                textAreaFont.family: "Menlo"
+            ScrollView {
+                clip: true
+                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                KaakaoTextArea {
+                    id: diffView
+                    objectName: "diffView"
+                    readOnly: true
+                    textFormat: Text.RichText
+                    placeholderText: qsTr("Diff view...")
+                    wrapMode: Text.NoWrap
+                    font.family: "Menlo"
+                }
             }
         }
 

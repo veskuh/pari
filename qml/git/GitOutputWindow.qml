@@ -162,14 +162,20 @@ Window {
                         visible: gitLogModel && gitLogModel.rowCount() === 0
                     }
 
-                    PariReadOnlyTextArea {
+                    ScrollView {
                         id: outputArea
                         objectName: "outputArea"
-                        text: output
-                        textFormat: Text.RichText
-                        wrapMode: Text.NoWrap
-                        textAreaFont.family: Qt.platform.os === 'osx' ? 'Menlo' : 'Noto Sans Mono'
-                        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOn }
+                        clip: true
+                        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                        property alias text: outputTextArea.text
+                        KaakaoTextArea {
+                            id: outputTextArea
+                            readOnly: true
+                            text: output
+                            textFormat: Text.RichText
+                            wrapMode: Text.NoWrap
+                            font.family: Qt.platform.os === 'osx' ? 'Menlo' : 'Noto Sans Mono'
+                        }
                     }
 
                     ListView {

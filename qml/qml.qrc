@@ -18,7 +18,6 @@
         <file>sidebar/GlobalSearchPane.qml</file>
         
         <file>common/PariPaperWell.qml</file>
-        <file>common/PariReadOnlyTextArea.qml</file>
         <file>common/ColorButton.qml</file>
         
         <file>editor/CodeEditorPane.qml</file>

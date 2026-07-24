@@ -1,4 +1,3 @@
 module common
 PariPaperWell 1.0 PariPaperWell.qml
-PariReadOnlyTextArea 1.0 PariReadOnlyTextArea.qml
 ColorButton 1.0 ColorButton.qml
