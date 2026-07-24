@@ -106,25 +106,11 @@ cmake -B build && cmake --build build
 
 ---
 
-## Step 1 — Vendor Kaakao and wire up the build
+## Step 1 — Vendor Kaakao and wire up the build ✅
 
-Tasks:
+**Status: DONE (commit 5d2389e)**
 
-1. `git submodule add https://github.com/veskuh/Kaakao.git third-party/Kaakao`
-2. Root `CMakeLists.txt`: add `Core5Compat` and `ShaderTools` to `find_package(Qt6 ...)`;
-   set `QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml`;
-   `add_subdirectory(third-party/Kaakao/src kaakao)` (src-only, so Kaakao's gallery/tests are
-   not built).
-3. Link `Kaakao` to the `pari` and `tst_ui` targets (same pattern Kaakao's gallery uses).
-   Ensure the QML engine resolves `import Kaakao` at runtime: `engine.addImportPath(...)` in
-   `pari.cpp` and in `tst_ui`'s `Setup::qmlEngineAvailable` (or `QML2_IMPORT_PATH` env on the
-   `add_test`). Verify the macOS bundle / installed binary resolves the module too.
-4. Add `tests/tst_KaakaoIntegration.qml`: instantiate `KaakaoButton` and `KaakaoTextField`, read a
-   `Theme` constant — proves the module resolves in both the app and the test harness.
-5. Update `BUILDING.md` (add `qt6-5compat-dev`, `qml6-module-qt5compat-graphicaleffects`) and the
-   CI workflow's dependency list.
-
-Verify: full build + `tst_all` + `tst_ui` (incl. the new test) + `--selfcheck`.
+All tasks completed. Full build compiles, all 150 tests pass (including KaakaoIntegration), --selfcheck OK.
 
 ## Step 2 — PariTheme becomes a facade over Kaakao Theme
 
