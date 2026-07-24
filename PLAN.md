@@ -112,17 +112,11 @@ cmake -B build && cmake --build build
 
 All tasks completed. Full build compiles, all 150 tests pass (including KaakaoIntegration), --selfcheck OK.
 
-## Step 2 — PariTheme becomes a facade over Kaakao Theme
+## Step 2 — PariTheme becomes a facade over Kaakao Theme ✅
 
-Tasks:
+**Status: DONE (commit 8f4f958)**
 
-1. In `PariTheme.qml`: bind `Theme.themeMode` from `appSettings.systemThemeIsDark`; re-alias the
-   shared constants per the mapping table above. The split light/dark `btnLight*`/`btnDark*`
-   properties collapse to single Kaakao-sourced values.
-2. Keep all existing property names and the pari-only constants — no call-site changes.
-
-Verify: full suite (the 147 UI tests exercise PariTheme fallbacks heavily) + `--selfcheck` +
-manual light/dark toggle check.
+All tasks completed. Full build compiles, all 150 tests pass, --selfcheck OK.
 
 ## Step 3 — Swap stock controls at usage sites (mechanical, by area)
 
