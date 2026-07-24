@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 import "../common"
 
 Rectangle {
@@ -28,7 +29,7 @@ Rectangle {
             Layout.fillWidth: true
             spacing: 0
             
-            Label {
+            KaakaoLabel {
                 text: qsTr("GLOBAL SEARCH")
                 color: pariTheme.textColor
                 font.pixelSize: 10
@@ -53,9 +54,8 @@ Rectangle {
                 spacing: 6
 
                 // Row 1: Wide Search Input
-                TextField {
+                KaakaoSearchField {
                     id: searchInput
-                    color: pariTheme.textColor
                     Layout.fillWidth: true
                     placeholderText: qsTr("Search for...")
                     onAccepted: projectSearchModel.search(fileSystem.rootPath, text, caseCheck.checked, regexCheck.checked, scopeInput.text)
@@ -79,13 +79,13 @@ Rectangle {
                         onClicked: root.replaceMode = !root.replaceMode
                     }
 
-                    CheckBox {
+                    KaakaoCheckBox {
                         id: regexCheck
                         text: qsTr("Regex")
                         font.pixelSize: 11
                     }
 
-                    CheckBox {
+                    KaakaoCheckBox {
                         id: caseCheck
                         text: qsTr("Match Case")
                         font.pixelSize: 11
@@ -100,7 +100,7 @@ Rectangle {
                     spacing: 8
                     visible: root.replaceMode
                     
-                    TextField {
+                    KaakaoTextField {
                         id: replaceInput
                         color: pariTheme.textColor
                         Layout.fillWidth: true
@@ -119,14 +119,14 @@ Rectangle {
                     Layout.fillWidth: true
                     spacing: 8
 
-                    Label {
+                    KaakaoLabel {
                         text: qsTr("Scope:")
                         color: pariTheme.textColor
                         font.pixelSize: 11
                         opacity: 0.7
                     }
 
-                    TextField {
+                    KaakaoTextField {
                         id: scopeInput
                         color: pariTheme.textColor
                         text: "*"
@@ -150,7 +150,7 @@ Rectangle {
                     }
                 }
                 
-                ProgressBar {
+                KaakaoProgressBar {
                     visible: projectSearchModel.isSearching
                     Layout.fillWidth: true
                     indeterminate: true
@@ -172,7 +172,7 @@ Rectangle {
                 height: 24
                 color: pariTheme.isDark ? "#3d3d3d" : "#e0e0e0"
                 
-                Label {
+                KaakaoLabel {
                     text: (typeof section !== "undefined" ? section : "").replace(fileSystem.rootPath + "/", "")
                     color: pariTheme.textColor
                     font.bold: true
@@ -195,14 +195,14 @@ Rectangle {
                 contentItem: ColumnLayout {
                     spacing: 2
                     
-                    Label {
+                    KaakaoLabel {
                         text: model.lineNumber === 0 ? qsTr("Filename match") : qsTr("Line %1").arg(model.lineNumber)
                         color: pariTheme.accentColor
                         font.pixelSize: 10
                         opacity: 0.8
                     }
                     
-                    Label {
+                    KaakaoLabel {
                         text: model.lineText
                         color: pariTheme.textColor
                         font.family: "Menlo"
@@ -226,7 +226,7 @@ Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 20
             
-            Label {
+            KaakaoLabel {
                 text: {
                     if (projectSearchModel.isSearching) {
                         return qsTr("Searching...");
@@ -241,21 +241,13 @@ Rectangle {
         }
     }
 
-    Dialog {
+    KaakaoDialog {
         id: replaceConfirmDialog
         title: qsTr("Confirm Replace All")
+        text: qsTr("Are you sure you want to replace all %1 occurrences in the project?").arg(projectSearchModel.resultCount)
         standardButtons: Dialog.Yes | Dialog.No
-        anchors.centerIn: Overlay.overlay
         modal: true
         implicitWidth: 350
-        
-        Label {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            text: qsTr("Are you sure you want to replace all %1 occurrences in the project?").arg(projectSearchModel.resultCount)
-            color: pariTheme.textColor
-            wrapMode: Text.WordWrap
-        }
         
         onAccepted: projectSearchModel.replaceAll(replaceInput.text)
     }

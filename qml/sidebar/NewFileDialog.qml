@@ -2,9 +2,10 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import Kaakao 1.0
 import "../common"
 
-Dialog {
+KaakaoDialog {
     id: newFileDialog
     title: qsTr("New File")
     modal: true
@@ -27,7 +28,7 @@ Dialog {
     contentItem: ColumnLayout {
         spacing: _pariTheme ? _pariTheme.paddingLarge : 15
 
-        Label {
+        KaakaoLabel {
             text: qsTr("Create new file in: ") + newFileDialog.folderPath
             Layout.fillWidth: true
             elide: Text.ElideMiddle
@@ -35,7 +36,7 @@ Dialog {
             color: _pariTheme ? _pariTheme.textColorDim : "gray"
         }
 
-        TextField {
+        KaakaoTextField {
             id: fileNameField
             Layout.fillWidth: true
             placeholderText: qsTr("File name")
