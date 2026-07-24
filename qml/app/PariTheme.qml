@@ -28,19 +28,6 @@ QtObject {
     readonly property color textColorInverse: Theme.accentButtonText
     readonly property color accentColor: Theme.primaryAccent
 
-    // --- Colors: Buttons (sourced from Kaakao Theme) ---
-    readonly property color btnLightTop: Theme.buttonGradTop
-    readonly property color btnLightBottom: Theme.buttonGradBottom
-    readonly property color btnLightBorder: Theme.buttonBorder
-    readonly property color btnLightPrimaryTop: Theme.accentGradTop
-    readonly property color btnLightPrimaryBottom: Theme.accentGradBottom
-
-    readonly property color btnDarkTop: Theme.buttonGradTop
-    readonly property color btnDarkBottom: Theme.buttonGradBottom
-    readonly property color btnDarkBorder: Theme.buttonBorder
-    readonly property color btnDarkPrimaryTop: Theme.accentGradTop
-    readonly property color btnDarkPrimaryBottom: Theme.accentGradBottom
-
     // --- Metrics: Paddings & Margins (sourced from Kaakao Theme) ---
     readonly property real paddingSmall: Theme.paddingSmall
     readonly property real paddingMedium: Theme.paddingMedium

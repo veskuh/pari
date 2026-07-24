@@ -17,11 +17,22 @@ Pari aims to assist with coding tasks in an offline-first environment.
 ## Key Features
 
 *   **Local LLM Integration:** Streaming support for local Ollama instances.
+*   **Kaakao Design Base:** Powered by the [Kaakao](https://github.com/veskuh/Kaakao) component library (macOS Yosemite–Catalina aesthetic).
 *   **Code Editor:** Syntax highlighting for **C++, Go, Java, JavaScript, Kotlin, Markdown, QML, Rust, Shell, and Swift**. Supports auto-indentation and LSP integration.
 *   **Workspace Investigation:** Integrated project-wide search and global replacement engine utilizing background-threaded C++ scanning.
 *   **Atelier Workspace Status:** Structured Git diffs with line navigation and badging for untracked files.
-*   **Tactile Design:** A high-fidelity "Developer's Atelier" aesthetic featuring "Machine Bezel" navigation and tactile refinements.
+*   **Tactile Design:** A high-fidelity "Developer's Atelier" aesthetic featuring `PariPaperWell` recessed containers and Kaakao window chrome.
 *   **Integrated Tools:** Built-in build system, Grep-mode line filtering, and interactive AI-suggested changes.
+
+## Dependencies
+
+Pari includes [Kaakao](https://github.com/veskuh/Kaakao) as a git submodule in `third-party/Kaakao`. Clone recursively or initialize submodules after cloning:
+
+```bash
+git clone --recursive git@github.com:veskuh/pari.git
+# or if already cloned:
+git submodule update --init --recursive
+```
 
 ## Testing & Quality
 
@@ -29,11 +40,11 @@ Pari aims to assist with coding tasks in an offline-first environment.
 
 The project includes an automated test suite covering both C++ logic and QML UI components.
 *   **Unit Tests:** 204 tests verifying core backend logic using the Qt Test framework.
-*   **UI Tests:** 147 tests verifying component behavior and state using `QtQuickTest`.
+*   **UI Tests:** 132 tests verifying component behavior and state using `QtQuickTest`.
 
 ### Code Coverage
 
-Pari maintains quality with **85.7%** line coverage. You can generate a detailed HTML report:
+Pari maintains high quality with code coverage tracking. You can generate a detailed HTML report:
 
 ```bash
 # Reconfigure with coverage enabled

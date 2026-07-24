@@ -44,7 +44,7 @@ rm -f "$INFO_FILE" "$FILTERED_INFO"
 # 3. Run Unit Tests (tst_all)
 # We prioritize tst_all for core logic coverage to avoid merging conflicts with UI tests
 echo "Running unit test suite (tst_all)..."
-"./$BUILD_DIR/tests/tst_all" >> "$LOG_FILE" 2>&1
+"./$BUILD_DIR/tests/tst_all" -platform offscreen >> "$LOG_FILE" 2>&1
 if [ $? -ne 0 ]; then echo "Warning: Unit tests had some failures."; fi
 
 # 4. Capture Coverage with lcov

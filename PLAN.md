@@ -160,13 +160,11 @@ Re-shelled `PariAppWindow` on `KaakaoWindow` and `KaakaoSplitView`; re-based `Pa
 
 Sourced `PariPaperWell` background and inner shadow directly from `Theme.contentBackground` and `Theme.textFieldInnerShadow`; rebuilt `ColorButton` on `KaakaoButton`; replaced `PariReadOnlyTextArea` with `KaakaoTextArea` and deleted `PariReadOnlyTextArea.qml` along with its `qmldir`/`qml.qrc` entries. Full build, `tst_all`, `tst_ui` (132 test cases including `tst_ColorButton` and `tst_OutputPane`), and `--selfcheck` passed cleanly.
 
-## Step 9 — Cleanup and docs
+## Step 9 — Cleanup and docs ✅
 
-Prune dead `PariTheme` properties and `qmldir`/`qml.qrc` entries; update `DESIGN.md` (component
-inventory, Kaakao as the design base), `project.md`, and `README.md` (dependency note).
+**Status: DONE**
 
-Verify: full suite + `--selfcheck` + one coverage run (`./scripts/coverage_report.sh`) to confirm
-no test-coverage regression.
+Pruned dead `btnLight*` and `btnDark*` properties from `PariTheme.qml`; updated `DESIGN.md`, `project.md`, and `README.md` to reflect Kaakao design system integration and submodules. Full build, `tst_all`, `tst_ui` (132 test cases), `--selfcheck`, and coverage report (87.4% line coverage) passed cleanly.
 
 ---
 
