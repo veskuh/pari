@@ -29,7 +29,7 @@ Item {
         }
 
         function test_initial_state() {
-            compare(toolBar.implicitHeight, 64)
+            compare(toolBar.implicitHeight, 54)
             compare(toolBar.isDark, false)
         }
 

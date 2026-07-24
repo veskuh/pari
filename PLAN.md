@@ -148,14 +148,11 @@ Swapped to `KaakaoToolButton` in `PariAppWindow` toolbar and `AiInputControl`; d
 
 Document tabs `PariTabBar` replaced with `KaakaoTabBar`/`KaakaoTabButton`; sidebar strip `PariSidebarTabBar` replaced with `KaakaoSegmentedControl`. Deleted `PariTabBar.qml`, `PariSidebarTabBar.qml`, their `qmldir`/`qml.qrc` entries, and `tst_PariTabBar.qml`. Full build, `tst_all`, `tst_ui` (132 test cases), and `--selfcheck` passed cleanly.
 
-## Step 7 — Re-shell the app on Kaakao chrome
+## Step 7 — Re-shell the app on Kaakao chrome ✅
 
-`PariAppWindow` root → `KaakaoWindow`; `PariToolBar` → `KaakaoToolBar`; `CustomStatusBar` →
-`KaakaoStatusBar`; menus → `KaakaoMenu`/`KaakaoMenuItem`/`KaakaoMenuSeparator`;
-`SplitView` → `KaakaoSplitView`. Trim `tst_PariMenuBar`/`tst_PariToolBar`/`tst_CustomStatusBar`
-to remaining pari-specific logic.
+**Status: DONE**
 
-Verify: full suite + `--selfcheck` + manual run (menus, status bar, splitters).
+Re-shelled `PariAppWindow` on `KaakaoWindow` and `KaakaoSplitView`; re-based `PariToolBar` on `KaakaoToolBar` and `CustomStatusBar` on `KaakaoStatusBar`; updated `PariMenuBar` and context menus to `KaakaoMenu`, `KaakaoMenuItem`, `KaakaoMenuSeparator`. Full build, `tst_all`, `tst_ui` (132 test cases), and `--selfcheck` passed cleanly.
 
 ## Step 8 — Re-base the surviving customs
 

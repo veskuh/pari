@@ -14,7 +14,7 @@ import "../ai"
 import "../utils/FileUtils.js" as FileUtils
 import "../utils/FormattingUtils.js" as FormattingUtils
 
-ApplicationWindow {
+KaakaoWindow {
     id: appWindow
 
     title: {
@@ -78,28 +78,9 @@ ApplicationWindow {
     visible: true
 
     // --- REFACTORED MAIN CONTENT AREA ---
-    SplitView {
+    KaakaoSplitView {
         anchors.fill: parent
         orientation: Qt.Horizontal
-
-        handle: Rectangle {
-            implicitWidth: 6
-            color: "transparent"
-            
-            Rectangle {
-                anchors.centerIn: parent
-                width: 1
-                height: parent.height
-                color: SplitHandle.hovered || SplitHandle.pressed ? pariTheme.accentColor : pariTheme.sidebarBorder
-                Behavior on color { ColorAnimation { duration: 150 } }
-            }
-            
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.SplitHCursor
-                acceptedButtons: Qt.NoButton
-            }
-        }
 
         // Pane 1: Sidebar
         Rectangle {
@@ -194,30 +175,11 @@ ApplicationWindow {
         }
 
         // Pane 2: Code Editor (55% width)
-        SplitView {
+        KaakaoSplitView {
             id: codeColumn
             orientation: Qt.Vertical
             SplitView.preferredWidth: appWindow.width * 0.55
             SplitView.minimumWidth: 250
-
-            handle: Rectangle {
-                implicitHeight: 6
-                color: "transparent"
-                
-                Rectangle {
-                    anchors.centerIn: parent
-                    height: 1
-                    width: parent.width
-                    color: SplitHandle.hovered || SplitHandle.pressed ? pariTheme.accentColor : pariTheme.sidebarBorder
-                    Behavior on color { ColorAnimation { duration: 150 } }
-                }
-                
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.SplitVCursor
-                    acceptedButtons: Qt.NoButton
-                }
-            }
 
             ColumnLayout {
                 spacing: 0

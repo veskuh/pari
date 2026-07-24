@@ -184,10 +184,10 @@ Item {
         }
     }
 
-    Menu {
+    KaakaoMenu {
         id: contextMenu
 
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("New File...")
             enabled: isDirectory
             onTriggered: {
@@ -199,7 +199,7 @@ Item {
                 dialog.open();
             }
         }
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Open in new tab")
             enabled: !isDirectory
             onTriggered: {
@@ -207,7 +207,7 @@ Item {
                 if (typeof fileSystemView !== 'undefined') fileSystemView.selectedPath = root.filePath;
             }
         }
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Info")
             onTriggered: {
                 var fileInfo = fileSystem.getFileInfo(root.filePath);
@@ -223,7 +223,7 @@ Item {
                 }
             }
         }
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Rename")
             onTriggered: {
                 var component = Qt.createComponent("RenameDialog.qml");

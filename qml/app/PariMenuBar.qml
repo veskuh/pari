@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import Kaakao 1.0
 
 MenuBar {
     id: root
@@ -8,89 +9,89 @@ MenuBar {
     property var dialogs
     property var gitLogModel
 
-    Menu {
+    KaakaoMenu {
         title: qsTr("File")
-        MenuItem { action: actions.newAction }
-        MenuItem { action: actions.openAction }
-        Menu {
+        KaakaoMenuItem { action: actions.newAction }
+        KaakaoMenuItem { action: actions.openAction }
+        KaakaoMenu {
             title: qsTr("Recents")
             Repeater {
                 model: appSettings.recentFolders
-                MenuItem {
+                KaakaoMenuItem {
                     text: modelData
                     onTriggered: fileSystem.setRootPath(modelData)
                 }
             }
-            MenuSeparator {}
-            MenuItem {
+            KaakaoMenuSeparator {}
+            KaakaoMenuItem {
                 text: qsTr("Clear Recents")
                 onTriggered: appSettings.clearRecentFolders()
             }
         }
-        MenuItem { action: actions.saveAction }
-        MenuItem { action: actions.saveAsAction }
-        MenuItem { action: actions.closeAction }
-        MenuItem {
+        KaakaoMenuItem { action: actions.saveAction }
+        KaakaoMenuItem { action: actions.saveAsAction }
+        KaakaoMenuItem { action: actions.closeAction }
+        KaakaoMenuItem {
             text: qsTr("Exit")
             onTriggered: Qt.exit(0)
         }
     }
-    Menu {
+    KaakaoMenu {
         title: qsTr("Edit")
-        MenuItem { text: qsTr("Cut") }
-        MenuItem { text: qsTr("Copy") }
-        MenuItem { text: qsTr("Paste") }
-        MenuItem { action: actions.findAction }
-        MenuItem { action: actions.filterLinesAction }
-        MenuItem { action: actions.indentAction }
-        MenuItem {
+        KaakaoMenuItem { text: qsTr("Cut") }
+        KaakaoMenuItem { text: qsTr("Copy") }
+        KaakaoMenuItem { text: qsTr("Paste") }
+        KaakaoMenuItem { action: actions.findAction }
+        KaakaoMenuItem { action: actions.filterLinesAction }
+        KaakaoMenuItem { action: actions.indentAction }
+        KaakaoMenuItem {
             text: qsTr("Settings...")
             onTriggered: dialogs.settingsDialog.show()
         }
     }
-    Menu {
+    KaakaoMenu {
         title: qsTr("View")
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Chat log")
             onTriggered: dialogs.chatLogWindow.show()
         }
-        MenuItem { action: actions.goToAction }
-        MenuSeparator {}
-        MenuItem {
+        KaakaoMenuItem { action: actions.goToAction }
+        KaakaoMenuSeparator {}
+        KaakaoMenuItem {
             text: qsTr("Show Files")
             action: actions.showTreePaneAction
             checkable: true
             checked: actions.showTreePaneAction ? actions.showTreePaneAction.checked : true
         }
 
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Global Search")
             onTriggered: {
                 actions.showGlobalSearchAction.trigger();
             }
         }
 
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Show AI")
             action: actions.showAiPaneAction
             checkable: true
             checked: actions.showAiPaneAction ? actions.showAiPaneAction.checked : true
         }
 
-        MenuSeparator {}
+        KaakaoMenuSeparator {}
 
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Show Hidden Files")
             action: actions.toggleHiddenFilesAction
             checkable: true
             checked: actions.toggleHiddenFilesAction ? actions.toggleHiddenFilesAction.checked : false
         }
     }
-    Menu {
+    KaakaoMenu {
         title: qsTr("Build")
-        MenuItem { action: actions.buildAction }
-        MenuItem { action: actions.runAction }
-        MenuItem {
+        KaakaoMenuItem { action: actions.buildAction }
+        KaakaoMenuItem { action: actions.runAction }
+        KaakaoMenuItem {
             text: "Clean"
             enabled: actions.hasBuildConfiguration
             onTriggered: {
@@ -99,40 +100,40 @@ MenuBar {
                 buildManager.executeCommand(appSettings.getCleanCommand(fileSystem.rootPath), fileSystem.rootPath);
             }
         }
-        MenuSeparator {}
-        MenuItem { action: actions.configureBuildAction }
+        KaakaoMenuSeparator {}
+        KaakaoMenuItem { action: actions.configureBuildAction }
     }
-    Menu {
+    KaakaoMenu {
         title: qsTr("Help")
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("About")
             onTriggered: dialogs.aboutWindow.show()
         }
     }
-    Menu {
+    KaakaoMenu {
         title: qsTr("Git")
-        MenuItem {
+        KaakaoMenuItem {
             text: "git diff"
             enabled: fileSystem.isGitRepository
             onTriggered: {
                 actions.rootWindow.showGitOutput("git status --porcelain && git diff", "", "");
             }
         }
-        MenuItem {
+        KaakaoMenuItem {
             text: "git diff current file"
             enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
             onTriggered: {
                 actions.rootWindow.showGitOutput("git status --porcelain " + fileSystem.currentFilePath + " && git diff " + fileSystem.currentFilePath, "", "");
             }
         }
-        MenuItem {
+        KaakaoMenuItem {
             enabled: fileSystem.isGitRepository
             text: "git log"
             onTriggered: {
                 actions.rootWindow.showGitOutput("git log --pretty=format:\"%H%x1f%an%x1f%ae%x1f%ad%x1f%s%n%b%x1e\" --date=rfc", "", "");
             }
         }
-        MenuItem {
+        KaakaoMenuItem {
             text: "git blame"
             enabled: fileSystem.isGitRepository && fileSystem.currentFilePath !== ""
             onTriggered: {
