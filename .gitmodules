@@ -1,0 +1,3 @@
+[submodule "third-party/Kaakao"]
+	path = third-party/Kaakao
+	url = https://github.com/veskuh/Kaakao.git

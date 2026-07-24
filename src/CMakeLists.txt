@@ -1,4 +1,4 @@
-find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test LabsSettings QuickDialogs2 Concurrent REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test QuickDialogs2 Concurrent REQUIRED)
 qt_standard_project_setup(REQUIRES 6.5)
 
 # --- BUILD-TIME VERSION DETECTION ---
@@ -95,9 +95,9 @@ target_link_libraries(pari PRIVATE
     Qt6::Qml
     Qt6::Network
     Qt6::Widgets
-    Qt6::LabsSettings
     Qt6::QuickDialogs2
     Qt6::Concurrent
+    Kaakao::Kaakao
 )
 
 if(APPLE)

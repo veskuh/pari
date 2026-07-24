@@ -17,8 +17,11 @@ if(ENABLE_COVERAGE)
     endif()
 endif()
 
-find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test LabsSettings QuickDialogs2 QuickTest REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Quick QuickControls2 Qml Network Widgets Test QuickDialogs2 QuickTest Concurrent Core5Compat ShaderTools REQUIRED)
 qt_standard_project_setup(REQUIRES 6.5)
+set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 
+add_subdirectory(third-party/Kaakao/src kaakao)
+add_library(Kaakao::Kaakao ALIAS Kaakao)
 add_subdirectory(src)
 add_subdirectory(tests)
