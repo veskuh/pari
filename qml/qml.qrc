@@ -17,7 +17,6 @@
         <file>sidebar/FileInfoDialog.qml</file>
         <file>sidebar/GlobalSearchPane.qml</file>
         
-        <file>common/PariToolButton.qml</file>
         <file>common/PariSidebarTabBar.qml</file>
         <file>common/PariPaperWell.qml</file>
         <file>common/PariReadOnlyTextArea.qml</file>

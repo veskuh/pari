@@ -6,6 +6,7 @@ import QtQuick.Window
 import QtQuick.Dialogs
 
 import net.veskuh.pari 1.0
+import Kaakao 1.0
 import "../sidebar"
 import "../editor"
 import "../common"
@@ -375,19 +376,19 @@ ApplicationWindow {
             anchors.verticalCenter: parent.verticalCenter
             leftPadding: 5
 
-            PariToolButton {
+            KaakaoToolButton {
                 text: qsTr("Build")
-                iconSource: "qrc:/assets/build.png"
+                icon.source: "qrc:/assets/build.png"
                 action: actions.buildAction
             }
-            PariToolButton {
+            KaakaoToolButton {
                 text: qsTr("Run")
-                iconSource: "qrc:/assets/play.png"
+                icon.source: "qrc:/assets/play.png"
                 action: actions.runAction
             }
-            PariToolButton {
+            KaakaoToolButton {
                 text: qsTr("Search")
-                iconSource: "qrc:/assets/search.png"
+                icon.source: "qrc:/assets/search.png"
                 action: actions.findAction
             }
         }

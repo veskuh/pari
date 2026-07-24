@@ -87,12 +87,11 @@ ColumnLayout {
             }
         }
 
-        PariToolButton {
+        KaakaoToolButton {
             id: sendButton
             objectName: "sendButton"
             text: qsTr("SEND")
-            iconSource: "qrc:/assets/send.png"
-            isPrimary: true
+            icon.source: "qrc:/assets/send.png"
             enabled: currentEditor && currentEditor.text !== "" && aiMessagePane.text !== "" && !llmBusy
             onClicked: inputControl.sendClicked()
         }

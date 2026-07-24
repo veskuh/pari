@@ -136,12 +136,11 @@ Verify (each sub-step): affected tests, then full `tst_ui` + `--selfcheck`.
 
 All PariButton usages replaced with KaakaoButton (preserving highlighted/accent styling), and all PariIconButton usages replaced with KaakaoToolButton (preserving sizes, checkable/checked states, tooltips, and signals). PariButton.qml, PariIconButton.qml, and tst_PariButton.qml deleted along with their qmldir/qml.qrc entries. Full build, tst_all (21 test cases), tst_ui (144 test cases), and --selfcheck passed.
 
-## Step 5 — Replace PariToolButton
+## Step 5 — Replace PariToolButton ✅
 
-Swap to `KaakaoToolButton` in `PariToolBar`, editor gutter, and panes; delete the component,
-its `qmldir`/`qml.qrc` entries, and `tst_PariToolButton.qml`.
+**Status: DONE**
 
-Verify: `tst_PariToolBar`, full suite, `--selfcheck`.
+Swapped to `KaakaoToolButton` in `PariAppWindow` toolbar and `AiInputControl`; deleted `PariToolButton.qml`, its `qmldir`/`qml.qrc` entries, and `tst_PariToolButton.qml`. Full build, `tst_all`, `tst_ui` (138 test cases), and `--selfcheck` passed cleanly.
 
 ## Step 6 — Replace the tab bars
 
