@@ -65,7 +65,7 @@ PariPaperWell {
             width: parent.width
             height: 26
 
-            PariIconButton {
+            KaakaoToolButton {
                 id: expandToggle
                 anchors.left: parent.left
                 width: 26; height: 26
@@ -79,27 +79,33 @@ PariPaperWell {
                 spacing: 2
                 height: 26
 
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     text: "⏳"; checkable: true; checked: findOverlay.filterActive
                     onCheckedChanged: findOverlay.filterActive = checked
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     text: "Aa"; checkable: true; checked: findOverlay.matchCase
                     onCheckedChanged: findOverlay.matchCase = checked
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     text: ".*"; checkable: true; checked: findOverlay.useRegex
                     onCheckedChanged: findOverlay.useRegex = checked
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     enabled: searchInput.text !== "" && !findOverlay.filterActive && findOverlay.totalMatches > 0 && (findOverlay.currentMatchIndex === -1 || findOverlay.currentMatchIndex > 0)
                     text: "▲"; onClicked: findOverlay.findPrevious()
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     enabled: searchInput.text !== "" && !findOverlay.filterActive && findOverlay.totalMatches > 0 && (findOverlay.currentMatchIndex === -1 || findOverlay.currentMatchIndex < findOverlay.totalMatches - 1)
                     text: "▼"; onClicked: findOverlay.findNext(false)
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     text: "✕"; onClicked: findOverlay.closeOverlay()
                 }
             }
@@ -159,12 +165,12 @@ PariPaperWell {
                 spacing: 4
                 height: 24
 
-                PariButton {
+                KaakaoButton {
                     text: qsTr("Replace")
                     onClicked: findOverlay.replaceNext()
                     width: 70; height: 24
                 }
-                PariButton {
+                KaakaoButton {
                     text: qsTr("Replace All")
                     onClicked: findOverlay.replaceAll()
                     width: 85; height: 24

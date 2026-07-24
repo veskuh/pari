@@ -77,7 +77,7 @@ ApplicationWindow {
                     model: _appSettings ? _appSettings.availableModels : []
                     Layout.fillWidth: true
                 }
-                PariButton {
+                KaakaoButton {
                     text: "Refresh"
                     objectName: "refreshButton"
                     onClicked: if (_llm) _llm.listModels()
@@ -106,7 +106,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     color: _pariTheme ? _pariTheme.textColor : "black"
                 }
-                PariButton {
+                KaakaoButton {
                     text: "Select"
                     onClicked: fontDialog.open()
                 }
@@ -225,7 +225,7 @@ ApplicationWindow {
             Layout.alignment: Qt.AlignRight
             spacing: 10
 
-            PariButton {
+            KaakaoButton {
                 text: "Apply"
                 objectName: "applyButton"
                 highlighted: true
@@ -242,7 +242,7 @@ ApplicationWindow {
                     settingsWindow.close();
                 }
             }
-            PariButton {
+            KaakaoButton {
                 text: "Cancel"
                 onClicked: {
                     settingsWindow.close();

@@ -72,7 +72,7 @@ Window {
             }
         }
 
-        PariButton {
+        KaakaoButton {
             text: qsTr("Close")
             Layout.alignment: Qt.AlignRight
             highlighted: true

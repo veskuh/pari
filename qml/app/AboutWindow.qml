@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import Kaakao 1.0
 import "../common"
 
 ApplicationWindow {
@@ -204,7 +205,7 @@ ApplicationWindow {
 
             Item { Layout.fillHeight: true }
 
-            PariButton {
+            KaakaoButton {
                 text: qsTr("Close")
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredWidth: 100

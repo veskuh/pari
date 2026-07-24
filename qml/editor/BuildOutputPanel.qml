@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 import "../common"
 import "../app"
 
@@ -70,12 +71,16 @@ PariPaperWell {
                     Layout.fillWidth: true
                 }
 
-                PariIconButton {
+                KaakaoToolButton {
                     text: root.expanded ? "-" : "+"
+                    implicitWidth: 26
+                    implicitHeight: 26
                     onClicked: root.expanded = !root.expanded
                 }
-                PariIconButton {
+                KaakaoToolButton {
                     text: "✕"
+                    implicitWidth: 26
+                    implicitHeight: 26
                     onClicked: {
                         root.visible = false;
                         root.expanded = false;

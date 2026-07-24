@@ -130,12 +130,11 @@ Three sub-steps, each independently testable:
 
 Verify (each sub-step): affected tests, then full `tst_ui` + `--selfcheck`.
 
-## Step 4 — Replace PariButton and PariIconButton
+## Step 4 — Replace PariButton and PariIconButton ✅
 
-Replace usages with `KaakaoButton` (primary/default styling per Kaakao API) and `KaakaoToolButton`
-for icon buttons; delete both components, their `qmldir`/`qml.qrc` entries, and `tst_PariButton.qml`.
+**Status: DONE**
 
-Verify: full suite + `--selfcheck`.
+All PariButton usages replaced with KaakaoButton (preserving highlighted/accent styling), and all PariIconButton usages replaced with KaakaoToolButton (preserving sizes, checkable/checked states, tooltips, and signals). PariButton.qml, PariIconButton.qml, and tst_PariButton.qml deleted along with their qmldir/qml.qrc entries. Full build, tst_all (21 test cases), tst_ui (144 test cases), and --selfcheck passed.
 
 ## Step 5 — Replace PariToolButton
 

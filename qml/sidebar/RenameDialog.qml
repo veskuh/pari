@@ -58,7 +58,7 @@ KaakaoDialog {
         RowLayout {
             Layout.alignment: Qt.AlignRight
             spacing: _pariTheme ? _pariTheme.paddingMedium : 10
-            PariButton {
+            KaakaoButton {
                 id: renameButton
                 objectName: "renameButton"
                 text: qsTr("Rename")
@@ -70,7 +70,7 @@ KaakaoDialog {
                     }
                 }
             }
-            PariButton {
+            KaakaoButton {
                 objectName: "cancelButton"
                 text: qsTr("Cancel")
                 onClicked: {

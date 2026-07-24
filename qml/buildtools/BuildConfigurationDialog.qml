@@ -81,7 +81,7 @@ ApplicationWindow {
             Layout.alignment: Qt.AlignRight
             spacing: _pariTheme ? _pariTheme.paddingMedium : 10
             
-            PariButton {
+            KaakaoButton {
                 text: qsTr("Save")
                 highlighted: true
                 onClicked: {
@@ -89,7 +89,7 @@ ApplicationWindow {
                     buildConfigurationWindow.close()
                 }
             }
-            PariButton {
+            KaakaoButton {
                 text: qsTr("Cancel")
                 onClicked: buildConfigurationWindow.close()
             }

@@ -72,7 +72,7 @@ Rectangle {
                     Layout.fillWidth: true
                     spacing: 12
 
-                    PariIconButton {
+                    KaakaoToolButton {
                         text: root.replaceMode ? "▼" : "▶"
                         Layout.preferredWidth: 24
                         Layout.preferredHeight: 24
@@ -107,7 +107,7 @@ Rectangle {
                         placeholderText: qsTr("Replace with...")
                     }
                     
-                    PariButton {
+                    KaakaoButton {
                         text: qsTr("Replace All")
                         enabled: projectSearchModel.resultCount > 0
                         onClicked: replaceConfirmDialog.open()
@@ -137,7 +137,7 @@ Rectangle {
 
                     Item { Layout.fillWidth: true }
                     
-                    PariButton {
+                    KaakaoButton {
                         text: projectSearchModel.isSearching ? qsTr("Cancel") : qsTr("Search")
                         highlighted: !projectSearchModel.isSearching
                         onClicked: {

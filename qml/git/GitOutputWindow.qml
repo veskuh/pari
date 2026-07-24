@@ -277,7 +277,7 @@ Window {
                 }
             }
 
-            PariButton {
+            KaakaoButton {
                 objectName: "closeButton"
                 text: qsTr("Close")
                 onClicked: gitOutputWindow.close()
