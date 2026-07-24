@@ -125,14 +125,8 @@ Three sub-steps, each independently testable:
 - **3a — `settings/` + `buildtools/`:** `TextField`→`KaakaoTextField`, `ComboBox`→`KaakaoComboBox`,
   `CheckBox`→`KaakaoCheckBox`, `Dialog`→`KaakaoDialog`, `Label`→`KaakaoLabel`.
   Verify: `tst_SettingsWindow`, `tst_BuildConfigurationDialog`.
-- **3b — `sidebar/`:** `NewFileDialog`/`RenameDialog`/`FileInfoDialog` → `KaakaoDialog`;
-  `GlobalSearchPane` inputs → `KaakaoSearchField`/`KaakaoTextField`, `CheckBox`→`KaakaoCheckBox`,
-  `ProgressBar`→`KaakaoProgressBar`.
-  Verify: `tst_RenameDialog`, `tst_FileInfoDialog`, `tst_FileTreeDelegate`.
-- **3c — `ai/` + `git/` + `editor/FindOverlay`:** `TextArea`→`KaakaoTextArea`,
-  `ComboBox`→`KaakaoComboBox`, busy indication → `KaakaoBusyIndicator`, `ToolTip`→`KaakaoToolTip`,
-  `Label`→`KaakaoLabel`, find field → `KaakaoSearchField`.
-  Verify: `tst_OutputPane`, `tst_ChatLogWindow`, `tst_GitOutputWindow`, `tst_FindOverlay`.
+- **3b — `sidebar/`:** ✅ Done (commit fc290b2)
+- **3c — `ai/` + `git/` + `editor/FindOverlay`:** ✅ Done
 
 Verify (each sub-step): affected tests, then full `tst_ui` + `--selfcheck`.
 

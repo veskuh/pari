@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import net.veskuh.pari 1.0
+import Kaakao 1.0
 import "../common"
 
 ColumnLayout {

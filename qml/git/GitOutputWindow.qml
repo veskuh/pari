@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import net.veskuh.pari 1.0
+import Kaakao 1.0
 import "../common"
 
 Window {
@@ -85,12 +86,12 @@ Window {
 
             RowLayout {
                 Layout.fillWidth: true
-                Label {
+                KaakaoLabel {
                     text: qsTr("Command: ")
                     font.bold: true
                     color: isDark ? "#aaaaaa" : "#555555"
                 }
-                Label {
+                KaakaoLabel {
                     text: command
                     font.family: "Menlo"
                     color: isDark ? "#ffffff" : "#000000"
@@ -99,7 +100,7 @@ Window {
                 }
 
                 // Filter Field (Visible only during git log)
-                TextField {
+                KaakaoSearchField {
                     id: logFilterField
                     placeholderText: qsTr("Search log...")
                     visible: command.includes("git log")
@@ -110,17 +111,9 @@ Window {
                             gitLogModel.filterText = text;
                         }
                     }
-                    
-                    background: Rectangle {
-                        radius: 4
-                        color: isDark ? "#2a2a2a" : "#ffffff"
-                        border.color: isDark ? "#444" : "#ccc"
-                    }
-                    color: isDark ? "#ffffff" : "#000000"
-                    font.pixelSize: 11
                 }
 
-                Label {
+                KaakaoLabel {
                     text: "🌿 " + branchName
                     font.bold: true
                     visible: branchName !== ""
@@ -159,7 +152,7 @@ Window {
                         ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOn }
                     }
 
-                    Label {
+                    KaakaoLabel {
                         id: noEntriesLabel
                         text: logFilterField.text !== "" ? qsTr("No matching entries found.") : qsTr("No log entries found.")
                         horizontalAlignment: Text.AlignHCenter
@@ -213,7 +206,7 @@ Window {
                                         anchors.rightMargin: 12
                                         spacing: 10
 
-                                        Label {
+                                        KaakaoLabel {
                                             text: model.hash
                                             font.family: appSettings.fontFamily
                                             font.pointSize: appSettings.fontSize - 1
@@ -221,7 +214,7 @@ Window {
                                             Layout.preferredWidth: 65
                                         }
 
-                                        Label {
+                                        KaakaoLabel {
                                             text: model.author
                                             font.family: appSettings.fontFamily
                                             font.pointSize: appSettings.fontSize - 1
@@ -230,7 +223,7 @@ Window {
                                             Layout.fillWidth: true
                                         }
 
-                                        Label {
+                                        KaakaoLabel {
                                             text: model.date
                                             font.family: appSettings.fontFamily
                                             font.pointSize: appSettings.fontSize - 1
@@ -239,7 +232,7 @@ Window {
                                         }
                                     }
 
-                                    ToolTip {
+                                    KaakaoToolTip {
                                         visible: mouseArea.containsMouse
                                         text: "Commit: " + model.hash + "\nAuthor: " + model.author + "\nEmail: " + model.email + "\nDate: " + model.date
                                         delay: 500
@@ -258,7 +251,7 @@ Window {
                                     visible: !model.showMetadata
                                 }
 
-                                Label {
+                                KaakaoLabel {
                                     id: codeLabel
                                     text: model.content
                                     font.family: appSettings.fontFamily

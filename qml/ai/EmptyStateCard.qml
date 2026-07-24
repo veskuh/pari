@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 
 AbstractButton {
     id: control
@@ -40,7 +41,7 @@ AbstractButton {
                 Layout.alignment: Qt.AlignHCenter
             }
             
-            Label {
+            KaakaoLabel {
                 text: control.title
                 font.family: "Public Sans"
                 font.pixelSize: 11
@@ -49,7 +50,7 @@ AbstractButton {
                 Layout.alignment: Qt.AlignHCenter
             }
             
-            Label {
+            KaakaoLabel {
                 text: control.description
                 font.family: "Public Sans"
                 font.pixelSize: 9

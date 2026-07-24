@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 import "../common"
 
 ColumnLayout {
@@ -14,7 +15,7 @@ ColumnLayout {
 
     spacing: 8
 
-    Label {
+    KaakaoLabel {
         text: qsTr("AI PROMPT")
         font.family: "Public Sans"
         font.pixelSize: 10
@@ -35,7 +36,7 @@ ColumnLayout {
             anchors.fill: parent
             anchors.margins: 4
             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-            TextArea {
+            KaakaoTextArea {
                 id: aiMessagePane
                 objectName: "aiMessagePane"
                 placeholderText: qsTr("Command the machine...")
@@ -59,7 +60,7 @@ ColumnLayout {
         Layout.fillWidth: true
         spacing: 10
 
-        ComboBox {
+        KaakaoComboBox {
             id: promptComboBox
             objectName: "promptComboBox"
             Layout.fillWidth: true

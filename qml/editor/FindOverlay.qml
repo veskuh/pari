@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import net.veskuh.pari 1.0
+import Kaakao 1.0
 import "../common"
 
 PariPaperWell {
@@ -103,7 +104,7 @@ PariPaperWell {
                 }
             }
 
-            Label {
+            KaakaoLabel {
                 id: resultsLabel
                 anchors.right: searchActionGroup.left
                 anchors.rightMargin: 8
@@ -116,7 +117,7 @@ PariPaperWell {
                 font.pixelSize: 11
             }
 
-            TextField {
+            KaakaoSearchField {
                 id: searchInput
                 anchors.left: parent.left
                 anchors.leftMargin: 34 // Matches replaceInput alignment
@@ -125,20 +126,6 @@ PariPaperWell {
                 height: 26
                 placeholderText: filterActive ? qsTr("Filter lines...") : qsTr("Search...")
                 onAccepted: findOverlay.findNext(false)
-                
-                color: findOverlay.isDark ? "#ffffff" : "#000000"
-                selectionColor: findOverlay.isDark ? "#4a9eff" : "#0078d7"
-                leftPadding: 28
-                
-                background: Rectangle {
-                    color: findOverlay.isDark ? "#1e1e1e" : "#fdfdfd"
-                    border.color: searchInput.activeFocus ? (findOverlay.isDark ? "#4a9eff" : "#0078d7") : (findOverlay.isDark ? "#333333" : "#cccccc")
-                    border.width: 1; radius: 3
-                    Label {
-                        text: filterActive ? "⏳" : "🔍"
-                        anchors.left: parent.left; anchors.leftMargin: 6; anchors.verticalCenter: parent.verticalCenter; opacity: 0.5
-                    }
-                }
             }
         }
 
@@ -154,7 +141,7 @@ PariPaperWell {
             Behavior on height { NumberAnimation { duration: 150 } }
             Behavior on opacity { NumberAnimation { duration: 150 } }
 
-            TextField {
+            KaakaoTextField {
                 id: replaceInput
                 anchors.left: parent.left
                 anchors.leftMargin: 34 // matches expandToggle.width (26) + leftMargin (8)
@@ -163,15 +150,6 @@ PariPaperWell {
                 height: 26
                 placeholderText: qsTr("Replace with...")
                 onAccepted: findOverlay.replaceNext()
-                
-                color: findOverlay.isDark ? "#ffffff" : "#000000"
-                selectionColor: findOverlay.isDark ? "#4a9eff" : "#0078d7"
-                
-                background: Rectangle {
-                    color: findOverlay.isDark ? "#1e1e1e" : "#fdfdfd"
-                    border.color: replaceInput.activeFocus ? (findOverlay.isDark ? "#4a9eff" : "#0078d7") : (findOverlay.isDark ? "#333333" : "#cccccc")
-                    border.width: 1; radius: 3
-                }
             }
 
             Row {
