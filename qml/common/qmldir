@@ -1,6 +1,4 @@
 module common
-PariSidebarTabBar 1.0 PariSidebarTabBar.qml
 PariPaperWell 1.0 PariPaperWell.qml
 PariReadOnlyTextArea 1.0 PariReadOnlyTextArea.qml
-PariTabBar 1.0 PariTabBar.qml
 ColorButton 1.0 ColorButton.qml

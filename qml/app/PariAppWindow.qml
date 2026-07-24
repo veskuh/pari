@@ -112,16 +112,14 @@ ApplicationWindow {
                 anchors.fill: parent
                 spacing: 0
 
-                // 1. SIDEBAR TAB BAR (Unified Metallic)
-                PariSidebarTabBar {
+                // 1. SIDEBAR TAB BAR (Kaakao Segmented Control)
+                KaakaoSegmentedControl {
                     id: sidebarTabBar
                     Layout.fillWidth: true
+                    Layout.margins: 4
                     currentIndex: sidebarStack.currentIndex
-                    model: [
-                        { text: qsTr("Explorer"), icon: "qrc:/assets/folder.png" },
-                        { text: qsTr("Search"), icon: "qrc:/assets/search.png" }
-                    ]
-                    onTabClicked: (index) => sidebarStack.currentIndex = index
+                    model: [qsTr("Explorer"), qsTr("Search")]
+                    onCurrentIndexChanged: sidebarStack.currentIndex = currentIndex
                 }
 
                 // 2. Main Sidebar Content
@@ -393,29 +391,68 @@ ApplicationWindow {
             }
         }
 
-        PariTabBar {
+        KaakaoTabBar {
             id: tabBar
             x: codeColumn.x
             width: codeColumn.width
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            model: documentManager.documents
-            onTabClicked: (index) => setEditorIndex(index)
-            onCloseTab: (index) => {
-                var doc = documentManager.documents[index];
-                if (doc.isDirty) {
-                    dialogs.targetIndex = index;
-                    dialogs.unsavedChangesDialog.open();
-                } else {
-                    documentManager.closeFile(index);
-                    setEditorIndex(documentManager.currentIndex);
+            currentIndex: documentManager.currentIndex
+
+            onCurrentIndexChanged: {
+                if (currentIndex >= 0 && currentIndex !== documentManager.currentIndex) {
+                    setEditorIndex(currentIndex);
+                }
+            }
+
+            Repeater {
+                model: documentManager.documents
+                delegate: KaakaoTabButton {
+                    required property var modelData
+                    required property int index
+
+                    text: modelData.isDirty ? modelData.fileName + " *" : modelData.fileName
+                    rightPadding: 24
+
+                    Label {
+                        text: "✕"
+                        anchors.right: parent.right
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.pixelSize: 10
+                        color: closeMouseArea.containsMouse ? Theme.primaryAccent : Theme.secondaryText
+                        opacity: 0.7
+                        z: 2
+
+                        MouseArea {
+                            id: closeMouseArea
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            hoverEnabled: true
+                            onClicked: (mouse) => {
+                                mouse.accepted = true;
+                                closeTabAtIndex(index);
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
+    function closeTabAtIndex(index) {
+        var doc = documentManager.documents[index];
+        if (doc && doc.isDirty) {
+            dialogs.targetIndex = index;
+            dialogs.unsavedChangesDialog.open();
+        } else {
+            documentManager.closeFile(index);
+            setEditorIndex(documentManager.currentIndex);
+        }
+    }
+
     function setEditorIndex(index) {
-        tabBar.currentIndex = index
+        tabBar.currentIndex = index;
         documentManager.setCurrentIndex(index);
         
         if (index >= 0 && index < documentManager.documents.length) {

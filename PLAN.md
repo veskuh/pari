@@ -142,13 +142,11 @@ All PariButton usages replaced with KaakaoButton (preserving highlighted/accent 
 
 Swapped to `KaakaoToolButton` in `PariAppWindow` toolbar and `AiInputControl`; deleted `PariToolButton.qml`, its `qmldir`/`qml.qrc` entries, and `tst_PariToolButton.qml`. Full build, `tst_all`, `tst_ui` (138 test cases), and `--selfcheck` passed cleanly.
 
-## Step 6 — Replace the tab bars
+## Step 6 — Replace the tab bars ✅
 
-Document tabs `PariTabBar` → `KaakaoTabBar`/`KaakaoTabButton`; sidebar strip `PariSidebarTabBar` →
-`KaakaoSegmentedControl`; delete both components, their `qmldir`/`qml.qrc` entries, and
-`tst_PariTabBar.qml`.
+**Status: DONE**
 
-Verify: `tst_CodeEditorPane` (tab interactions), full suite, `--selfcheck`.
+Document tabs `PariTabBar` replaced with `KaakaoTabBar`/`KaakaoTabButton`; sidebar strip `PariSidebarTabBar` replaced with `KaakaoSegmentedControl`. Deleted `PariTabBar.qml`, `PariSidebarTabBar.qml`, their `qmldir`/`qml.qrc` entries, and `tst_PariTabBar.qml`. Full build, `tst_all`, `tst_ui` (132 test cases), and `--selfcheck` passed cleanly.
 
 ## Step 7 — Re-shell the app on Kaakao chrome
 
