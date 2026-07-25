@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 import "../common"
 
 Dialog {
@@ -38,13 +39,13 @@ Dialog {
         RowLayout {
             Layout.alignment: Qt.AlignRight
             spacing: _pariTheme ? _pariTheme.paddingMedium : 8
-            PariButton {
+            KaakaoButton {
                 objectName: "okButton"
                 text: qsTr("OK")
                 highlighted: true
                 onClicked: goToLineDialog.accept()
             }
-            PariButton {
+            KaakaoButton {
                 objectName: "cancelButton"
                 text: qsTr("Cancel")
                 onClicked: goToLineDialog.reject()

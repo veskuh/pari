@@ -17,6 +17,10 @@ public:
 public slots:
     void qmlEngineAvailable(QQmlEngine *engine)
     {
+        engine->addImportPath(QLatin1String("qrc:/qt/qml"));
+        engine->addImportPath(QCoreApplication::applicationDirPath() + QLatin1String("/../qml"));
+        engine->addImportPath(QCoreApplication::applicationDirPath() + QLatin1String("/qml"));
+
         qmlRegisterType<DiffUtils>("net.veskuh.pari", 1, 0, "DiffUtils");
         qmlRegisterType<TextDocumentSearcher>("net.veskuh.pari", 1, 0, "TextDocumentSearcher");
         qmlRegisterType<GitLogModel>("net.veskuh.pari", 1, 0, "GitLogModel");

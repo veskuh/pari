@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 import "../common"
 
 Rectangle {
@@ -28,13 +29,14 @@ Rectangle {
             Layout.fillWidth: true
             spacing: 0
             
-            Label {
+            KaakaoLabel {
                 text: qsTr("GLOBAL SEARCH")
                 color: pariTheme.textColor
                 font.pixelSize: 10
                 font.bold: true
                 opacity: 0.6
                 Layout.leftMargin: 10
+                Layout.rightMargin: 10
                 Layout.topMargin: 10
                 Layout.bottomMargin: 8
             }
@@ -45,17 +47,24 @@ Rectangle {
             id: searchWell
             backgroundColor: pariTheme.isDark ? "#1a1a1a" : "#d8d8d8"
             Layout.fillWidth: true
-            Layout.preferredHeight: root.replaceMode ? 180 : 145
+            Layout.leftMargin: 8
+            Layout.rightMargin: 8
+            Layout.topMargin: 4
+            Layout.bottomMargin: 8
+            implicitHeight: searchColumn.implicitHeight + 16
+            Layout.preferredHeight: implicitHeight
             
             content: ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 10
+                id: searchColumn
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 8
                 spacing: 6
 
                 // Row 1: Wide Search Input
-                TextField {
+                KaakaoSearchField {
                     id: searchInput
-                    color: pariTheme.textColor
                     Layout.fillWidth: true
                     placeholderText: qsTr("Search for...")
                     onAccepted: projectSearchModel.search(fileSystem.rootPath, text, caseCheck.checked, regexCheck.checked, scopeInput.text)
@@ -70,22 +79,22 @@ Rectangle {
                 // Row 2: Replace Toggle + Search Options (Checkboxes)
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 12
+                    spacing: 8
 
-                    PariIconButton {
+                    KaakaoToolButton {
                         text: root.replaceMode ? "▼" : "▶"
                         Layout.preferredWidth: 24
                         Layout.preferredHeight: 24
                         onClicked: root.replaceMode = !root.replaceMode
                     }
 
-                    CheckBox {
+                    KaakaoCheckBox {
                         id: regexCheck
                         text: qsTr("Regex")
                         font.pixelSize: 11
                     }
 
-                    CheckBox {
+                    KaakaoCheckBox {
                         id: caseCheck
                         text: qsTr("Match Case")
                         font.pixelSize: 11
@@ -100,14 +109,14 @@ Rectangle {
                     spacing: 8
                     visible: root.replaceMode
                     
-                    TextField {
+                    KaakaoTextField {
                         id: replaceInput
                         color: pariTheme.textColor
                         Layout.fillWidth: true
                         placeholderText: qsTr("Replace with...")
                     }
                     
-                    PariButton {
+                    KaakaoButton {
                         text: qsTr("Replace All")
                         enabled: projectSearchModel.resultCount > 0
                         onClicked: replaceConfirmDialog.open()
@@ -117,27 +126,28 @@ Rectangle {
                 // Row 4: Scope & Search Button
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 8
+                    spacing: 6
 
-                    Label {
+                    KaakaoLabel {
                         text: qsTr("Scope:")
                         color: pariTheme.textColor
                         font.pixelSize: 11
                         opacity: 0.7
                     }
 
-                    TextField {
+                    KaakaoTextField {
                         id: scopeInput
                         color: pariTheme.textColor
                         text: "*"
                         placeholderText: "*.cpp"
                         font.pixelSize: 11
-                        Layout.preferredWidth: 80
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 60
                     }
 
                     Item { Layout.fillWidth: true }
                     
-                    PariButton {
+                    KaakaoButton {
                         text: projectSearchModel.isSearching ? qsTr("Cancel") : qsTr("Search")
                         highlighted: !projectSearchModel.isSearching
                         onClicked: {
@@ -150,7 +160,7 @@ Rectangle {
                     }
                 }
                 
-                ProgressBar {
+                KaakaoProgressBar {
                     visible: projectSearchModel.isSearching
                     Layout.fillWidth: true
                     indeterminate: true
@@ -172,16 +182,17 @@ Rectangle {
                 height: 24
                 color: pariTheme.isDark ? "#3d3d3d" : "#e0e0e0"
                 
-                Label {
+                KaakaoLabel {
                     text: (typeof section !== "undefined" ? section : "").replace(fileSystem.rootPath + "/", "")
                     color: pariTheme.textColor
                     font.bold: true
                     font.pixelSize: 11
                     elide: Text.ElideLeft
-                    width: parent.width - 20
                     anchors {
                         left: parent.left
+                        right: parent.right
                         leftMargin: 10
+                        rightMargin: 24
                         verticalCenter: parent.verticalCenter
                     }
                 }
@@ -191,18 +202,20 @@ Rectangle {
                 id: delegate
                 width: resultsList.width
                 height: 45
+                leftPadding: 10
+                rightPadding: 24
                 
                 contentItem: ColumnLayout {
                     spacing: 2
                     
-                    Label {
+                    KaakaoLabel {
                         text: model.lineNumber === 0 ? qsTr("Filename match") : qsTr("Line %1").arg(model.lineNumber)
                         color: pariTheme.accentColor
                         font.pixelSize: 10
                         opacity: 0.8
                     }
                     
-                    Label {
+                    KaakaoLabel {
                         text: model.lineText
                         color: pariTheme.textColor
                         font.family: "Menlo"
@@ -226,7 +239,7 @@ Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 20
             
-            Label {
+            KaakaoLabel {
                 text: {
                     if (projectSearchModel.isSearching) {
                         return qsTr("Searching...");
@@ -241,21 +254,13 @@ Rectangle {
         }
     }
 
-    Dialog {
+    KaakaoDialog {
         id: replaceConfirmDialog
         title: qsTr("Confirm Replace All")
+        text: qsTr("Are you sure you want to replace all %1 occurrences in the project?").arg(projectSearchModel.resultCount)
         standardButtons: Dialog.Yes | Dialog.No
-        anchors.centerIn: Overlay.overlay
         modal: true
         implicitWidth: 350
-        
-        Label {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            text: qsTr("Are you sure you want to replace all %1 occurrences in the project?").arg(projectSearchModel.resultCount)
-            color: pariTheme.textColor
-            wrapMode: Text.WordWrap
-        }
         
         onAccepted: projectSearchModel.replaceAll(replaceInput.text)
     }

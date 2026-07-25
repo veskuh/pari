@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import net.veskuh.pari 1.0
+import Kaakao 1.0
 import "../common"
 
 PariPaperWell {
@@ -64,7 +65,7 @@ PariPaperWell {
             width: parent.width
             height: 26
 
-            PariIconButton {
+            KaakaoToolButton {
                 id: expandToggle
                 anchors.left: parent.left
                 width: 26; height: 26
@@ -78,32 +79,38 @@ PariPaperWell {
                 spacing: 2
                 height: 26
 
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     text: "⏳"; checkable: true; checked: findOverlay.filterActive
                     onCheckedChanged: findOverlay.filterActive = checked
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     text: "Aa"; checkable: true; checked: findOverlay.matchCase
                     onCheckedChanged: findOverlay.matchCase = checked
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     text: ".*"; checkable: true; checked: findOverlay.useRegex
                     onCheckedChanged: findOverlay.useRegex = checked
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     enabled: searchInput.text !== "" && !findOverlay.filterActive && findOverlay.totalMatches > 0 && (findOverlay.currentMatchIndex === -1 || findOverlay.currentMatchIndex > 0)
                     text: "▲"; onClicked: findOverlay.findPrevious()
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     enabled: searchInput.text !== "" && !findOverlay.filterActive && findOverlay.totalMatches > 0 && (findOverlay.currentMatchIndex === -1 || findOverlay.currentMatchIndex < findOverlay.totalMatches - 1)
                     text: "▼"; onClicked: findOverlay.findNext(false)
                 }
-                PariIconButton {
+                KaakaoToolButton {
+                    implicitWidth: 26; implicitHeight: 26
                     text: "✕"; onClicked: findOverlay.closeOverlay()
                 }
             }
 
-            Label {
+            KaakaoLabel {
                 id: resultsLabel
                 anchors.right: searchActionGroup.left
                 anchors.rightMargin: 8
@@ -116,7 +123,7 @@ PariPaperWell {
                 font.pixelSize: 11
             }
 
-            TextField {
+            KaakaoSearchField {
                 id: searchInput
                 anchors.left: parent.left
                 anchors.leftMargin: 34 // Matches replaceInput alignment
@@ -125,20 +132,6 @@ PariPaperWell {
                 height: 26
                 placeholderText: filterActive ? qsTr("Filter lines...") : qsTr("Search...")
                 onAccepted: findOverlay.findNext(false)
-                
-                color: findOverlay.isDark ? "#ffffff" : "#000000"
-                selectionColor: findOverlay.isDark ? "#4a9eff" : "#0078d7"
-                leftPadding: 28
-                
-                background: Rectangle {
-                    color: findOverlay.isDark ? "#1e1e1e" : "#fdfdfd"
-                    border.color: searchInput.activeFocus ? (findOverlay.isDark ? "#4a9eff" : "#0078d7") : (findOverlay.isDark ? "#333333" : "#cccccc")
-                    border.width: 1; radius: 3
-                    Label {
-                        text: filterActive ? "⏳" : "🔍"
-                        anchors.left: parent.left; anchors.leftMargin: 6; anchors.verticalCenter: parent.verticalCenter; opacity: 0.5
-                    }
-                }
             }
         }
 
@@ -154,7 +147,7 @@ PariPaperWell {
             Behavior on height { NumberAnimation { duration: 150 } }
             Behavior on opacity { NumberAnimation { duration: 150 } }
 
-            TextField {
+            KaakaoTextField {
                 id: replaceInput
                 anchors.left: parent.left
                 anchors.leftMargin: 34 // matches expandToggle.width (26) + leftMargin (8)
@@ -163,15 +156,6 @@ PariPaperWell {
                 height: 26
                 placeholderText: qsTr("Replace with...")
                 onAccepted: findOverlay.replaceNext()
-                
-                color: findOverlay.isDark ? "#ffffff" : "#000000"
-                selectionColor: findOverlay.isDark ? "#4a9eff" : "#0078d7"
-                
-                background: Rectangle {
-                    color: findOverlay.isDark ? "#1e1e1e" : "#fdfdfd"
-                    border.color: replaceInput.activeFocus ? (findOverlay.isDark ? "#4a9eff" : "#0078d7") : (findOverlay.isDark ? "#333333" : "#cccccc")
-                    border.width: 1; radius: 3
-                }
             }
 
             Row {
@@ -181,12 +165,12 @@ PariPaperWell {
                 spacing: 4
                 height: 24
 
-                PariButton {
+                KaakaoButton {
                     text: qsTr("Replace")
                     onClicked: findOverlay.replaceNext()
                     width: 70; height: 24
                 }
-                PariButton {
+                KaakaoButton {
                     text: qsTr("Replace All")
                     onClicked: findOverlay.replaceAll()
                     width: 85; height: 24

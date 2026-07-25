@@ -2,9 +2,10 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import Kaakao 1.0
 import "../common"
 
-Dialog {
+KaakaoDialog {
     id: renameDialog
     title: "Rename File"
     modal: true
@@ -33,14 +34,14 @@ Dialog {
     contentItem: ColumnLayout {
         spacing: _pariTheme ? _pariTheme.paddingLarge : 15
 
-        Label {
+        KaakaoLabel {
             text: "Enter new name for: " + (renameDialog.oldPath ? renameDialog.oldPath.substring(renameDialog.oldPath.lastIndexOf('/') + 1) : "")
             Layout.fillWidth: true
             elide: Text.ElideMiddle
             color: _pariTheme ? _pariTheme.textColor : "black"
         }
 
-        TextField {
+        KaakaoTextField {
             id: newNameField
             Layout.fillWidth: true
             placeholderText: "New name"
@@ -57,7 +58,7 @@ Dialog {
         RowLayout {
             Layout.alignment: Qt.AlignRight
             spacing: _pariTheme ? _pariTheme.paddingMedium : 10
-            PariButton {
+            KaakaoButton {
                 id: renameButton
                 objectName: "renameButton"
                 text: qsTr("Rename")
@@ -69,7 +70,7 @@ Dialog {
                     }
                 }
             }
-            PariButton {
+            KaakaoButton {
                 objectName: "cancelButton"
                 text: qsTr("Cancel")
                 onClicked: {

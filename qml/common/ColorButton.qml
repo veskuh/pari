@@ -1,18 +1,22 @@
 import QtQuick
+import Kaakao 1.0
 
-Rectangle {
+KaakaoButton {
     id: root
 
-    width: 50
-    height: 25
+    property alias color: swatch.color
 
-    border.color: "gray"
-    border.width: 1
+    implicitWidth: 50
+    implicitHeight: 25
 
-    MouseArea {
-        anchors.fill: parent
-        onClicked: root.clicked()
+    padding: 3
+
+    contentItem: Rectangle {
+        id: swatch
+        implicitWidth: 44
+        implicitHeight: 19
+        radius: Theme.radiusSmall
+        border.color: Theme.buttonBorder
+        border.width: 1
     }
-
-    signal clicked
 }

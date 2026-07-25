@@ -178,6 +178,7 @@ target_link_libraries(tst_ui PRIVATE
     Qt6::Widgets
     Qt6::Network
     Qt6::Concurrent
+    Kaakao::Kaakao
 )
 
 if(ENABLE_COVERAGE)

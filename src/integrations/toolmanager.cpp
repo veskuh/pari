@@ -11,6 +11,13 @@ ToolManager::ToolManager(QObject *parent)
 {
     connect(m_branchProcess, &QProcess::finished, this, &ToolManager::onBranchProcessFinished);
     connect(m_qmlFormatProcess, &QProcess::finished, this, &ToolManager::onQmlFormatProcessFinished);
+    connect(m_qmlFormatProcess, &QProcess::errorOccurred, this, [this](QProcess::ProcessError error) {
+        if (error == QProcess::FailedToStart && m_tempQmlFile) {
+            emit qmlFileIndented(m_originalQmlContent);
+            m_tempQmlFile->deleteLater();
+            m_tempQmlFile = nullptr;
+        }
+    });
 }
 
 void ToolManager::runCommand(const QString &command, const QString &workingDirectory)

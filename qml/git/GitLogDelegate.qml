@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import Kaakao 1.0
 import "../common"
 
 Item {
@@ -128,7 +129,7 @@ Item {
                             }
                             border.color: isDark ? "#111" : "#b0b7be"
                             
-                            Label {
+                            KaakaoLabel {
                                 anchors.centerIn: parent
                                 text: _sha.substring(0, 7)
                                 font.family: "Menlo"
@@ -147,7 +148,7 @@ Item {
                                         copyTooltip.show("Copied!");
                                     }
                                 }
-                                ToolTip {
+                                KaakaoToolTip {
                                     id: copyTooltip
                                     text: qsTr("Click to copy SHA")
                                     visible: parent.containsMouse
@@ -174,7 +175,7 @@ Item {
 
                         Item { Layout.fillWidth: true }
 
-                        Label {
+                        KaakaoLabel {
                             text: (model && model.date) ? (model.date + " " + model.time) : ""
                             font.family: "Menlo"
                             font.pixelSize: 10
@@ -188,14 +189,14 @@ Item {
                         Layout.fillWidth: true
                         spacing: 8
 
-                        Label {
+                        KaakaoLabel {
                             text: delegateRoot.expanded ? "▼" : "▶"
                             font.pixelSize: 8
                             color: ((typeof pariTheme !== 'undefined') ? pariTheme.accentColor : "#0078d7")
                             opacity: 0.8
                         }
 
-                        Label {
+                        KaakaoLabel {
                             Layout.fillWidth: true
                             text: (model && model.messageHeader) ? model.messageHeader : ""
                             font.bold: true
@@ -212,8 +213,8 @@ Item {
                         spacing: 6
                         opacity: 0.7
 
-                        Label { text: "👤"; font.pixelSize: 10 }
-                        Label {
+                        KaakaoLabel { text: "👤"; font.pixelSize: 10 }
+                        KaakaoLabel {
                             text: (model && model.authorName) ? model.authorName : ""
                             font.pixelSize: 11
                             color: ((typeof pariTheme !== 'undefined') ? pariTheme.textColor : "#000")
@@ -240,7 +241,7 @@ Item {
                     opacity: 0.5
                 }
 
-                Label {
+                KaakaoLabel {
                     Layout.fillWidth: true
                     text: (model && model.messageBody) ? model.messageBody : ""
                     font.pixelSize: 12
@@ -258,8 +259,8 @@ Item {
                     RowLayout {
                         visible: _detailsLoading
                         spacing: 8
-                        Label { text: "⚙️"; font.pixelSize: 12 }
-                        Label { 
+                        KaakaoLabel { text: "⚙️"; font.pixelSize: 12 }
+                        KaakaoLabel { 
                             text: qsTr("Fetching Refactoring Dossier...")
                             font.pixelSize: 11; font.italic: true; opacity: 0.6
                             color: ((typeof pariTheme !== 'undefined') ? pariTheme.textColor : "#000")
@@ -272,7 +273,7 @@ Item {
                         Layout.fillWidth: true
                         spacing: 10
 
-                        Label {
+                        KaakaoLabel {
                             text: "📑 <a href='diff_full:all'>View Full Diff</a>"
                             textFormat: Text.RichText
                             font.pixelSize: 11
@@ -284,7 +285,7 @@ Item {
                             }
                         }
 
-                        Label {
+                        KaakaoLabel {
                             id: statsText
                             Layout.fillWidth: true
                             textFormat: Text.RichText

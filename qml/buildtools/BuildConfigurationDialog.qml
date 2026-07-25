@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import QtQuick.Dialogs
+import Kaakao 1.0
 import "../common"
 
 ApplicationWindow {
@@ -32,12 +33,12 @@ ApplicationWindow {
             columnSpacing: 10
             Layout.fillWidth: true
 
-            Label {
+            KaakaoLabel {
                 text: qsTr("Build:")
                 font.bold: true
                 color: _pariTheme ? _pariTheme.textColor : "#333333"
             }
-            TextField {
+            KaakaoTextField {
                 id: buildCommandField
                 placeholderText: qsTr("cmake --build build")
                 text: buildConfigurationWindow.buildCommand
@@ -45,12 +46,12 @@ ApplicationWindow {
                 selectByMouse: true
             }
 
-            Label {
+            KaakaoLabel {
                 text: qsTr("Run:")
                 font.bold: true
                 color: _pariTheme ? _pariTheme.textColor : "#333333"
             }
-            TextField {
+            KaakaoTextField {
                 id: runCommandField
                 placeholderText: qsTr("./build/app")
                 text: buildConfigurationWindow.runCommand
@@ -58,12 +59,12 @@ ApplicationWindow {
                 selectByMouse: true
             }
 
-            Label {
+            KaakaoLabel {
                 text: qsTr("Clean:")
                 font.bold: true
                 color: _pariTheme ? _pariTheme.textColor : "#333333"
             }
-            TextField {
+            KaakaoTextField {
                 id: cleanCommandField
                 placeholderText: qsTr("rm -rf build")
                 text: buildConfigurationWindow.cleanCommand
@@ -80,7 +81,7 @@ ApplicationWindow {
             Layout.alignment: Qt.AlignRight
             spacing: _pariTheme ? _pariTheme.paddingMedium : 10
             
-            PariButton {
+            KaakaoButton {
                 text: qsTr("Save")
                 highlighted: true
                 onClicked: {
@@ -88,7 +89,7 @@ ApplicationWindow {
                     buildConfigurationWindow.close()
                 }
             }
-            PariButton {
+            KaakaoButton {
                 text: qsTr("Cancel")
                 onClicked: buildConfigurationWindow.close()
             }

@@ -1,7 +1,8 @@
 import QtQuick
 import QtQuick.Controls
+import Kaakao 1.0
 
-ApplicationWindow {
+KaakaoDialog {
     id: fileInfoDialog
     title: qsTr("File Info")
 
@@ -13,24 +14,20 @@ ApplicationWindow {
     width: 400
     height: 180
 
-    Column {
-        anchors{
-            fill: parent
-            margins: 10
-        }
-
+    contentItem: Column {
         spacing: 10
+        padding: 16
 
-        Label {
+        KaakaoLabel {
             text: qsTr("Name: %1").arg(fileName)
         }
-        Label {
+        KaakaoLabel {
             text: qsTr("Path: %1").arg(filePath)
         }
-        Label {
+        KaakaoLabel {
             text: qsTr("Size: %1").arg(fileSize)
         }
-        Label {
+        KaakaoLabel {
             text: qsTr("Modified: %1").arg(fileModified)
         }
     }

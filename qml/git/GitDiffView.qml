@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 import "../common"
 
 Item {
@@ -101,7 +102,7 @@ Item {
                         spacing: 8
                         visible: type !== 4
 
-                        Label {
+                        KaakaoLabel {
                             Layout.preferredWidth: 25
                             text: (typeof oldLine === 'number' && oldLine > 0) ? oldLine : ""
                             font.family: "Menlo"
@@ -109,7 +110,7 @@ Item {
                             horizontalAlignment: Text.AlignRight
                             color: isDark ? "#666666" : "#999999"
                         }
-                        Label {
+                        KaakaoLabel {
                             Layout.preferredWidth: 25
                             text: (typeof newLine === 'number' && newLine > 0) ? newLine : ""
                             font.family: "Menlo"
@@ -117,7 +118,7 @@ Item {
                             horizontalAlignment: Text.AlignRight
                             color: isDark ? "#666666" : "#999999"
                         }
-                        Label {
+                        KaakaoLabel {
                             Layout.fillWidth: true
                             text: {
                                 if (type === 1) return "+";
@@ -146,7 +147,7 @@ Item {
                     }
                     spacing: 8
 
-                    Label {
+                    KaakaoLabel {
                         text: type === 3 ? "🛠️" : (type === 5 || type === 6 ? "📄" : "")
                         visible: type === 3 || type === 5 || type === 6
                         font.pixelSize: 14
@@ -159,7 +160,7 @@ Item {
                         radius: 3
                         color: isDark ? "#228b22" : "#e6ffe6"
                         border.color: isDark ? "#1a331a" : "#228b22"
-                        Label {
+                        KaakaoLabel {
                             anchors.centerIn: parent
                             text: "NEW"
                             font.bold: true
@@ -168,7 +169,7 @@ Item {
                         }
                     }
 
-                    Label {
+                    KaakaoLabel {
                         id: contentLabel
                         Layout.fillWidth: true
                         text: {

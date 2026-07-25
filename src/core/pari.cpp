@@ -40,6 +40,9 @@ int main(int argc, char *argv[])
     qmlRegisterType<DocumentManager>("net.veskuh.pari", 1, 0, "DocumentManager");
 
     QQmlApplicationEngine engine;
+    engine.addImportPath(QLatin1String("qrc:/qt/qml"));
+    engine.addImportPath(QCoreApplication::applicationDirPath() + QLatin1String("/../qml"));
+    engine.addImportPath(QCoreApplication::applicationDirPath() + QLatin1String("/qml"));
 
     Settings *appSettings = new Settings(&app);
     appSettings->setSystemTheme(QApplication::palette().color(QPalette::Window).lightness() < 128);

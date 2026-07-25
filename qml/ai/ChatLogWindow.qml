@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 import "../common"
 
 Window {
@@ -21,7 +22,7 @@ Window {
         anchors.margins: _pariTheme ? _pariTheme.marginStandard : 10
         spacing: _pariTheme ? _pariTheme.marginStandard : 10
 
-        Label {
+        KaakaoLabel {
             text: qsTr("Chat Session Log")
             font.bold: true
             font.pixelSize: _pariTheme ? _pariTheme.fontSizeLarge : 14
@@ -71,7 +72,7 @@ Window {
             }
         }
 
-        PariButton {
+        KaakaoButton {
             text: qsTr("Close")
             Layout.alignment: Qt.AlignRight
             highlighted: true

@@ -1,51 +1,44 @@
 import QtQuick
+import Kaakao
 
 QtObject {
     id: root
-    
-    readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null && appSettings.systemThemeIsDark !== undefined) ? appSettings.systemThemeIsDark : false
 
-    // --- Colors: Surfaces ---
-    readonly property color sidebarBg: isDark ? "#252525" : "#D6DDE5"
-    readonly property color sidebarBorder: isDark ? "#333333" : "#A6ABB2"
-    readonly property color editorBg: isDark ? "#1a1a1a" : "#ffffff"
+    property Binding themeBinding: Binding {
+        target: Theme
+        property: "themeMode"
+        value: (typeof appSettings !== 'undefined' && appSettings !== null && appSettings.systemThemeIsDark !== undefined)
+               ? (appSettings.systemThemeIsDark ? Theme.Dark : Theme.Light)
+               : Theme.System
+    }
+
+    readonly property bool isDark: Theme.isDarkMode
+
+    // --- Colors: Surfaces (sourced from Kaakao Theme) ---
+    readonly property color sidebarBg: Theme.sidebarBackground
+    readonly property color sidebarBorder: Theme.sidebarBorder
+    readonly property color editorBg: Theme.contentBackground
+    readonly property color editorBorder: Theme.textFieldBorder
+    readonly property color windowBg: Theme.windowBackground
+
+    // --- Colors: Text (sourced from Kaakao Theme) ---
+    readonly property color textColor: Theme.primaryText
+    readonly property color textColorMuted: Theme.secondaryText
+    readonly property color textColorDim: Theme.secondaryText
+    readonly property color textColorInverse: Theme.accentButtonText
+    readonly property color accentColor: Theme.primaryAccent
+
+    // --- Metrics: Paddings & Margins (sourced from Kaakao Theme) ---
+    readonly property real paddingSmall: Theme.paddingSmall
+    readonly property real paddingMedium: Theme.paddingMedium
+    readonly property real marginStandard: Theme.standardPadding
+    readonly property real borderRadius: Theme.radiusStandard
+
+    // --- Custom pari properties (no Kaakao equivalent) ---
     readonly property color editorBgDirty: isDark ? "#1e2538" : "#fffdf0"
-    readonly property color editorBorder: isDark ? "#121212" : "#bcbcbc"
-    readonly property color windowBg: isDark ? "#1e1e1e" : "#f0f0f0"
-    
-    // --- Colors: Text ---
-    readonly property color textColor: isDark ? "#d0d0d0" : "#1a1c1c"
-    readonly property color textColorMuted: isDark ? "#888888" : "#666666"
-    readonly property color textColorDim: isDark ? "#aaaaaa" : "#555555"
-    readonly property color textColorInverse: "#ffffff"
-    readonly property color accentColor: isDark ? "#4a9eff" : "#0078d7"
-
-    // --- Colors: Buttons (Light Theme) ---
-    readonly property color btnLightTop: "#f0f0f0"
-    readonly property color btnLightBottom: "#cccccc"
-    readonly property color btnLightBorder: "#9b9b9b"
-    readonly property color btnLightPrimaryTop: "#3b99fc"
-    readonly property color btnLightPrimaryBottom: "#0078d7"
-    
-    // --- Colors: Buttons (Dark Theme) ---
-    readonly property color btnDarkTop: "#3c3c3c"
-    readonly property color btnDarkBottom: "#252525"
-    readonly property color btnDarkBorder: "#111111"
-    readonly property color btnDarkPrimaryTop: "#1a6ac3"
-    readonly property color btnDarkPrimaryBottom: "#0d4d92"
-
-    // --- Metrics: Paddings & Margins ---
-    readonly property real paddingSmall: 4
-    readonly property real paddingMedium: 8
     readonly property real paddingLarge: 12
-    readonly property real marginStandard: 15
-    readonly property real borderRadius: 4
-    
-    // --- Fonts ---
     readonly property string monoFont: (typeof appSettings !== 'undefined' && appSettings && appSettings.fontFamily) ? appSettings.fontFamily : (Qt.platform.os === 'osx' ? "Menlo" : "monospace")
     readonly property int fontSize: (typeof appSettings !== 'undefined' && appSettings && appSettings.fontSize) ? appSettings.fontSize : 12
-    
-    // Classic macOS hierarchy: 11pt for toolbar/small, 13pt for standard buttons
     readonly property int fontToolbar: 11
     readonly property int fontButton: 13
     readonly property int fontSizeSmall: fontSize - 1

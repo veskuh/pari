@@ -2,8 +2,9 @@
 
 ## Completed Features
 
-*   **Modular Architecture:** Refactored into a clean, component-based structure (`AppLogic`, `PariActions`, etc.).
-*   **Intelligent UI:** Resizable panes using `SplitView`, togglable sidebars, and proportional layouts.
+*   **Kaakao Design System Integration:** Native macOS Yosemite–Catalina aesthetic using [Kaakao](https://github.com/veskuh/Kaakao) components across controls, window chrome, toolbars, menus, tab bars, and dialogs.
+*   **Modular Architecture:** Refactored into a clean, component-based structure (`AppLogic`, `PariActions`, `PariTheme` facade).
+*   **Intelligent UI:** Resizable panes using `KaakaoSplitView`, togglable sidebars, and proportional layouts.
 *   **Local AI Power:** Full streaming integration with Ollama for real-time responses.
 *   **Contextual AI:** Automatic injection of file content and user selection into prompts.
 *   **Visual Diffs:** Integrated diff view for AI-suggested changes.
@@ -12,12 +13,12 @@
 *   **Advanced Search:** Integrated incremental search and **Grep-like line filtering** with original document numbering.
 *   **Project-Wide Investigation:** Background-threaded search and global replacement engine across the entire codebase.
 *   **Multi-Language:** Precision syntax highlighting for **C++, Go, Java, JavaScript, Kotlin, Markdown, QML, Rust, Shell, and Swift**.
-*   **Skeuomorphic Design:** Tactile "Precision Bench" design with "Machine Bezel" top-tab navigation and premium tactile refinements.
-*   **Quality First:** Robust test suite with **350+ tests** and **85.7%** line coverage.
+*   **Skeuomorphic Design:** Tactile "Precision Bench" design with `PariPaperWell` recessed containers and Kaakao chrome.
+*   **Quality First:** Robust test suite with **330+ tests** and high line coverage.
 
 ## Current Architecture
 
-*   **Frontend:** QML with a modular component system and high-fidelity skeuomorphic refinements.
+*   **Frontend:** QML built on the `Kaakao` component framework and `PariTheme` facade.
 *   **Backend Facade (`DocumentManager`):** Central orchestrator for document lifecycles and state.
 *   **Engines:** 
     *   `ProjectSearchModel`: High-performance, background-threaded project-wide search engine.
@@ -31,7 +32,7 @@
 # C++ Unit Tests (204 tests)
 ./build/tests/tst_all
 
-# QML UI Tests (147 tests)
+# QML UI Tests (132 tests)
 ./build/tests/tst_ui -input tests/
 ```
 

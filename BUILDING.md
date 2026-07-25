@@ -3,7 +3,7 @@
 ## Prerequisites
 
 ### Common Dependencies
-- **Qt6:** (Core, Gui, Qml, Quick, Widgets, Network, Test)
+- **Qt6:** (Core, Gui, Qml, Quick, Widgets, Network, Test, Core5Compat, ShaderTools)
 - **CMake:** 3.16 or newer.
 - **Ninja/Make:** Build system generator.
 - **Ollama:** Locally running instance for AI features.
@@ -18,12 +18,14 @@ Install dependencies via Homebrew:
 brew install qt6 cmake lcov clang-format
 ```
 
-### Linux (Debian/Ubuntu)
+### Linux (Debian/Ubuntu / openSUSE)
 ```bash
 sudo apt-get install -y qt6-base-dev qt6-declarative-dev qml-qt6 qmlscene-qt6 \
     qml6-module-qtquick-controls qml6-module-qtquick-window qml6-module-qtquick-layouts \
     qml6-module-qtquick-dialogs qml6-module-qtqml-workerscript qml6-module-qtquick \
-    qml6-module-qtquick-templates qml6-module-qtcore lcov clang-format
+    qml6-module-qtquick-templates qml6-module-qtcore qml6-module-qt5compat-graphicaleffects \
+    qt6-5compat-dev qt6-shadertools-dev lcov clang-format
+# openSUSE: qt6-qt5compat-devel qt6-shadertools-devel
 ```
 
 ## Build Instructions

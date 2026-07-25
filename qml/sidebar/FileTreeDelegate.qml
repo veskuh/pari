@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 
 Item {
     id: root
@@ -97,7 +98,7 @@ Item {
         spacing: 4
 
         // --- Indicator (Folder Arrow) ---
-        Label {
+        KaakaoLabel {
             id: indicator
             text: isDirectory ? "▶" : ""
             font.pixelSize: 10
@@ -147,7 +148,7 @@ Item {
         }
 
         // --- Label ---
-        Label {
+        KaakaoLabel {
             text: root.display ? root.display : ""
             Layout.fillWidth: true
             clip: true
@@ -183,10 +184,10 @@ Item {
         }
     }
 
-    Menu {
+    KaakaoMenu {
         id: contextMenu
 
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("New File...")
             enabled: isDirectory
             onTriggered: {
@@ -198,7 +199,7 @@ Item {
                 dialog.open();
             }
         }
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Open in new tab")
             enabled: !isDirectory
             onTriggered: {
@@ -206,7 +207,7 @@ Item {
                 if (typeof fileSystemView !== 'undefined') fileSystemView.selectedPath = root.filePath;
             }
         }
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Info")
             onTriggered: {
                 var fileInfo = fileSystem.getFileInfo(root.filePath);
@@ -218,14 +219,11 @@ Item {
                     fileModified: fileInfo.modified
                 });
                 if (dialog) {
-                    // ApplicationWindow coordinates are screen-relative
-                    dialog.x = mainWindow.x + (mainWindow.width - dialog.width) / 2;
-                    dialog.y = mainWindow.y + (mainWindow.height - dialog.height) / 2;
-                    dialog.show();
+                    dialog.open();
                 }
             }
         }
-        MenuItem {
+        KaakaoMenuItem {
             text: qsTr("Rename")
             onTriggered: {
                 var component = Qt.createComponent("RenameDialog.qml");

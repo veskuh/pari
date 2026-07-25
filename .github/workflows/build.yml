@@ -13,6 +13,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v5
+      with:
+        submodules: recursive
 
     - name: Install dependencies
       run: |
@@ -24,6 +26,7 @@ jobs:
       with:
         version: '6.9.3'
         arch: 'linux_gcc_64'
+        modules: 'qt5compat qtshadertools'
 
     - name: Build project
       run: |

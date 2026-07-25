@@ -1,124 +1,72 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Kaakao 1.0
 
-Rectangle {
+KaakaoStatusBar {
     id: root
-    implicitHeight: 24
-    width: parent.width
-    
+
     property alias text: statusLabel.text
     property string modelName: ""
     property string branchName: ""
-    
+
     readonly property bool isDark: (typeof appSettings !== 'undefined' && appSettings !== null) ? appSettings.systemThemeIsDark : false
-    
-    gradient: Gradient {
-        GradientStop { 
-            position: 0.0
-            color: root.isDark ? "#3c3c3c" : "#e2e2e2" 
-        }
-        GradientStop { 
-            position: 1.0
-            color: root.isDark ? "#2d2d2d" : "#d0d0d0" 
-        }
-    }
-    
-    // Top highlight line to separate from the content area
+
+    // Recessed LCD-style indicator for Branch
     Rectangle {
-        anchors.top: parent.top
-        width: parent.width
-        height: 1
-        color: root.isDark ? "#505050" : "#ffffff"
-        z: 2
+        Layout.preferredHeight: 18
+        Layout.preferredWidth: branchLabel.implicitWidth + 12
+        visible: root.branchName !== ""
+        radius: Theme.radiusSmall
+        color: Theme.contentBackground
+        border.color: Theme.buttonBorder
+
+        Label {
+            id: branchLabel
+            text: "🌿 " + root.branchName
+            anchors.centerIn: parent
+            font.family: Theme.defaultFont.family
+            font.pixelSize: 10
+            color: Theme.primaryAccent
+        }
     }
-    
-    RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: 8
-        anchors.rightMargin: 8
-        spacing: 12
-        
-        // Recessed LCD-style indicator for Branch
-        Rectangle {
-            Layout.preferredHeight: 18
-            Layout.preferredWidth: branchLabel.implicitWidth + 12
-            visible: root.branchName !== ""
-            radius: 2
-            color: root.isDark ? "#1a1a1a" : "#fdfdfd"
-            border.color: root.isDark ? "#121212" : "#bcbcbc"
-            
-            Label {
-                id: branchLabel
-                text: "🌿 " + root.branchName
-                anchors.centerIn: parent
-                font.family: "Menlo"
-                font.pixelSize: 10
-                color: root.isDark ? "#4aa9ff" : "#0051a6"
-            }
-            
-            // Inset shadow for LCD effect
-            Rectangle {
-                anchors.fill: parent
-                radius: 2
-                color: "black"
-                opacity: 0.05
-            }
+
+    // Recessed LCD-style indicator for Model
+    Rectangle {
+        Layout.preferredHeight: 18
+        Layout.preferredWidth: modelLabel.implicitWidth + 12
+        visible: root.modelName !== ""
+        radius: Theme.radiusSmall
+        color: Theme.contentBackground
+        border.color: Theme.buttonBorder
+
+        Label {
+            id: modelLabel
+            text: "💡 " + root.modelName
+            anchors.centerIn: parent
+            font.family: Theme.defaultFont.family
+            font.pixelSize: 10
+            color: Theme.secondaryText
         }
+    }
 
-        // Recessed LCD-style indicator for Model
-        Rectangle {
-            Layout.preferredHeight: 18
-            Layout.preferredWidth: modelLabel.implicitWidth + 12
-            visible: root.modelName !== ""
-            radius: 2
-            color: root.isDark ? "#1a1a1a" : "#fdfdfd"
-            border.color: root.isDark ? "#121212" : "#bcbcbc"
-            
-            Label {
-                id: modelLabel
-                text: "💡 " + root.modelName
-                anchors.centerIn: parent
-                font.family: "Menlo"
-                font.pixelSize: 10
-                color: root.isDark ? "#b0b0b0" : "#646464"
-            }
+    Item { Layout.fillWidth: true }
 
-            // Inset shadow for LCD effect
-            Rectangle {
-                anchors.fill: parent
-                radius: 2
-                color: "black"
-                opacity: 0.05
-            }
-        }
+    // Recessed LCD-style indicator for Status Message
+    Rectangle {
+        Layout.preferredHeight: 18
+        Layout.preferredWidth: statusLabel.implicitWidth + 16
+        radius: Theme.radiusSmall
+        color: Theme.contentBackground
+        border.color: Theme.buttonBorder
 
-        Item { Layout.fillWidth: true }
-
-        // Recessed LCD-style indicator for Status Message
-        Rectangle {
-            Layout.preferredHeight: 18
-            Layout.preferredWidth: statusLabel.implicitWidth + 16
-            radius: 2
-            color: root.isDark ? "#1a1a1a" : "#fdfdfd"
-            border.color: root.isDark ? "#121212" : "#bcbcbc"
-            
-            Label {
-                id: statusLabel
-                anchors.centerIn: parent
-                font.family: "Menlo"
-                font.pixelSize: 10
-                color: root.isDark ? "#b0b0b0" : "#444444"
-                text: qsTr("Ready")
-            }
-
-            // Inset shadow for LCD effect
-            Rectangle {
-                anchors.fill: parent
-                radius: 2
-                color: "black"
-                opacity: 0.05
-            }
+        Label {
+            id: statusLabel
+            anchors.centerIn: parent
+            font.family: Theme.defaultFont.family
+            font.pixelSize: 10
+            color: Theme.primaryText
+            text: qsTr("Ready")
         }
     }
 }

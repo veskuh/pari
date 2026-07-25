@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Kaakao 1.0
 import "../app"
 
 Rectangle {
@@ -17,19 +18,19 @@ Rectangle {
     radius: _theme.borderRadius
     
     property color backgroundColor: "transparent"
-    color: backgroundColor !== Qt.rgba(0,0,0,0) ? backgroundColor : (isDirtyWell ? _theme.editorBgDirty : _theme.editorBg)
-    border.color: _theme.editorBorder
+    color: backgroundColor !== Qt.rgba(0,0,0,0) ? backgroundColor : (isDirtyWell ? _theme.editorBgDirty : Theme.contentBackground)
+    border.color: Theme.textFieldBorder
     border.width: 1
 
     property bool isDirtyWell: false
 
-    // Inset shadow for depth
+    // Inset shadow for depth sourced from Theme.textFieldInnerShadow
     Rectangle {
         anchors.fill: parent
         anchors.margins: 1
         color: "transparent"
-        border.color: root.isDark ? "#000000" : "black"
-        opacity: root.isDark ? 0.2 : 0.05
+        border.color: Theme.textFieldInnerShadow
+        border.width: 1
         radius: root.radius
     }
 

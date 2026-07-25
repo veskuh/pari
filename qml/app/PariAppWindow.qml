@@ -6,6 +6,7 @@ import QtQuick.Window
 import QtQuick.Dialogs
 
 import net.veskuh.pari 1.0
+import Kaakao 1.0
 import "../sidebar"
 import "../editor"
 import "../common"
@@ -13,7 +14,7 @@ import "../ai"
 import "../utils/FileUtils.js" as FileUtils
 import "../utils/FormattingUtils.js" as FormattingUtils
 
-ApplicationWindow {
+KaakaoWindow {
     id: appWindow
 
     title: {
@@ -77,28 +78,9 @@ ApplicationWindow {
     visible: true
 
     // --- REFACTORED MAIN CONTENT AREA ---
-    SplitView {
+    KaakaoSplitView {
         anchors.fill: parent
         orientation: Qt.Horizontal
-
-        handle: Rectangle {
-            implicitWidth: 6
-            color: "transparent"
-            
-            Rectangle {
-                anchors.centerIn: parent
-                width: 1
-                height: parent.height
-                color: SplitHandle.hovered || SplitHandle.pressed ? pariTheme.accentColor : pariTheme.sidebarBorder
-                Behavior on color { ColorAnimation { duration: 150 } }
-            }
-            
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.SplitHCursor
-                acceptedButtons: Qt.NoButton
-            }
-        }
 
         // Pane 1: Sidebar
         Rectangle {
@@ -111,16 +93,14 @@ ApplicationWindow {
                 anchors.fill: parent
                 spacing: 0
 
-                // 1. SIDEBAR TAB BAR (Unified Metallic)
-                PariSidebarTabBar {
+                // 1. SIDEBAR TAB BAR (Kaakao Segmented Control)
+                KaakaoSegmentedControl {
                     id: sidebarTabBar
-                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.margins: 4
                     currentIndex: sidebarStack.currentIndex
-                    model: [
-                        { text: qsTr("Explorer"), icon: "qrc:/assets/folder.png" },
-                        { text: qsTr("Search"), icon: "qrc:/assets/search.png" }
-                    ]
-                    onTabClicked: (index) => sidebarStack.currentIndex = index
+                    model: [qsTr("Explorer"), qsTr("Search")]
+                    onCurrentIndexChanged: sidebarStack.currentIndex = currentIndex
                 }
 
                 // 2. Main Sidebar Content
@@ -195,30 +175,11 @@ ApplicationWindow {
         }
 
         // Pane 2: Code Editor (55% width)
-        SplitView {
+        KaakaoSplitView {
             id: codeColumn
             orientation: Qt.Vertical
             SplitView.preferredWidth: appWindow.width * 0.55
             SplitView.minimumWidth: 250
-
-            handle: Rectangle {
-                implicitHeight: 6
-                color: "transparent"
-                
-                Rectangle {
-                    anchors.centerIn: parent
-                    height: 1
-                    width: parent.width
-                    color: SplitHandle.hovered || SplitHandle.pressed ? pariTheme.accentColor : pariTheme.sidebarBorder
-                    Behavior on color { ColorAnimation { duration: 150 } }
-                }
-                
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.SplitVCursor
-                    acceptedButtons: Qt.NoButton
-                }
-            }
 
             ColumnLayout {
                 spacing: 0
@@ -375,46 +336,85 @@ ApplicationWindow {
             anchors.verticalCenter: parent.verticalCenter
             leftPadding: 5
 
-            PariToolButton {
+            KaakaoToolButton {
                 text: qsTr("Build")
-                iconSource: "qrc:/assets/build.png"
+                icon.source: "qrc:/assets/build.png"
                 action: actions.buildAction
             }
-            PariToolButton {
+            KaakaoToolButton {
                 text: qsTr("Run")
-                iconSource: "qrc:/assets/play.png"
+                icon.source: "qrc:/assets/play.png"
                 action: actions.runAction
             }
-            PariToolButton {
+            KaakaoToolButton {
                 text: qsTr("Search")
-                iconSource: "qrc:/assets/search.png"
+                icon.source: "qrc:/assets/search.png"
                 action: actions.findAction
             }
         }
 
-        PariTabBar {
+        KaakaoTabBar {
             id: tabBar
             x: codeColumn.x
             width: codeColumn.width
-            anchors.top: parent.top
             anchors.bottom: parent.bottom
-            model: documentManager.documents
-            onTabClicked: (index) => setEditorIndex(index)
-            onCloseTab: (index) => {
-                var doc = documentManager.documents[index];
-                if (doc.isDirty) {
-                    dialogs.targetIndex = index;
-                    dialogs.unsavedChangesDialog.open();
-                } else {
-                    documentManager.closeFile(index);
-                    setEditorIndex(documentManager.currentIndex);
+            currentIndex: documentManager.currentIndex
+
+            onCurrentIndexChanged: {
+                if (currentIndex >= 0 && currentIndex !== documentManager.currentIndex) {
+                    setEditorIndex(currentIndex);
+                }
+            }
+
+            Repeater {
+                model: documentManager.documents
+                delegate: KaakaoTabButton {
+                    required property var modelData
+                    required property int index
+
+                    checked: index === tabBar.currentIndex
+                    text: modelData.isDirty ? modelData.fileName + " *" : modelData.fileName
+                    rightPadding: 24
+
+                    Label {
+                        text: "✕"
+                        anchors.right: parent.right
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.pixelSize: 10
+                        color: closeMouseArea.containsMouse ? Theme.primaryAccent : Theme.secondaryText
+                        opacity: 0.7
+                        z: 2
+
+                        MouseArea {
+                            id: closeMouseArea
+                            anchors.fill: parent
+                            anchors.margins: -4
+                            hoverEnabled: true
+                            onClicked: (mouse) => {
+                                mouse.accepted = true;
+                                closeTabAtIndex(index);
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
+    function closeTabAtIndex(index) {
+        var doc = documentManager.documents[index];
+        if (doc && doc.isDirty) {
+            dialogs.targetIndex = index;
+            dialogs.unsavedChangesDialog.open();
+        } else {
+            documentManager.closeFile(index);
+            setEditorIndex(documentManager.currentIndex);
+        }
+    }
+
     function setEditorIndex(index) {
-        tabBar.currentIndex = index
+        tabBar.currentIndex = index;
         documentManager.setCurrentIndex(index);
         
         if (index >= 0 && index < documentManager.documents.length) {
