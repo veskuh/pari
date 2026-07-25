@@ -96,7 +96,7 @@ KaakaoWindow {
                 // 1. SIDEBAR TAB BAR (Kaakao Segmented Control)
                 KaakaoSegmentedControl {
                     id: sidebarTabBar
-                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
                     Layout.margins: 4
                     currentIndex: sidebarStack.currentIndex
                     model: [qsTr("Explorer"), qsTr("Search")]
@@ -357,7 +357,6 @@ KaakaoWindow {
             id: tabBar
             x: codeColumn.x
             width: codeColumn.width
-            anchors.top: parent.top
             anchors.bottom: parent.bottom
             currentIndex: documentManager.currentIndex
 
@@ -373,6 +372,7 @@ KaakaoWindow {
                     required property var modelData
                     required property int index
 
+                    checked: index === tabBar.currentIndex
                     text: modelData.isDirty ? modelData.fileName + " *" : modelData.fileName
                     rightPadding: 24
 

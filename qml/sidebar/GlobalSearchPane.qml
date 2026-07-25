@@ -36,6 +36,7 @@ Rectangle {
                 font.bold: true
                 opacity: 0.6
                 Layout.leftMargin: 10
+                Layout.rightMargin: 10
                 Layout.topMargin: 10
                 Layout.bottomMargin: 8
             }
@@ -46,11 +47,19 @@ Rectangle {
             id: searchWell
             backgroundColor: pariTheme.isDark ? "#1a1a1a" : "#d8d8d8"
             Layout.fillWidth: true
-            Layout.preferredHeight: root.replaceMode ? 180 : 145
+            Layout.leftMargin: 8
+            Layout.rightMargin: 8
+            Layout.topMargin: 4
+            Layout.bottomMargin: 8
+            implicitHeight: searchColumn.implicitHeight + 16
+            Layout.preferredHeight: implicitHeight
             
             content: ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 10
+                id: searchColumn
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 8
                 spacing: 6
 
                 // Row 1: Wide Search Input
@@ -70,7 +79,7 @@ Rectangle {
                 // Row 2: Replace Toggle + Search Options (Checkboxes)
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 12
+                    spacing: 8
 
                     KaakaoToolButton {
                         text: root.replaceMode ? "▼" : "▶"
@@ -117,7 +126,7 @@ Rectangle {
                 // Row 4: Scope & Search Button
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 8
+                    spacing: 6
 
                     KaakaoLabel {
                         text: qsTr("Scope:")
@@ -132,7 +141,8 @@ Rectangle {
                         text: "*"
                         placeholderText: "*.cpp"
                         font.pixelSize: 11
-                        Layout.preferredWidth: 80
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 60
                     }
 
                     Item { Layout.fillWidth: true }
@@ -178,10 +188,11 @@ Rectangle {
                     font.bold: true
                     font.pixelSize: 11
                     elide: Text.ElideLeft
-                    width: parent.width - 20
                     anchors {
                         left: parent.left
+                        right: parent.right
                         leftMargin: 10
+                        rightMargin: 24
                         verticalCenter: parent.verticalCenter
                     }
                 }
@@ -191,6 +202,8 @@ Rectangle {
                 id: delegate
                 width: resultsList.width
                 height: 45
+                leftPadding: 10
+                rightPadding: 24
                 
                 contentItem: ColumnLayout {
                     spacing: 2
