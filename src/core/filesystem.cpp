@@ -22,6 +22,25 @@ bool ProjectTreeProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &s
     return true;
 }
 
+void ProjectTreeProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
+{
+    QSortFilterProxyModel::setSourceModel(sourceModel);
+    if (!sourceModel)
+        return;
+
+    // QFileSystemModel emits layoutChanged when its background sort finishes,
+    // right after rowsInserted. QQuickTreeView cannot handle layoutChanged —
+    // it leaves stale delegate instances on screen (the duplicate-rows bug).
+    //
+    // Fix: fully disconnect the source's layout signals so the proxy neither
+    // processes nor forwards them. rowsInserted/rowsRemoved/dataChanged still
+    // flow through, so the tree stays correct; the rootIndex and the view's
+    // expansion state are preserved. (QFileSystemModel inserts rows in sorted
+    // order, so suppressing the follow-up layoutChanged doesn't change order.)
+    disconnect(sourceModel, &QAbstractItemModel::layoutAboutToBeChanged, this, nullptr);
+    disconnect(sourceModel, &QAbstractItemModel::layoutChanged, this, nullptr);
+}
+
 bool FileSystem::renameFile(const QString &oldPath, const QString &newPath)
 {
     QFile file(oldPath);
