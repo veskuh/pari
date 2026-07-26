@@ -118,18 +118,38 @@ endif()
 include(GNUInstallDirs)
 
 if(APPLE)
-    # On macOS, install the .app bundle to /Applications by default
-    # but respect CMAKE_INSTALL_PREFIX if set (e.g. /usr/local)
+
     install(TARGETS pari
-        BUNDLE DESTINATION /Applications
+        BUNDLE DESTINATION .
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+    install(TARGETS Kaakao Kaakaoplugin
+        LIBRARY DESTINATION pari.app/Contents/Frameworks
+        RUNTIME DESTINATION pari.app/Contents/Frameworks
+    )
+    if(NOT DEFINED QT_QML_OUTPUT_DIRECTORY)
+        set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
+    endif()
+    install(DIRECTORY "${QT_QML_OUTPUT_DIRECTORY}/Kaakao"
+        DESTINATION pari.app/Contents/qml
     )
 else()
     # LINUX DEPLOYMENT
-    # 1. Install Binary (Force fresh install by being explicit)
+    # 1. Install Binary and Kaakao Libraries
     install(TARGETS pari
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         COMPONENT Application
+    )
+    install(TARGETS Kaakao Kaakaoplugin
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+    if(NOT DEFINED QT_QML_OUTPUT_DIRECTORY)
+        set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
+    endif()
+    install(DIRECTORY "${QT_QML_OUTPUT_DIRECTORY}/Kaakao"
+        DESTINATION qml
     )
 
     # 2. Install Icon
@@ -145,3 +165,4 @@ else()
         COMPONENT Application
     )
 endif()
+
