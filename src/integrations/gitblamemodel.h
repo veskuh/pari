@@ -13,6 +13,7 @@ struct BlameLine {
     QString content;
     QColor color;
     bool showMetadata;
+    int lineNumber;
 };
 
 class GitBlameModel : public QAbstractListModel
@@ -26,7 +27,8 @@ public:
         DateRole,
         ContentRole,
         ColorRole,
-        ShowMetadataRole
+        ShowMetadataRole,
+        LineNumberRole
     };
 
     explicit GitBlameModel(QObject *parent = nullptr);

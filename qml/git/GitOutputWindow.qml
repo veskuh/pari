@@ -201,6 +201,30 @@ Window {
                                     color: model.color
                                 }
 
+                                Rectangle {
+                                    Layout.preferredWidth: 50
+                                    Layout.fillHeight: true
+                                    color: isDark ? "#252526" : "#f5f5f5"
+
+                                    KaakaoLabel {
+                                        anchors.fill: parent
+                                        anchors.rightMargin: 8
+                                        text: (typeof model.lineNumber !== "undefined" && model.lineNumber !== null) ? model.lineNumber : 0
+                                        font.family: Qt.platform.os === 'osx' ? 'Menlo' : 'Noto Sans Mono'
+                                        font.pointSize: appSettings.fontSize - 1
+                                        color: isDark ? "#888888" : "#666666"
+                                        horizontalAlignment: Text.AlignRight
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    Rectangle {
+                                        anchors.right: parent.right
+                                        width: 1
+                                        height: parent.height
+                                        color: isDark ? "#3c3c3c" : "#e0e0e0"
+                                    }
+                                }
+
                                 Item {
                                     Layout.preferredWidth: 280
                                     Layout.fillHeight: true
