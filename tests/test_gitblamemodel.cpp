@@ -36,10 +36,18 @@ void TestGitBlameModel::testParsing() {
 
 void TestGitBlameModel::testClear() {
     GitBlameModel model;
+    QCOMPARE(model.rowCount(), 0);
+    QCOMPARE(model.data(model.index(0), GitBlameModel::LineNumberRole).toInt(), 0);
+
     model.parseRawOutput("4a9e0123456789abcdef0123456789abcdef0123 1 1 1\nauthor X\n\tcontent\n");
     QVERIFY(model.rowCount() > 0);
     model.clear();
     QCOMPARE(model.rowCount(), 0);
+    QCOMPARE(model.data(model.index(0), GitBlameModel::LineNumberRole).toInt(), 0);
+
+    model.parseRawOutput("");
+    QCOMPARE(model.rowCount(), 0);
+    QCOMPARE(model.data(model.index(0), GitBlameModel::LineNumberRole).toInt(), 0);
 }
 
 void TestGitBlameModel::cleanupTestCase() {}

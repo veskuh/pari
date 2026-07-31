@@ -12,8 +12,8 @@ struct BlameLine {
     QString date;
     QString content;
     QColor color;
-    bool showMetadata;
-    int lineNumber;
+    bool showMetadata = false;
+    int lineNumber = 0;
 };
 
 class GitBlameModel : public QAbstractListModel

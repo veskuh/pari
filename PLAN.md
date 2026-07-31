@@ -169,7 +169,7 @@ Pruned dead `btnLight*` and `btnDark*` properties from `PariTheme.qml`; updated 
 ## Step 10 — Line numbers in git blame view ✅
 
 **Status: DONE**
-Added lineNumbers to GitBlameModel (C++ model) and a line number gutter to the blame view delegate in GitOutputWindow.qml.
+Added lineNumbers to GitBlameModel (C++ model) and a line number gutter to the blame view delegate in GitOutputWindow.qml. OpenCode review fix round completed: initialized `lineNumber` and `showMetadata` in `BlameLine` struct to prevent undefined behavior, and added edge-case test coverage for invalid/empty model states.
 
 ---
 
