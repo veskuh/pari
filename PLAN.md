@@ -166,6 +166,11 @@ Sourced `PariPaperWell` background and inner shadow directly from `Theme.content
 
 Pruned dead `btnLight*` and `btnDark*` properties from `PariTheme.qml`; updated `DESIGN.md`, `project.md`, and `README.md` to reflect Kaakao design system integration and submodules. Full build, `tst_all`, `tst_ui` (132 test cases), `--selfcheck`, and coverage report (87.4% line coverage) passed cleanly.
 
+## Step 10 — Line numbers in git blame view ✅
+
+**Status: DONE**
+Added lineNumbers to GitBlameModel (C++ model) and a line number gutter to the blame view delegate in GitOutputWindow.qml. OpenCode review fix round completed: initialized `lineNumber` and `showMetadata` in `BlameLine` struct to prevent undefined behavior, and added edge-case test coverage for invalid/empty model states.
+
 ---
 
 ## Risks

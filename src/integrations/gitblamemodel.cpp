@@ -31,6 +31,7 @@ QVariant GitBlameModel::data(const QModelIndex &index, int role) const
     case ContentRole: return line.content;
     case ColorRole: return line.color;
     case ShowMetadataRole: return line.showMetadata;
+    case LineNumberRole: return line.lineNumber;
     default: return QVariant();
     }
 }
@@ -45,6 +46,7 @@ QHash<int, QByteArray> GitBlameModel::roleNames() const
     roles[ContentRole] = "content";
     roles[ColorRole] = "color";
     roles[ShowMetadataRole] = "showMetadata";
+    roles[LineNumberRole] = "lineNumber";
     return roles;
 }
 
@@ -72,6 +74,7 @@ void GitBlameModel::parseRawOutput(const QString &rawOutput)
     QStringList lines = rawOutput.split('\n');
     BlameLine currentLine;
     QString lastHash;
+    int lineCounter = 0;
     
     struct CommitInfo {
         QString author;
@@ -86,6 +89,8 @@ void GitBlameModel::parseRawOutput(const QString &rawOutput)
 
         if (line.startsWith('\t')) {
             // This is the actual source code line
+            ++lineCounter;
+            currentLine.lineNumber = lineCounter;
             currentLine.content = line.mid(1);
             currentLine.color = getColorForHash(currentLine.hash);
             currentLine.showMetadata = (currentLine.hash != lastHash);

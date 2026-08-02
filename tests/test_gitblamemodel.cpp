@@ -26,18 +26,28 @@ void TestGitBlameModel::testParsing() {
     QCOMPARE(model.data(model.index(0), GitBlameModel::DateRole).toString(), "2024-04-19");
     QCOMPARE(model.data(model.index(0), GitBlameModel::ContentRole).toString(), "#include <iostream>");
     QCOMPARE(model.data(model.index(0), GitBlameModel::ShowMetadataRole).toBool(), true);
+    QCOMPARE(model.data(model.index(0), GitBlameModel::LineNumberRole).toInt(), 1);
     
     // Check second line (same hash, metadata should be hidden)
     QCOMPARE(model.data(model.index(1), GitBlameModel::ContentRole).toString(), "int main() {");
     QCOMPARE(model.data(model.index(1), GitBlameModel::ShowMetadataRole).toBool(), false);
+    QCOMPARE(model.data(model.index(1), GitBlameModel::LineNumberRole).toInt(), 2);
 }
 
 void TestGitBlameModel::testClear() {
     GitBlameModel model;
+    QCOMPARE(model.rowCount(), 0);
+    QCOMPARE(model.data(model.index(0), GitBlameModel::LineNumberRole).toInt(), 0);
+
     model.parseRawOutput("4a9e0123456789abcdef0123456789abcdef0123 1 1 1\nauthor X\n\tcontent\n");
     QVERIFY(model.rowCount() > 0);
     model.clear();
     QCOMPARE(model.rowCount(), 0);
+    QCOMPARE(model.data(model.index(0), GitBlameModel::LineNumberRole).toInt(), 0);
+
+    model.parseRawOutput("");
+    QCOMPARE(model.rowCount(), 0);
+    QCOMPARE(model.data(model.index(0), GitBlameModel::LineNumberRole).toInt(), 0);
 }
 
 void TestGitBlameModel::cleanupTestCase() {}
