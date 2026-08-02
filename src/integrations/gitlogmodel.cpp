@@ -48,7 +48,7 @@ void GitLogModel::parseAndSetLog(const QString &log)
             commit.date = dt.date().toString("yyyy-MM-dd");
             commit.time = dt.time().toString("HH:mm");
             
-            QString message = fields[4];
+            const QString& message = fields[4];
             int firstNewline = message.indexOf('\n');
             if (firstNewline != -1) {
                 commit.messageHeader = message.left(firstNewline).trimmed();
