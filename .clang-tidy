@@ -6,6 +6,7 @@ Checks: >
   performance-*,
   -performance-unnecessary-copy-initialization,
   readability-redundant-*,
+  -readability-redundant-access-specifiers,
   readability-container-size-empty,
   clang-diagnostic-*
 
