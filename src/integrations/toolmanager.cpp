@@ -42,7 +42,7 @@ void ToolManager::runCommand(const QString &command, const QString &workingDirec
             process->deleteLater();
             return;
         }
-        const CommandContext& ctx = it.value();
+        CommandContext ctx = it.value();
         m_runningCommands.erase(it);
         dispatchCommandOutput(ctx);
         process->deleteLater();
