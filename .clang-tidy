@@ -1,4 +1,13 @@
-Checks: '-*,bugprone-*,performance-*,clang-diagnostic-*'
-WarningsAsErrors: ''
-HeaderFilterRegex: ''
-FormatStyle: none
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-branch-clone,
+  performance-*,
+  -performance-unnecessary-copy-initialization,
+  readability-redundant-*,
+  readability-container-size-empty,
+  clang-diagnostic-*
+
+HeaderFilterRegex: 'src/.*'
+FormatStyle: file
