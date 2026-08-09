@@ -84,7 +84,7 @@ void GitBlameModel::parseRawOutput(const QString &rawOutput)
     QHash<QString, CommitInfo> commitCache;
 
     for (int i = 0; i < lines.size(); ++i) {
-        QString line = lines.at(i);
+        const QString& line = lines.at(i);
         if (line.isEmpty()) continue;
 
         if (line.startsWith('\t')) {
