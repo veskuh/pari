@@ -1,20 +1,30 @@
 # C++ & Qt Coding Guidelines for Pari
 
-To ensure code quality and prevent runtime bugs before code review and CI checks, all developers and AI agents must follow these guidelines.
+To ensure code quality, optimal performance, and prevent runtime bugs before code review and CI checks, all developers and AI agents must follow these guidelines.
 
 ## Static Analysis & Quality Checks
 
-Run `clang-tidy` locally using the build compilation database before opening a PR:
+Run `clang-tidy` and `clazy-standalone` locally using the build compilation database:
 
 ```bash
-# Export compile commands and run clang-tidy
+# Export compile commands
 cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+# Run clang-tidy
 clang-tidy -p build src/integrations/*.cpp src/core/*.cpp src/editor/*.cpp src/formatting/*.cpp
+
+# Run Qt-specific static analysis (Clazy)
+clazy-standalone -p build src/integrations/*.cpp src/core/*.cpp src/editor/*.cpp src/formatting/*.cpp
 ```
 
 ## Qt Container & Lifetime Rules
 
-1. **Avoid Dangling References on Container Erasure**:
+1. **Avoid Container Detachment in Range Loops (`-Wclazy-range-loop-detach`)**:
+   - In C++11 range loops over non-const Qt containers (`QList`, `QStringList`), always wrap the container with `std::as_const(...)` to prevent copy-on-write (COW) detachment and unexpected deep copies.
+   - **Incorrect**: `for (const QString &line : lines)`
+   - **Correct**: `for (const QString &line : std::as_const(lines))`
+
+2. **Avoid Dangling References on Container Erasure**:
    - Never assign a `const T&` reference to an iterator's value (`it.value()`) or map element immediately before calling `.erase(it)` or mutating the container.
    - **Incorrect**:
      ```cpp
@@ -29,8 +39,10 @@ clang-tidy -p build src/integrations/*.cpp src/core/*.cpp src/editor/*.cpp src/f
      dispatchCommandOutput(ctx);
      ```
 
-2. **Qt Signals and Slots**:
-   - Do not mix `private slots:` and `private:` without understanding that `clang-tidy` ignores redundant access specifier warnings for Qt macros when `-readability-redundant-access-specifiers` is disabled.
+3. **String Allocation & Regex Performance**:
+   - Prefer multi-argument `.arg(a, b, c)` over chained `.arg(a).arg(b)` to avoid intermediate temporary `QString` allocations (`-Wclazy-qstring-arg`).
+   - Use `static const QRegularExpression` for regexes used repeatedly in hot paths (`-Wclazy-use-static-qregularexpression`).
+   - Prefer hex integer literals for `QColor` (e.g. `QColor(0x888888)`) over string literals `QColor("#888888")` (`-Wclazy-qcolor-from-literal`).
 
-3. **Code Formatting**:
+4. **Code Formatting**:
    - Always run `clang-format` on modified C++ files according to `.clang-format`.
