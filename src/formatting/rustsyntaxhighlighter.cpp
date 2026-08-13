@@ -1,5 +1,6 @@
 #include "rustsyntaxhighlighter.h"
 #include "syntaxtheme.h"
+#include <utility>
 
 RustSyntaxHighlighter::RustSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
     : QSyntaxHighlighter(parent),
@@ -75,7 +76,7 @@ QList<RustSyntaxHighlighter::HighlightRange> RustSyntaxHighlighter::highlightLin
     QList<HighlightRange> ranges;
 
     // 1. Apply stateless rules (keywords, types, attributes)
-    for (const HighlightingRule &rule : highlightingRules) {
+    for (const HighlightingRule &rule : std::as_const(highlightingRules)) {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
             QRegularExpressionMatch match = matchIterator.next();
@@ -111,7 +112,7 @@ QList<RustSyntaxHighlighter::HighlightRange> RustSyntaxHighlighter::highlightLin
 
 void RustSyntaxHighlighter::highlightBlock(const QString &text) {
     QList<HighlightRange> ranges = highlightLine(text);
-    for (const auto &range : ranges) {
+    for (const auto &range : std::as_const(ranges)) {
         setFormat(range.start, range.length, range.format);
     }
 

@@ -10,6 +10,7 @@
 #include "shellsyntaxhighlighter.h"
 #include "markdownsyntaxhighlighter.h"
 #include <QFileInfo>
+#include <utility>
 #include <functional>
 
 struct HighlighterRegistryEntry {
@@ -52,7 +53,8 @@ SyntaxHighlighterProvider::SyntaxHighlighterProvider(QObject *parent)
 QStringList SyntaxHighlighterProvider::supportedExtensions()
 {
     QStringList exts;
-    for (const auto &entry : highlighterRegistry()) {
+    auto registry = highlighterRegistry();
+    for (const auto &entry : std::as_const(registry)) {
         exts << entry.extensions;
     }
     // Also add plain text if not already there
@@ -63,7 +65,8 @@ QStringList SyntaxHighlighterProvider::supportedExtensions()
 QStringList SyntaxHighlighterProvider::supportedFileNames()
 {
     QStringList names;
-    for (const auto &entry : highlighterRegistry()) {
+    auto registry = highlighterRegistry();
+    for (const auto &entry : std::as_const(registry)) {
         names << entry.fileNames;
     }
     return names;
@@ -90,7 +93,8 @@ void SyntaxHighlighterProvider::attachHighlighter(QQuickTextDocument *doc, const
     
     SyntaxTheme *currentTheme = m_settings->systemThemeIsDark() ? m_settings->darkTheme() : m_settings->lightTheme();
 
-    for (const auto &entry : highlighterRegistry()) {
+    auto registry = highlighterRegistry();
+    for (const auto &entry : std::as_const(registry)) {
         if (entry.extensions.contains(extension) || entry.fileNames.contains(fileName)) {
             entry.factory(doc->textDocument(), currentTheme);
             return;

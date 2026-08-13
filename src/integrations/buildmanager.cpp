@@ -43,9 +43,7 @@ void BuildManager::onErrorOccurred(QProcess::ProcessError error)
                                  "Executable: '%2'\n\n"
                                  "Please ensure that the executable exists, has execute permissions (the 'x' bit), and is present in your system PATH.\n"
                                  "Current PATH: %3")
-                                 .arg(errorDetail)
-                                 .arg(exeName)
-                                 .arg(QProcessEnvironment::systemEnvironment().value("PATH"));
+                                 .arg(errorDetail, exeName, QProcessEnvironment::systemEnvironment().value("PATH"));
         emit errorReady(errMsg);
         emit finished();
     }

@@ -7,10 +7,11 @@
 #include <QEventLoop>
 #include <QDateTime>
 #include <QRegularExpression>
+#include <utility>
 
 void Llm::addToChatLog(const QString &line)
 {
-    m_chatLog.append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")).arg(line));
+    m_chatLog.append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"), line));
     emit chatLogChanged();
 }
 
@@ -75,8 +76,7 @@ void Llm::sendPrompt(const QString &prompt)
 void Llm::onSettingsChanged()
 {
     addToChatLog(QString("INFO: Settings changed. New URL: %1, New Model: %2")
-                     .arg(m_settings->ollamaUrl())
-                     .arg(m_settings->ollamaModel()));
+                     .arg(m_settings->ollamaUrl(), m_settings->ollamaModel()));
 }
 
 void Llm::onReadyRead()
@@ -132,7 +132,8 @@ void Llm::onNetworkReply()
         }
         addToChatLog("AI: " + m_currentResponse);
         QString finalResponse = m_currentResponse;
-        finalResponse.replace(QRegularExpression("<think>.*?</think>", QRegularExpression::DotMatchesEverythingOption), "");
+        static const QRegularExpression thinkTag(R"(<think>.*?</think>)", QRegularExpression::DotMatchesEverythingOption);
+        finalResponse.replace(thinkTag, "");
         emit responseReady(finalResponse);
     } else {
         addToChatLog("ERROR: " + reply->errorString());
@@ -154,7 +155,7 @@ void Llm::listModels()
             QJsonObject obj = doc.object();
             QJsonArray modelsArray = obj["models"].toArray();
             QStringList models;
-            for (const auto &modelValue : modelsArray) {
+            for (const auto &modelValue : std::as_const(modelsArray)) {
                 QJsonObject modelObject = modelValue.toObject();
                 models.append(modelObject["name"].toString());
             }

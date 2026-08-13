@@ -1,4 +1,6 @@
 #include "qmlsyntaxhighlighter.h"
+#include "syntaxtheme.h"
+#include <utility>
 
 QmlSyntaxHighlighter::QmlSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
     : QSyntaxHighlighter(parent), m_theme(theme)
@@ -43,7 +45,7 @@ QmlSyntaxHighlighter::QmlSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *t
 void QmlSyntaxHighlighter::highlightBlock(const QString &text)
 {
     // Apply stateless rules (keywords, components)
-    for (const HighlightingRule &rule : highlightingRules) {
+    for (const HighlightingRule &rule : std::as_const(highlightingRules)) {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
             QRegularExpressionMatch match = matchIterator.next();
@@ -52,7 +54,7 @@ void QmlSyntaxHighlighter::highlightBlock(const QString &text)
     }
 
     // Strings
-    QRegularExpression stringExpression(QStringLiteral("\"([^\"\\\\]|\\\\.)*\""));
+    static const QRegularExpression stringExpression(QStringLiteral("\"([^\"\\\\]|\\\\.)*\""));
     QRegularExpressionMatchIterator stringIterator = stringExpression.globalMatch(text);
     while (stringIterator.hasNext()) {
         QRegularExpressionMatch match = stringIterator.next();
@@ -60,7 +62,7 @@ void QmlSyntaxHighlighter::highlightBlock(const QString &text)
     }
 
     // Single-line comments
-    QRegularExpression singleLineCommentExpression(QStringLiteral("//[^\n]*"));
+    static const QRegularExpression singleLineCommentExpression(QStringLiteral("//[^\n]*"));
     QRegularExpressionMatchIterator slcIterator = singleLineCommentExpression.globalMatch(text);
     while (slcIterator.hasNext()) {
         QRegularExpressionMatch match = slcIterator.next();

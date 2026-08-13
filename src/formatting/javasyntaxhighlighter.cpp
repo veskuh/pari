@@ -1,5 +1,6 @@
 #include "javasyntaxhighlighter.h"
 #include "syntaxtheme.h"
+#include <utility>
 
 JavaSyntaxHighlighter::JavaSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
     : QSyntaxHighlighter(parent),
@@ -65,7 +66,7 @@ QList<JavaSyntaxHighlighter::HighlightRange> JavaSyntaxHighlighter::highlightLin
     QList<HighlightRange> ranges;
 
     // 1. Apply stateless rules (keywords, annotations)
-    for (const HighlightingRule &rule : highlightingRules) {
+    for (const HighlightingRule &rule : std::as_const(highlightingRules)) {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
             QRegularExpressionMatch match = matchIterator.next();
@@ -102,7 +103,7 @@ QList<JavaSyntaxHighlighter::HighlightRange> JavaSyntaxHighlighter::highlightLin
 void JavaSyntaxHighlighter::highlightBlock(const QString &text) {
     // Apply basic rules via highlightLine
     QList<HighlightRange> ranges = highlightLine(text);
-    for (const auto &range : ranges) {
+    for (const auto &range : std::as_const(ranges)) {
         setFormat(range.start, range.length, range.format);
     }
 

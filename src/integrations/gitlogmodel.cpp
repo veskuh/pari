@@ -1,4 +1,5 @@
 #include "gitlogmodel.h"
+#include <utility>
 
 GitLogModel::GitLogModel(QObject *parent) : QAbstractListModel(parent)
 {
@@ -35,7 +36,7 @@ void GitLogModel::parseAndSetLog(const QString &log)
     m_allCommits.clear();
 
     QStringList commitEntries = log.split(QChar(0x1e), Qt::SkipEmptyParts);
-    for (const QString &entry : commitEntries) {
+    for (const QString &entry : std::as_const(commitEntries)) {
         QStringList fields = entry.split(QChar(0x1f));
         if (fields.size() >= 5) {
             GitCommit commit;
@@ -135,11 +136,11 @@ void GitLogModel::applyFilter()
     } else {
         m_visibleCommits.clear();
         QString filter = m_filterText.toLower();
-        for (const auto &commit : m_allCommits) {
-            if (commit.sha.toLower().contains(filter) ||
-                commit.authorName.toLower().contains(filter) ||
-                commit.messageHeader.toLower().contains(filter) ||
-                commit.messageBody.toLower().contains(filter)) {
+        for (const auto &commit : std::as_const(m_allCommits)) {
+            if (commit.sha.contains(filter, Qt::CaseInsensitive) ||
+                commit.authorName.contains(filter, Qt::CaseInsensitive) ||
+                commit.messageHeader.contains(filter, Qt::CaseInsensitive) ||
+                commit.messageBody.contains(filter, Qt::CaseInsensitive)) {
                 m_visibleCommits.append(commit);
             }
         }

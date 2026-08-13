@@ -13,8 +13,8 @@ void ShellSyntaxHighlighter::highlightBlock(const QString &text) {
     if (!m_theme)
         return;
 
-    QRegularExpression expression("(?<string>\"([^\"\\\\]|\\\\.)*\"|'[^']*')|"
-                                  "(?<comment>#[^\n]*)");
+    static const QRegularExpression expression("(?<string>\"([^\"\\\\]|\\\\.)*\"|'[^']*')|"
+                                                "(?<comment>#[^\n]*)");
 
     QRegularExpressionMatchIterator it = expression.globalMatch(text);
     while (it.hasNext()) {
