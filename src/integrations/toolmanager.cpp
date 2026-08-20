@@ -5,6 +5,7 @@
 #include <QTemporaryFile>
 #include <QCoreApplication>
 #include <QDir>
+#include <utility>
 
 ToolManager::ToolManager(QObject *parent)
     : QObject{parent}, m_branchProcess(new QProcess(this)), m_qmlFormatProcess(new QProcess(this)), m_tempQmlFile(nullptr)
@@ -146,7 +147,7 @@ QString ToolManager::formatDiffOutput(const QString &output) const
     QStringList lines = escaped.split('\n');
     QString formattedOutput = "<div style=\"white-space: pre; font-family: monospace;\">";
     
-    for (const QString &line : lines) {
+    for (const QString &line : std::as_const(lines)) {
         if (line.startsWith('+')) {
             formattedOutput += "<font color=\"#228b22\">" + line + "</font><br>";
         } else if (line.startsWith('-')) {

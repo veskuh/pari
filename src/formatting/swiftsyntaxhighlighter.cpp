@@ -1,4 +1,5 @@
 #include "swiftsyntaxhighlighter.h"
+#include <utility>
 
 SwiftSyntaxHighlighter::SwiftSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
     : QSyntaxHighlighter(parent),
@@ -87,7 +88,7 @@ QList<SwiftSyntaxHighlighter::HighlightRange> SwiftSyntaxHighlighter::highlightL
     QList<HighlightRange> ranges;
 
     // 1. Apply stateless rules (keywords, types, attributes)
-    for (const HighlightingRule &rule : highlightingRules) {
+    for (const HighlightingRule &rule : std::as_const(highlightingRules)) {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
             QRegularExpressionMatch match = matchIterator.next();
@@ -124,7 +125,7 @@ QList<SwiftSyntaxHighlighter::HighlightRange> SwiftSyntaxHighlighter::highlightL
 void SwiftSyntaxHighlighter::highlightBlock(const QString &text) {
     // Apply basic rules via highlightLine
     QList<HighlightRange> ranges = highlightLine(text);
-    for (const auto &range : ranges) {
+    for (const auto &range : std::as_const(ranges)) {
         setFormat(range.start, range.length, range.format);
     }
 

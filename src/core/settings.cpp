@@ -55,19 +55,19 @@ void Settings::loadSettings()
     m_indentWithSpaces = m_qsettings.value("editor/indentWithSpaces", true).toBool();
     m_indentSize = m_qsettings.value("editor/indentSize", 4).toInt();
 
-    m_lightTheme->keywordColor = m_qsettings.value("theme/light/keywordColor", QColor("#0000FF")).value<QColor>();
-    m_lightTheme->stringColor = m_qsettings.value("theme/light/stringColor", QColor("#A31515")).value<QColor>();
-    m_lightTheme->commentColor = m_qsettings.value("theme/light/commentColor", QColor("#008000")).value<QColor>();
-    m_lightTheme->typeColor = m_qsettings.value("theme/light/typeColor", QColor("#2B91AF")).value<QColor>();
-    m_lightTheme->numberColor = m_qsettings.value("theme/light/numberColor", QColor("#FF0000")).value<QColor>();
-    m_lightTheme->preprocessorColor = m_qsettings.value("theme/light/preprocessorColor", QColor("#800000")).value<QColor>();
+    m_lightTheme->keywordColor = m_qsettings.value("theme/light/keywordColor", QColor(0x0000FF)).value<QColor>();
+    m_lightTheme->stringColor = m_qsettings.value("theme/light/stringColor", QColor(0xA31515)).value<QColor>();
+    m_lightTheme->commentColor = m_qsettings.value("theme/light/commentColor", QColor(0x008000)).value<QColor>();
+    m_lightTheme->typeColor = m_qsettings.value("theme/light/typeColor", QColor(0x2B91AF)).value<QColor>();
+    m_lightTheme->numberColor = m_qsettings.value("theme/light/numberColor", QColor(0xFF0000)).value<QColor>();
+    m_lightTheme->preprocessorColor = m_qsettings.value("theme/light/preprocessorColor", QColor(0x800000)).value<QColor>();
 
-    m_darkTheme->keywordColor = m_qsettings.value("theme/dark/keywordColor", QColor("#569CD6")).value<QColor>();
-    m_darkTheme->stringColor = m_qsettings.value("theme/dark/stringColor", QColor("#D69D85")).value<QColor>();
-    m_darkTheme->commentColor = m_qsettings.value("theme/dark/commentColor", QColor("#6A9955")).value<QColor>();
-    m_darkTheme->typeColor = m_qsettings.value("theme/dark/typeColor", QColor("#4EC9B0")).value<QColor>();
-    m_darkTheme->numberColor = m_qsettings.value("theme/dark/numberColor", QColor("#B5CEA8")).value<QColor>();
-    m_darkTheme->preprocessorColor = m_qsettings.value("theme/dark/preprocessorColor", QColor("#9B9B9B")).value<QColor>();
+    m_darkTheme->keywordColor = m_qsettings.value("theme/dark/keywordColor", QColor(0x569CD6)).value<QColor>();
+    m_darkTheme->stringColor = m_qsettings.value("theme/dark/stringColor", QColor(0xD69D85)).value<QColor>();
+    m_darkTheme->commentColor = m_qsettings.value("theme/dark/commentColor", QColor(0x6A9955)).value<QColor>();
+    m_darkTheme->typeColor = m_qsettings.value("theme/dark/typeColor", QColor(0x4EC9B0)).value<QColor>();
+    m_darkTheme->numberColor = m_qsettings.value("theme/dark/numberColor", QColor(0xB5CEA8)).value<QColor>();
+    m_darkTheme->preprocessorColor = m_qsettings.value("theme/dark/preprocessorColor", QColor(0x9B9B9B)).value<QColor>();
 }
 
 QString Settings::ollamaUrl() const

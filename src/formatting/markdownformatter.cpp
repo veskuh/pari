@@ -1,20 +1,27 @@
 #include "markdownformatter.h"
 #include <QStringList>
 #include <QRegularExpression>
+#include <utility>
 
 MarkdownFormatter::MarkdownFormatter(QObject *parent) : QObject(parent) {}
 
 QString MarkdownFormatter::processInlineMarkdown(QString text) const {
+    static const QRegularExpression codeRe("`(.*?)`");
+    static const QRegularExpression boldRe("\\*\\*(.*?)\\*\\*");
+    static const QRegularExpression italicRe("\\*(.*?)\\*");
+    static const QRegularExpression strikeRe("~~(.*?)~~");
+    static const QRegularExpression linkRe("\\[([^\\]]+)\\]\\(([^\\)]+)\\)");
+
     // code
-    text.replace(QRegularExpression("`(.*?)`"), "<code>\\1</code>");
+    text.replace(codeRe, "<code>\\1</code>");
     // Bold
-    text.replace(QRegularExpression("\\*\\*(.*?)\\*\\*"), "<b>\\1</b>");
+    text.replace(boldRe, "<b>\\1</b>");
     // Italics
-    text.replace(QRegularExpression("\\*(.*?)\\*"), "<i>\\1</i>");
+    text.replace(italicRe, "<i>\\1</i>");
     // Strikethrough
-    text.replace(QRegularExpression("~~(.*?)~~"), "<s>\\1</s>");
+    text.replace(strikeRe, "<s>\\1</s>");
     // Links
-    text.replace(QRegularExpression("\\[([^\\]]+)\\]\\(([^\\)]+)\\)"), "<a href=\"\\2\">\\1</a>");
+    text.replace(linkRe, "<a href=\"\\2\">\\1</a>");
     return text;
 }
 
@@ -45,7 +52,9 @@ QString MarkdownFormatter::toHtml(const QString &markdown) const {
         if (in_blockquote) { result += "</blockquote>\n"; in_blockquote = false; }
     };
 
-    for (const QString &line : lines) {
+    static const QRegularExpression olRe("^\\d+\\. ");
+
+    for (const QString &line : std::as_const(lines)) {
         if (line.startsWith("```")) {
             close_paragraph();
             close_lists_and_quotes();
@@ -78,7 +87,7 @@ QString MarkdownFormatter::toHtml(const QString &markdown) const {
                 in_list_ul = true;
             }
             result += "<li>" + processInlineMarkdown(escapeHtml(line.mid(2))) + "</li>\n";
-        } else if (QRegularExpression("^\\d+\\. ").match(line).hasMatch()) {
+        } else if (olRe.match(line).hasMatch()) {
             close_paragraph();
             if (in_list_ul) { result += "</ul>\n"; in_list_ul = false; }
             if (in_blockquote) { result += "</blockquote>\n"; in_blockquote = false; }

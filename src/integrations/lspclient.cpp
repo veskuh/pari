@@ -4,6 +4,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonValue>
+#include <utility>
 
 LspClient::LspClient(QObject *parent) : QObject(parent), m_process(nullptr), m_requestId(0), m_documentId(0) {
 }
@@ -215,8 +216,8 @@ void LspClient::handleMessage(const QByteArray &message) {
             if (result.contains("items")) {
                 QJsonArray items = result["items"].toArray();
                 QList<QString> completionItemsList;
-                for (const QJsonValue &item : items) {
-                    completionItemsList.append(item.toObject()["label"].toString());
+                for (const QJsonValue &item : std::as_const(items)) {
+                    completionItemsList.append(item.toObject().value("label").toString());
                 }
                 emit completionItems(completionItemsList);
             }

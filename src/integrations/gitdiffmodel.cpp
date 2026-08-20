@@ -1,5 +1,6 @@
 #include "gitdiffmodel.h"
 #include <QRegularExpression>
+#include <utility>
 
 GitDiffModel::GitDiffModel(QObject *parent) : QAbstractListModel(parent)
 {
@@ -18,12 +19,18 @@ QVariant GitDiffModel::data(const QModelIndex &index, int role) const
     const GitDiffLine &line = m_lines[index.row()];
 
     switch (role) {
-        case TypeRole: return static_cast<int>(line.type);
-        case ContentRole: return line.content;
-        case OldLineRole: return line.oldLineNumber > 0 ? QVariant(line.oldLineNumber) : QVariant(0);
-        case NewLineRole: return line.newLineNumber > 0 ? QVariant(line.newLineNumber) : QVariant(0);
-        case FilePathRole: return line.filePath;
-        default: return QVariant();
+    case TypeRole:
+        return static_cast<int>(line.type);
+    case ContentRole:
+        return line.content;
+    case OldLineRole:
+        return line.oldLineNumber > 0 ? QVariant(line.oldLineNumber) : QVariant(0);
+    case NewLineRole:
+        return line.newLineNumber > 0 ? QVariant(line.newLineNumber) : QVariant(0);
+    case FilePathRole:
+        return line.filePath;
+    default:
+        return QVariant();
     }
 }
 
@@ -33,19 +40,19 @@ void GitDiffModel::parseRawDiff(const QString &rawDiff)
     m_lines.clear();
 
     QStringList rawLines = rawDiff.split('\n');
-    QString currentFilePath;
     int oldLine = 0;
     int newLine = 0;
+    QString currentFilePath;
 
     QList<GitDiffLine> untrackedLines;
     QList<GitDiffLine> statusLines;
     QList<GitDiffLine> actualDiffLines;
     bool inDiffPhase = false;
 
-    QRegularExpression hunkHeader(R"(^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@)");
-    QRegularExpression porcelainStatus(R"(^([ MADRCU?][ MADRCU?])\s+(.+)$)");
+    static const QRegularExpression hunkHeader(R"(^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@)");
+    static const QRegularExpression porcelainStatus(R"(^([ MADRCU?][ MADRCU?])\s+(.+)$)");
 
-    for (const QString &line : rawLines) {
+    for (const QString &line : std::as_const(rawLines)) {
         if (line.isEmpty()) continue;
 
         if (line.startsWith("diff --git")) {
@@ -64,7 +71,7 @@ void GitDiffModel::parseRawDiff(const QString &rawDiff)
                     sl.content = path;
                 } else {
                     sl.type = GitDiffLine::StatusFile;
-                    sl.content = QString("[%1] %2").arg(code.trimmed()).arg(path);
+                    sl.content = QString("[%1] %2").arg(code.trimmed(), path);
                 }
                 sl.filePath = path;
                 sl.oldLineNumber = -1;
@@ -99,7 +106,7 @@ void GitDiffModel::parseRawDiff(const QString &rawDiff)
                     diffLine.content = pathA;
                 } else {
                     currentFilePath = pathB;
-                    diffLine.content = QString("%1 → %2").arg(pathA).arg(pathB);
+                    diffLine.content = QString("%1 → %2").arg(pathA, pathB);
                 }
                 diffLine.filePath = currentFilePath;
             }

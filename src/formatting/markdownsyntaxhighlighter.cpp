@@ -1,4 +1,5 @@
 #include "markdownsyntaxhighlighter.h"
+#include <utility>
 
 MarkdownSyntaxHighlighter::MarkdownSyntaxHighlighter(QTextDocument *parent, SyntaxTheme *theme)
     : QSyntaxHighlighter(parent), m_theme(theme)
@@ -116,7 +117,7 @@ void MarkdownSyntaxHighlighter::applyNormalRules(const QString &text, int offset
 {
     if (length <= 0) return;
     QString subString = text.mid(offset, length);
-    for (const HighlightingRule &rule : highlightingRules) {
+    for (const HighlightingRule &rule : std::as_const(highlightingRules)) {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(subString);
         while (matchIterator.hasNext()) {
             QRegularExpressionMatch match = matchIterator.next();

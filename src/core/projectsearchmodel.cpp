@@ -2,12 +2,13 @@
 #include "documentmanager.h"
 #include "textdocument.h"
 #include "syntaxhighlighterprovider.h"
-#include <QtConcurrent>
+#include <QtConcurrent/QtConcurrent>
 #include <QDirIterator>
 #include <QFileInfo>
 #include <QFile>
 #include <QTextStream>
 #include <QRegularExpression>
+#include <utility>
 #include <QSet>
 
 ProjectSearchModel::ProjectSearchModel(QObject *parent)
@@ -107,7 +108,7 @@ void ProjectSearchModel::replaceAll(const QString &replaceText)
     if (m_results.isEmpty() || m_lastPattern.isEmpty()) return;
 
     QSet<QString> uniqueFiles;
-    for (const auto &res : m_results) {
+    for (const auto &res : std::as_const(m_results)) {
         uniqueFiles.insert(res.filePath);
     }
 
@@ -117,7 +118,7 @@ void ProjectSearchModel::replaceAll(const QString &replaceText)
         if (!m_lastMatchCase) re.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
     }
 
-    for (const QString &filePath : uniqueFiles) {
+    for (const QString &filePath : std::as_const(uniqueFiles)) {
         QString content;
         bool isOpen = false;
         int docIndex = -1;
@@ -155,7 +156,8 @@ void ProjectSearchModel::replaceAll(const QString &replaceText)
                 m_docManager->saveFile(docIndex, newContent); 
                 // wait, saveFile actually writes to disk. 
                 // Better: update text directly and mark dirty.
-                TextDocument *doc = qobject_cast<TextDocument*>(m_docManager->documents()[docIndex]);
+                auto docs = m_docManager->documents();
+                TextDocument *doc = qobject_cast<TextDocument*>(docs[docIndex]);
                 doc->setText(newContent);
                 m_docManager->markDirty(docIndex);
             } else {
@@ -210,7 +212,7 @@ void ProjectSearchModel::performSearch(QPromise<QList<SearchResult>> &promise,
     QStringList filters;
     if (!scopeFilter.isEmpty() && scopeFilter != "*") {
         QStringList rawFilters = scopeFilter.split(',', Qt::SkipEmptyParts);
-        for (const QString &f : rawFilters) {
+        for (const QString &f : std::as_const(rawFilters)) {
             QString trimmed = f.trimmed();
             if (trimmed.contains('*') || trimmed.contains('?')) {
                 filters << trimmed;
@@ -219,10 +221,12 @@ void ProjectSearchModel::performSearch(QPromise<QList<SearchResult>> &promise,
             }
         }
     } else {
-        for (const QString &ext : SyntaxHighlighterProvider::supportedExtensions()) {
+        auto exts = SyntaxHighlighterProvider::supportedExtensions();
+        for (const QString &ext : std::as_const(exts)) {
             filters << "*." + ext;
         }
-        for (const QString &fileName : SyntaxHighlighterProvider::supportedFileNames()) {
+        auto fileNames = SyntaxHighlighterProvider::supportedFileNames();
+        for (const QString &fileName : std::as_const(fileNames)) {
             filters << fileName;
         }
     }

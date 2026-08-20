@@ -157,7 +157,7 @@ QColor GitBlameModel::getColorForHash(const QString &hash)
     if (m_colorCache.contains(hash))
         return m_colorCache.value(hash);
 
-    if (hash.startsWith("00000000")) return QColor("#888888");
+    if (hash.startsWith("00000000")) return QColor(0x888888);
 
     uint h = qHash(hash);
     QColor color = QColor::fromHsl(h % 360, 180, 150);
