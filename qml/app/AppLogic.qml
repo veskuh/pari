@@ -65,7 +65,6 @@ Item {
     Connections {
         target: (typeof fileSystem !== 'undefined') ? fileSystem : null
         function onRootPathChanged() {
-            rootWindow.fileSystemView.model = fileSystem.model;
             var buildCommand = appSettings.getBuildCommand(fileSystem.rootPath);
             rootWindow.hasBuildConfiguration = buildCommand !== "";
             

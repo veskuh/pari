@@ -138,6 +138,7 @@ KaakaoWindow {
                             Layout.fillHeight: true
                             Layout.fillWidth: true
                             model: fileSystem.model
+                            rootIndex: fileSystem.currentRootIndex
                             property string selectedPath: ""
                             delegate: FileTreeDelegate { mainWindow: appWindow }
                             columnWidthProvider: function(column) {
@@ -145,12 +146,6 @@ KaakaoWindow {
                             }
                             onWidthChanged: forceLayout()
                             ScrollBar.horizontal: ScrollBar { policy: ScrollBar.AlwaysOff }
-                        }
-                        Connections {
-                            target: fileSystemView
-                            function onModelChanged() {
-                                fileSystemView.rootIndex = fileSystem.currentRootIndex;
-                            }
                         }
                     }
 
