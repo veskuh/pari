@@ -11,8 +11,6 @@ class ProjectTreeProxyModel : public QSortFilterProxyModel
 public:
     using QSortFilterProxyModel::QSortFilterProxyModel;
 
-    void setSourceModel(QAbstractItemModel *sourceModel) override;
-
 protected:
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 };

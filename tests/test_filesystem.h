@@ -19,6 +19,7 @@ private slots:
     void testIsDirectory();
     void testFileExistsInProject();
     void testGetAbsolutePath();
+    void testProxyForwardsLayoutChanged();
 };
 
 #endif // TEST_FILESYSTEM_H

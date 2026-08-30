@@ -4,6 +4,34 @@
 #include <QTemporaryDir>
 #include <QFile>
 #include <QSignalSpy>
+#include <QAbstractItemModel>
+
+namespace {
+class MockSourceModel : public QAbstractItemModel
+{
+public:
+    using QAbstractItemModel::QAbstractItemModel;
+
+    void triggerLayoutChanged()
+    {
+        emit layoutChanged(QList<QPersistentModelIndex>(), QAbstractItemModel::VerticalSortHint);
+    }
+
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override
+    {
+        Q_UNUSED(parent);
+        return createIndex(row, column);
+    }
+    QModelIndex parent(const QModelIndex &) const override { return QModelIndex(); }
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override { return parent.isValid() ? 0 : 1; }
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override
+    {
+        Q_UNUSED(parent);
+        return 1;
+    }
+    QVariant data(const QModelIndex &, int) const override { return QVariant(); }
+};
+} // namespace
 
 void TestFileSystem::initTestCase()
 {
@@ -165,4 +193,24 @@ void TestFileSystem::testGetAbsolutePath()
     
     QCOMPARE(fileSystem.getAbsolutePath("file.txt"), QString("/tmp/pari/file.txt"));
     QCOMPARE(fileSystem.getAbsolutePath("/absolute/path.txt"), QString("/absolute/path.txt"));
+}
+
+void TestFileSystem::testProxyForwardsLayoutChanged()
+{
+    // Regression test: ProjectTreeProxyModel must NOT disconnect the source
+    // model's layoutChanged signal. Suppressing it (as was done previously to
+    // work around a QQuickTreeView bug) leaves QSortFilterProxyModel's internal
+    // source->proxy index mapping stale after QFileSystemModel re-sorts on a
+    // directory change, which makes the file tree show duplicate entries.
+    ProjectTreeProxyModel proxy;
+    MockSourceModel source;
+
+    QSignalSpy spy(&proxy, &QAbstractItemModel::layoutChanged);
+
+    proxy.setSourceModel(&source);
+    QCOMPARE(spy.count(), 0);
+
+    source.triggerLayoutChanged();
+
+    QCOMPARE(spy.count(), 1);
 }
